@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^raw-data$
+^docs$
+^doc$
+^README\.Rmd$
+^_pkgdown\.yml$
+^pkgdown$
+^\.github$
+^LICENSE\.md$
+^.RDataTmp$
+^BiasDetect\.Rproj$

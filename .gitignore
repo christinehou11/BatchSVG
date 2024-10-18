@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+docs/
+vignettes/*.html
+vignettes/*.R
+docs
+raw-data/
+*.rda
+BiasDetect.Rproj
+*.RDataTmp
