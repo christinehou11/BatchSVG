@@ -38,10 +38,21 @@
 #' @export
 #'
 #' @examples
-#' 
+#' data(spe)
+#' SVGs <- rowData(spe)$gene_name
+#' batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 #'
-#' #biasDetect()
+#' # data frame
+#' bias <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5)
+#' bias
 #'
+#' # plots
+#' bias_plot <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5, visual = TRUE)
+#'
+#' # deviance
+#' bias_plot$deviance
+#' # rank
+#' bias_plot$rank
 
 biasDetect <- function(batch_df, nSD_dev = 5, nSD_rank = 5, visual = FALSE) {
 
@@ -64,13 +75,13 @@ biasDetect <- function(batch_df, nSD_dev = 5, nSD_rank = 5, visual = FALSE) {
 
     if (visual == TRUE) {
         options(ggrepel.max.overlaps = Inf)
-        
+
         sd.interval <- nSD_dev
         col.pal <- brewer.pal(length(unique(
             batch_df[["nSD_bin_dev"]])),"YlOrRd")
         col.pal[1] <- "grey"
-        plot_dev <- batch_df |> 
-            ggplot(aes(x=.data[["dev_default"]], y=.data[["dev_batch"]], 
+        plot_dev <- batch_df |>
+            ggplot(aes(x=.data[["dev_default"]], y=.data[["dev_batch"]],
                 color=.data[["nSD_bin_dev"]])) +
             geom_point() + scale_x_log10() + scale_y_log10() +
             scale_color_manual(values=col.pal) +
@@ -78,22 +89,22 @@ biasDetect <- function(batch_df, nSD_dev = 5, nSD_rank = 5, visual = FALSE) {
                 aes(label = ifelse(.data[["nSD_dev"]] > sd.interval,
                 .data[["gene_name"]], "")), size = 3) +
             labs(x= "dev (no batch)", y="dev (batch)",
-                color = "nSD_bin") + 
+                color = "nSD_bin") +
             theme_bw() +
             geom_abline(aes(slope = 1, intercept = 0), lty = 2)
-        
+
         sd.interval <- nSD_rank
         col.pal2 <- brewer.pal(length(unique(
             batch_df[["nSD_bin_rank"]])),"YlOrRd")
         col.pal2[1] <- "grey"
         plot_rank <- ggplot(batch_df, aes(x=.data[["rank_default"]],
-                y=.data[["rank_batch"]], 
+                y=.data[["rank_batch"]],
                 color=.data[["nSD_bin_rank"]])) +
             geom_point() +
             scale_y_reverse() + scale_color_manual(values=col.pal2) +
             geom_abline(aes(slope = -1, intercept = 0), lty = 2) +
             labs(x= "rank (no batch)", y= "rank (batch)",
-                color = "nSD_bin") + 
+                color = "nSD_bin") +
             theme_bw() +
             geom_text_repel(aes(label = ifelse(
                 .data[["nSD_rank"]] > sd.interval,
@@ -104,7 +115,7 @@ biasDetect <- function(batch_df, nSD_dev = 5, nSD_rank = 5, visual = FALSE) {
     else {
         biased.genes.df <- filter(batch_df,
                     .data$dev_outlier==TRUE | .data$rank_outlier==TRUE)
-        
+
         bias <- biased.genes.df$gene
         names(bias) <- biased.genes.df$gene_name
         output <- bias

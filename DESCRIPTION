@@ -63,3 +63,4 @@ biocViews: GeneExpression, Spatial, Transcriptomics, BatchEffect, QualityControl
 URL: https://christinehou11.github.io/BiasDetect/, https://github.com/christinehou11/BiasDetect
 BugReports: https://github.com/christinehou11/BiasDetect/issues
 Config/testthat/edition: 3
+LazyData: true

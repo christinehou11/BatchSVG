@@ -21,7 +21,7 @@
 #'     \code{logcounts} is strongly recommended to be included in \code{assays}.
 #'     Also, the input data is assumed to set up \code{rownames(input)} as
 #'     \code{genes} and \code{gene_name} in \code{rowData(input)}. The input can
-#'     be either the raw and complete data object or the filtered data object 
+#'     be either the raw and complete data object or the filtered data object
 #'     containing only highly variable genes (HVGs) or spatially varaible genes
 #'     (SVGs).
 #'
@@ -46,9 +46,10 @@
 #' @export
 #'
 #' @examples
-#' 
-#' #set.seed(123)
-#' #batch_df <- featureSelect(spe_svgs, batch_effect = "sample_id", VGs = SVGs)
+#'
+#' data(spe)
+#' SVGs <- rowData(spe)$gene_name
+#' batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 #'
 featureSelect <- function(input, batch_effect = NULL, VGs = NULL) {
 

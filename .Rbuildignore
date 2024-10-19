@@ -1,6 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^raw-data$
+^data-raw$
 ^docs$
 ^doc$
 ^README\.Rmd$
