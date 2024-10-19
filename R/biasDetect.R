@@ -39,7 +39,7 @@
 #'
 #' @examples
 #' data(spe)
-#' SVGs <- rowData(spe)$gene_name
+#' SVGs <- SummarizedExperiment::rowData(spe)$gene_name
 #' batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 #'
 #' # data frame

@@ -13,7 +13,7 @@ author:
     email: shicks19@jhu.edu
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{01 Find Bias Features - Spatial Transcriptomics Data}
+  %\VignetteIndexEntry{01 Tutorial for spe data object}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -57,20 +57,9 @@ BiocManager::valid()
 Load required packages
 
 ```{r 'library', message=FALSE}
-library("BiasDetect")
-library("here")
-library("dplyr")
-library("SummarizedExperiment")
-library("SpatialExperiment")
-library("ggplot2")
-library("PRECAST")
-library("Seurat")
-library("scater")
-library("ggspavis")
-library("scuttle")
-library("gridExtra")
-library("grid")
-set.seed(123)
+library(BiasDetect)
+library(SummarizedExperiment)
+library(SpatialExperiment)
 ```
 
 ### Data
