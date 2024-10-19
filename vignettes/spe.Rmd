@@ -33,7 +33,7 @@ The methodology details can be found in [Find Bias Feature](https://jac-thom.git
 
 ### Installation
 
-`BiasDetect` is a R package. Install development version from [GitHub](https://christinehou11.github.io/BiasDetect):
+`BiasDetect` is a R package. Install development version from [GitHub](https://christinehou11.github.io/BiasDetect).
 
 ```{r 'install dev', eval = FALSE}
 remotes::install("christinehou11/BiasDetect")
