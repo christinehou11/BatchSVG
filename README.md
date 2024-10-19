@@ -40,3 +40,7 @@ BiocManager::install("christinehou11/BiasDetect")
 #### Tutorial
 
 A detailed tutorial is available in [Find Biased Features](https://jac-thom.github.io/findBiasedFeatures/) written by Jacqui Thompson.
+
+### Code of Conduct
+  
+  Please note that the BiasDetect project is released with a [Contributor Code of Conduct](https://christinehou11.github.io/BiasDetect/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

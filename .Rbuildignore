@@ -10,3 +10,8 @@
 ^LICENSE\.md$
 ^.RDataTmp$
 ^BiasDetect\.Rproj$
+^dev$
+dev_history.R
+^dev$
+$run_dev.*
+^CODE_OF_CONDUCT\.md$
