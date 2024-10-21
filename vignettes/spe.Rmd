@@ -59,70 +59,25 @@ Load required packages
 ```{r 'library', message=FALSE}
 library(BiasDetect)
 library(SpatialExperiment)
-library(dplyr)
-library(tidyr)
-library(tibble)
+library(SummarizedExperiment)
+library(httr)
 ```
 
 ### Data
 
-`humanHippocampus2024` is an `ExperimentHub` package. The package is still under review for Bioconductor community, but the development version can be can be installed from GitHub.
+The `spe` object used for this tutorial is stored in [Dropbox](https://www.dropbox.com/home/biasDetect_vignette?preview=spe.rda). 
 
-```{r github data package, eval = FALSE, comment=NA, message=FALSE, warning=FALSE}
-install.packages("remotes")
-remotes::install_github("christinehou11/humanHippocampus2024")
+The object is also saved in the `ExperimentHub` package named `humanHippocampus2024`, and the development version from [GitHub]((https://github.com/christinehou11/humanHippocampus2024)) is available. The package has not been publicly available, but the data objects can be accessed via GitHub installation and tutorial is [here](https://christinehou11.github.io/humanHippocampus2024/).
+
+```{r dropbox,message=FALSE, warning=FALSE}
+response <- GET("https://www.dropbox.com/scl/fi/mppcfm2ays6qet7y1x46i/spe.rda?rlkey=1i138uo808pjrsv957hnfbtmf&st=qod6xg3m&dl=1")
+load(rawConnection(response$content))
 ```
 
-The package stored `spe` object used for this tutorial. The detailed tutorial to retrieve the data objects from `humanHippocampus2024` package is [here](https://christinehou11.github.io/humanHippocampus2024/articles/humanHippocampus2024.html).
+The dataset in this tutorial section is from [spatialHPC](https://github.com/LieberInstitute/spatial_hpc). We filtered out 4 samples. We then ran [nnSVG](https://www.nature.com/articles/s41467-023-39748-z) to identify spatially-variable genes (SVGs). We filtered to only the top 2000 significant features in the 4 samples we're using and further filterer to only features that are in the top 2000 of >1 sample. Finally, we obtained 2082 SVGs.
 
-```{r hidden data input,message=FALSE, warning=FALSE}
-library(humanHippocampus2024)
-library(ExperimentHub)
-
-ehub <- ExperimentHub()
-myfiles <- query(ehub, "humanHippocampus2024")
-spatial_hpc_spe <- myfiles[["EH9605"]]
-spatial_hpc_spe
-```
-
-The dataset in this tutorial section is from [spatialHPC](https://github.com/LieberInstitute/spatial_hpc). We filtered out 4 samples.
-
-```{r spe filter,comment=NA, message=FALSE, warning=FALSE}
-fix_order = distinct(as.data.frame(colData(spatial_hpc_spe)), slide, array, brnum, sample_id, position, sex) %>% 
-  arrange(slide, array)
-sub4 = fix_order$sample_id[c(14,16,
-                             20,21)]
-spe_sub4 = spatial_hpc_spe[,spatial_hpc_spe$sample_id %in% sub4]
-
-```
-
-We ran [nnSVG](https://www.nature.com/articles/s41467-023-39748-z) to identify spatially-variable genes (SVGs). 
-
-```{r nnsvg, comment=NA, message=FALSE, warning=FALSE}
-load(system.file("extdata","nnSVG_outs_HE_only.rda", package="BiasDetect"))
-dim(res_ranks)
-```
-
-We filtered to only the top 2000 significant features in the 4 samples we're using and further filterer to only features that are in the top 2000 of >1 sample. Finally, we obtained 2082 SVGs.
-
-```{r nnsvg filter, message=FALSE, warning=FALSE, comment=NA}
-res_df = pivot_longer(
-    rownames_to_column(as.data.frame(res_ranks),
-                        var="gene_id"), 
-    colnames(res_ranks), names_to="sample_id", 
-    values_to="rank", values_drop_na=T)
-
-res_df2 = filter(res_df, 
-    sample_id %in% 
-    c("V11L05-333_B1","V11L05-333_D1",
-    "V11L05-335_D1", "V11L05-336_A1"), 
-    rank<=2000)
-
-svgs = group_by(res_df2, gene_id) %>% tally() %>% filter(n>1) 
-nrow(svgs)
-
-spe_sub4 = spe_sub4[rowData(spe_sub4)$gene_id %in% svgs$gene_id,]
-dim(spe_sub4)
+```{r data input, message=FALSE, warning=FALSE, comment=NA}
+spe
 ```
 
 
@@ -130,9 +85,9 @@ dim(spe_sub4)
 
 The data frame created from `featureSelect()` function includes `nSD_dev` and `nSD_rank`, and we can use `biasDetect()` function to identify the bias genes based on the self-selected `nSD` integer thresholds for deviance and rank respectively. The default threshold is 5 for deviance and 5 for rank.
 
-```{r feature select, comment = NA, message=FALSE, warning=FALSE}
-SVGs <- rowData(spe_sub4)$gene_name
-batch_df <- featureSelect(spe_sub4, batch_effect = "sample_id", VGs = SVGs)
+```{r feature select, comment = NA, warning=FALSE}
+SVGs <- rowData(spe)$gene_name
+batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 dim(batch_df)
 head(batch_df)
 ```
@@ -165,7 +120,7 @@ bias_fig$rank
 Finally, we can obtain a newer `spe_sub4` object without the biased genes.
 
 ```{r new spe_sub4, comment = NA, message=FALSE, warning=FALSE}
-svgs_filt = setdiff(rownames(spe_sub4), bias)
+svgs_filt = setdiff(rownames(spe), bias)
 length(svgs_filt)
 ```
 

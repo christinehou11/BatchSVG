@@ -25,10 +25,7 @@ Load required packages
 library("BiasDetect")
 library("SummarizedExperiment")
 library("SpatialExperiment")
-library("ggplot2")
-library("PRECAST")
-library("scater")
-library("ggspavis")
+library("httr")
 ```
 
 Additionally, you can install development version from [GitHub](https://christinehou11.github.io/BiasDetect):
