@@ -45,11 +45,6 @@
 #'
 #' @export
 #'
-#' @examples
-#'
-#' data(spe)
-#' SVGs <- SummarizedExperiment::rowData(spe)$gene_name
-#' batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 #'
 featureSelect <- function(input, batch_effect = NULL, VGs = NULL) {
 

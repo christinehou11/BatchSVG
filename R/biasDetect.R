@@ -38,9 +38,7 @@
 #' @export
 #'
 #' @examples
-#' data(spe)
-#' SVGs <- SummarizedExperiment::rowData(spe)$gene_name
-#' batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
+#' batch_df <- read.csv(system.file("extdata","hpc_srt_batch_df.csv",package = "BiasDetect"))
 #'
 #' # data frame
 #' bias <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5)

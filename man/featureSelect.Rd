@@ -43,10 +43,3 @@ Function to conduct feature selection on snRNA-seq and spatial
 transcriptomics data and calculate the difference of deviance and rank
 with and without the selected batch effect.
 }
-\examples{
-
-data(spe)
-SVGs <- SummarizedExperiment::rowData(spe)$gene_name
-batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
-
-}
