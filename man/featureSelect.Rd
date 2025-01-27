@@ -44,19 +44,30 @@ transcriptomics data and calculate the difference of deviance and rank
 with and without the selected batch effect.
 }
 \examples{
+github <- "https://github.com/christinehou11/BiasDetect-analyses/"
+subdir <- "raw/refs/heads/main/processed-data/spatialHPC_SRT/"
+csv1 <- "spe-hpc_sub4_svgs-only_counts-1.csv"
+csv2 <- "spe-hpc_sub4_svgs-only_counts-2.csv"
+cdata <- "spe-hpc_sub4_svgs-only_colData.csv"
+rdata <- "spe-hpc_sub4_svgs-only_rowData.csv"
 
-csv1 <- read.csv(url("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-1.csv"), row.names = 1)
-csv2 <- read.csv(url("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-2.csv"), row.names = 1)
-counts = rbind(csv1, csv2)
+url1 <- paste0(github,subdir,csv1, sep = "")
+url2 <- paste0(github,subdir,csv2, sep = "")
+url3 <- paste0(github,subdir,cdata, sep = "")
+url4 <- paste0(github,subdir,rdata, sep = "")
+
+file1 <- read.csv(url(url1), row.names = 1)
+file2 <- read.csv(url(url2), row.names = 1)
+counts = rbind(file1, file2)
 colnames(counts) = gsub("\\\\.","-",colnames(counts))
-cdata = read.csv("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_colData.csv", row.names=1)
-rdata = read.csv("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_rowData.csv", row.names=1)
+cdata = read.csv(url(url3), row.names=1)
+rdata = read.csv(url(url4), row.names=1)
+
 spe = SpatialExperiment::SpatialExperiment(
 assay = list("counts"=counts), 
 colData = cdata, rowData = rdata,
 spatialCoordsNames = c("array_row", "array_col"))
 
-# conduct feature selection
 SVGs <- SummarizedExperiment::rowData(spe)$gene_id
 batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 
