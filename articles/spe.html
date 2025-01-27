@@ -8,8 +8,8 @@
 <title>Find Bias Features - Spatial Transcriptomics Data • BiasDetect</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Find Bias Features - Spatial Transcriptomics Data">
 </head>
 <body>
@@ -139,8 +139,16 @@ from <a href="(https://github.com/christinehou11/humanHippocampus2024)" class="e
 is available. The package has not been publicly available, but the data
 objects can be accessed via GitHub installation and tutorial is <a href="https://christinehou11.github.io/humanHippocampus2024/" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html" class="external-link">GET</a></span><span class="op">(</span><span class="st">"https://www.dropbox.com/scl/fi/mppcfm2ays6qet7y1x46i/spe.rda?rlkey=1i138uo808pjrsv957hnfbtmf&amp;st=qod6xg3m&amp;dl=1"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rawConnection.html" class="external-link">rawConnection</a></span><span class="op">(</span><span class="va">response</span><span class="op">$</span><span class="va">content</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">csv1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-1.csv"</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">csv2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-2.csv"</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">csv1</span>, <span class="va">csv2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\."</span>,<span class="st">"-"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cdata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_colData.csv"</span>, row.names<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">rdata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_rowData.csv"</span>, row.names<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">spe</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment.html" class="external-link">SpatialExperiment</a></span><span class="op">(</span></span>
+<span>  assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">=</span><span class="va">counts</span><span class="op">)</span>, </span>
+<span>  colData <span class="op">=</span> <span class="va">cdata</span>, rowData <span class="op">=</span> <span class="va">rdata</span>,</span>
+<span>  spatialCoordsNames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"array_row"</span>, <span class="st">"array_col"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The dataset in this tutorial section is from <a href="https://github.com/LieberInstitute/spatial_hpc" class="external-link">spatialHPC</a>. We
 filtered out 4 samples. We then ran <a href="https://www.nature.com/articles/s41467-023-39748-z" class="external-link">nnSVG</a> to
 identify spatially-variable genes (SVGs). We filtered to only the top
@@ -174,7 +182,7 @@ includes <code>nSD_dev</code> and <code>nSD_rank</code>, and we can use
 the self-selected <code>nSD</code> integer thresholds for deviance and
 rank respectively. The default threshold is 5 for deviance and 5 for
 rank.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>SVGs <span class="ot">&lt;-</span> <span class="fu">rowData</span>(spe)<span class="sc">$</span>gene_name</span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>SVGs <span class="ot">&lt;-</span> <span class="fu">rowData</span>(spe)<span class="sc">$</span>gene_id</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>batch_df <span class="ot">&lt;-</span> <span class="fu">featureSelect</span>(spe, <span class="at">batch_effect =</span> <span class="st">"sample_id"</span>, <span class="at">VGs =</span> SVGs)</span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>Step <span class="dv">1</span><span class="sc">:</span> Running feature selection without batch...</span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>Step <span class="dv">2</span><span class="sc">:</span> Running feature selection with batch...</span>
@@ -244,13 +252,13 @@ removing the biased gene.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Session info</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.4.1 (2024-06-14)</span></span>
+<span><span class="co">#&gt; R version 4.4.2 (2024-10-31)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 22.04.5 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.1 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
-<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0</span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; locale:</span></span>
 <span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
@@ -266,40 +274,39 @@ removing the biased gene.</p>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] httr_1.4.7                  SpatialExperiment_1.14.0   </span></span>
-<span><span class="co">#&gt;  [3] SingleCellExperiment_1.26.0 SummarizedExperiment_1.34.0</span></span>
-<span><span class="co">#&gt;  [5] Biobase_2.64.0              GenomicRanges_1.56.2       </span></span>
-<span><span class="co">#&gt;  [7] GenomeInfoDb_1.40.1         IRanges_2.38.1             </span></span>
-<span><span class="co">#&gt;  [9] S4Vectors_0.42.1            BiocGenerics_0.50.0        </span></span>
-<span><span class="co">#&gt; [11] MatrixGenerics_1.16.0       matrixStats_1.4.1          </span></span>
-<span><span class="co">#&gt; [13] BiasDetect_0.99.0           BiocStyle_2.32.1           </span></span>
+<span><span class="co">#&gt;  [1] httr_1.4.7                  SpatialExperiment_1.16.0   </span></span>
+<span><span class="co">#&gt;  [3] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0</span></span>
+<span><span class="co">#&gt;  [5] Biobase_2.66.0              GenomicRanges_1.58.0       </span></span>
+<span><span class="co">#&gt;  [7] GenomeInfoDb_1.42.1         IRanges_2.40.1             </span></span>
+<span><span class="co">#&gt;  [9] S4Vectors_0.44.0            BiocGenerics_0.52.0        </span></span>
+<span><span class="co">#&gt; [11] MatrixGenerics_1.18.1       matrixStats_1.5.0          </span></span>
+<span><span class="co">#&gt; [13] BiasDetect_0.99.0           BiocStyle_2.34.0           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] gtable_0.3.5            rjson_0.2.23            xfun_0.48              </span></span>
+<span><span class="co">#&gt;  [1] gtable_0.3.6            rjson_0.2.23            xfun_0.50              </span></span>
 <span><span class="co">#&gt;  [4] bslib_0.8.0             ggplot2_3.5.1           ggrepel_0.9.6          </span></span>
-<span><span class="co">#&gt;  [7] lattice_0.22-6          vctrs_0.6.5             tools_4.4.1            </span></span>
-<span><span class="co">#&gt; [10] generics_0.1.3          curl_5.2.3              parallel_4.4.1         </span></span>
-<span><span class="co">#&gt; [13] tibble_3.2.1            fansi_1.0.6             highr_0.11             </span></span>
-<span><span class="co">#&gt; [16] pkgconfig_2.0.3         Matrix_1.7-0            RColorBrewer_1.1-3     </span></span>
-<span><span class="co">#&gt; [19] desc_1.4.3              lifecycle_1.0.4         GenomeInfoDbData_1.2.12</span></span>
-<span><span class="co">#&gt; [22] farver_2.1.2            compiler_4.4.1          textshaping_0.4.0      </span></span>
-<span><span class="co">#&gt; [25] munsell_0.5.1           codetools_0.2-20        htmltools_0.5.8.1      </span></span>
-<span><span class="co">#&gt; [28] sass_0.4.9              yaml_2.3.10             pkgdown_2.1.1          </span></span>
-<span><span class="co">#&gt; [31] pillar_1.9.0            crayon_1.5.3            jquerylib_0.1.4        </span></span>
-<span><span class="co">#&gt; [34] BiocParallel_1.38.0     DelayedArray_0.30.1     cachem_1.1.0           </span></span>
-<span><span class="co">#&gt; [37] magick_2.8.5            abind_1.4-8             rsvd_1.0.5             </span></span>
-<span><span class="co">#&gt; [40] tidyselect_1.2.1        digest_0.6.37           BiocSingular_1.20.0    </span></span>
-<span><span class="co">#&gt; [43] dplyr_1.1.4             bookdown_0.41           labeling_0.4.3         </span></span>
-<span><span class="co">#&gt; [46] fastmap_1.2.0           grid_4.4.1              colorspace_2.1-1       </span></span>
-<span><span class="co">#&gt; [49] cli_3.6.3               SparseArray_1.4.8       magrittr_2.0.3         </span></span>
-<span><span class="co">#&gt; [52] S4Arrays_1.4.1          utf8_1.2.4              withr_3.0.1            </span></span>
-<span><span class="co">#&gt; [55] UCSC.utils_1.0.0        scales_1.3.0            rmarkdown_2.28         </span></span>
-<span><span class="co">#&gt; [58] XVector_0.44.0          ragg_1.3.3              beachmat_2.20.0        </span></span>
-<span><span class="co">#&gt; [61] ScaledMatrix_1.12.0     evaluate_1.0.1          knitr_1.48             </span></span>
-<span><span class="co">#&gt; [64] irlba_2.3.5.1           rlang_1.1.4             Rcpp_1.0.13            </span></span>
-<span><span class="co">#&gt; [67] glue_1.8.0              BiocManager_1.30.25     scry_1.16.0            </span></span>
-<span><span class="co">#&gt; [70] jsonlite_1.8.9          R6_2.5.1                systemfonts_1.1.0      </span></span>
-<span><span class="co">#&gt; [73] fs_1.6.4                zlibbioc_1.50.0</span></span></code></pre></div>
+<span><span class="co">#&gt;  [7] lattice_0.22-6          vctrs_0.6.5             tools_4.4.2            </span></span>
+<span><span class="co">#&gt; [10] generics_0.1.3          parallel_4.4.2          tibble_3.2.1           </span></span>
+<span><span class="co">#&gt; [13] pkgconfig_2.0.3         Matrix_1.7-1            RColorBrewer_1.1-3     </span></span>
+<span><span class="co">#&gt; [16] desc_1.4.3              lifecycle_1.0.4         GenomeInfoDbData_1.2.13</span></span>
+<span><span class="co">#&gt; [19] farver_2.1.2            compiler_4.4.2          textshaping_1.0.0      </span></span>
+<span><span class="co">#&gt; [22] munsell_0.5.1           codetools_0.2-20        htmltools_0.5.8.1      </span></span>
+<span><span class="co">#&gt; [25] sass_0.4.9              yaml_2.3.10             pkgdown_2.1.1          </span></span>
+<span><span class="co">#&gt; [28] pillar_1.10.1           crayon_1.5.3            jquerylib_0.1.4        </span></span>
+<span><span class="co">#&gt; [31] BiocParallel_1.40.0     DelayedArray_0.32.0     cachem_1.1.0           </span></span>
+<span><span class="co">#&gt; [34] magick_2.8.5            abind_1.4-8             rsvd_1.0.5             </span></span>
+<span><span class="co">#&gt; [37] tidyselect_1.2.1        digest_0.6.37           BiocSingular_1.22.0    </span></span>
+<span><span class="co">#&gt; [40] dplyr_1.1.4             bookdown_0.42           labeling_0.4.3         </span></span>
+<span><span class="co">#&gt; [43] fastmap_1.2.0           grid_4.4.2              colorspace_2.1-1       </span></span>
+<span><span class="co">#&gt; [46] cli_3.6.3               SparseArray_1.6.1       magrittr_2.0.3         </span></span>
+<span><span class="co">#&gt; [49] S4Arrays_1.6.0          withr_3.0.2             UCSC.utils_1.2.0       </span></span>
+<span><span class="co">#&gt; [52] scales_1.3.0            rmarkdown_2.29          XVector_0.46.0         </span></span>
+<span><span class="co">#&gt; [55] ragg_1.3.3              beachmat_2.22.0         ScaledMatrix_1.14.0    </span></span>
+<span><span class="co">#&gt; [58] evaluate_1.0.3          knitr_1.49              irlba_2.3.5.1          </span></span>
+<span><span class="co">#&gt; [61] rlang_1.1.5             Rcpp_1.0.14             glue_1.8.0             </span></span>
+<span><span class="co">#&gt; [64] BiocManager_1.30.25     scry_1.18.0             jsonlite_1.8.9         </span></span>
+<span><span class="co">#&gt; [67] R6_2.5.1                systemfonts_1.2.1       fs_1.6.5               </span></span>
+<span><span class="co">#&gt; [70] zlibbioc_1.52.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
