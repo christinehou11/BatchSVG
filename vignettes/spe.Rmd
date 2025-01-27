@@ -81,14 +81,18 @@ url1 <- paste0(github,subdir,csv1, sep = "")
 url2 <- paste0(github,subdir,csv2, sep = "")
 url3 <- paste0(github,subdir,cdata, sep = "")
 url4 <- paste0(github,subdir,rdata, sep = "")
+```
 
+```{r read urls, message=FALSE, warning=FALSE}
 file1 <- read.csv(url(url1), row.names = 1)
 file2 <- read.csv(url(url2), row.names = 1)
 counts <- rbind(file1, file2)
 colnames(counts) = gsub("\\.","-",colnames(counts))
 cdata <- read.csv(url(url3), row.names=1)
 rdata <- read.csv(url(url4), row.names=1)
+```
 
+```{r build spe, message=FALSE, warning=FALSE}
 spe <- SpatialExperiment(
     assay = list("counts"=counts), 
     colData = cdata, rowData = rdata,
