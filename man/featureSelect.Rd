@@ -28,7 +28,7 @@ should be specified based on different scenarios.}
 \code{SingleCelleExperiment} object or Spatially Variable Genes (SVGs)
 for \code{SpatialExperiment} object. If it is a data frame, it is assumed
 to contain one column of identified variable genes with column name as
-"gene_name".}
+gene name/ID, e.g. "ENSG00000002330".}
 }
 \value{
 If the input was provided as a \code{SpatialExperiment} or
@@ -45,17 +45,19 @@ with and without the selected batch effect.
 }
 \examples{
 
-# dropbox link
-file_name <- "https://www.dropbox.com/scl/fi/mppcfm2ays6qet7y1x46i/spe.rda"
-suffix <- "?rlkey=1i138uo808pjrsv957hnfbtmf&st=qod6xg3m&dl=1"
-url <- paste0(file_name,suffix,sep = "")
-
-# load data
-response <- httr::GET(url)
-load(rawConnection(response$content))
+csv1 <- read.csv(url("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-1.csv"), row.names = 1)
+csv2 <- read.csv(url("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-2.csv"), row.names = 1)
+counts = rbind(csv1, csv2)
+colnames(counts) = gsub("\\\\.","-",colnames(counts))
+cdata = read.csv("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_colData.csv", row.names=1)
+rdata = read.csv("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_rowData.csv", row.names=1)
+spe = SpatialExperiment::SpatialExperiment(
+assay = list("counts"=counts), 
+colData = cdata, rowData = rdata,
+spatialCoordsNames = c("array_row", "array_col"))
 
 # conduct feature selection
-SVGs <- SummarizedExperiment::rowData(spe)$gene_name
+SVGs <- SummarizedExperiment::rowData(spe)$gene_id
 batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 
 }

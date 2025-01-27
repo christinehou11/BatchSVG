@@ -34,7 +34,7 @@
 #'     \code{SingleCelleExperiment} object or Spatially Variable Genes (SVGs)
 #'     for \code{SpatialExperiment} object. If it is a data frame, it is assumed
 #'     to contain one column of identified variable genes with column name as
-#'     "gene_name".
+#'     gene name/ID, e.g. "ENSG00000002330".
 #'
 #' @return If the input was provided as a \code{SpatialExperiment} or
 #'     \code{SingleCellExperiment} object, the output values are returned as
@@ -47,19 +47,21 @@
 #'
 #' @examples
 #'
-#' # dropbox link
-#' file_name <- "https://www.dropbox.com/scl/fi/mppcfm2ays6qet7y1x46i/spe.rda"
-#' suffix <- "?rlkey=1i138uo808pjrsv957hnfbtmf&st=qod6xg3m&dl=1"
-#' url <- paste0(file_name,suffix,sep = "")
-#'
-#' # load data
-#' response <- httr::GET(url)
-#' load(rawConnection(response$content))
+#' csv1 <- read.csv(url("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-1.csv"), row.names = 1)
+#' csv2 <- read.csv(url("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_counts-2.csv"), row.names = 1)
+#' counts = rbind(csv1, csv2)
+#' colnames(counts) = gsub("\\.","-",colnames(counts))
+#' cdata = read.csv("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_colData.csv", row.names=1)
+#' rdata = read.csv("https://github.com/christinehou11/BiasDetect-analyses/raw/refs/heads/main/processed-data/spatialHPC_SRT/spe-hpc_sub4_svgs-only_rowData.csv", row.names=1)
+#' spe = SpatialExperiment::SpatialExperiment(
+#' assay = list("counts"=counts), 
+#' colData = cdata, rowData = rdata,
+#' spatialCoordsNames = c("array_row", "array_col"))
 #'
 #' # conduct feature selection
-#' SVGs <- SummarizedExperiment::rowData(spe)$gene_name
+#' SVGs <- SummarizedExperiment::rowData(spe)$gene_id
 #' batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
-#'
+#' 
 featureSelect <- function(input, batch_effect = NULL, VGs = NULL) {
 
     stopifnot(
@@ -73,7 +75,9 @@ featureSelect <- function(input, batch_effect = NULL, VGs = NULL) {
             stop("The batch_effect is not a valid column")}
         batch_effect <- colData(input)[[batch_effect]]
     } else { stop("Please provide a valid batch_effect.")}
-
+    
+    input <- input[rowData(input)$gene_id %in% VGs, ]
+    
     message("Step 1: Running feature selection without batch...")
     bd <- devianceFeatureSelection(input, assay = "counts", fam = "binomial")
     bd_df <- cbind.data.frame("gene"=rownames(bd),
@@ -96,7 +100,6 @@ featureSelect <- function(input, batch_effect = NULL, VGs = NULL) {
     message("Step 3: Calculating deviance and rank difference...")
     batch_df <- left_join(bd_df, bd_batch_df, by=c("gene", "gene_name"),
                             suffix=c("_default","_batch"))
-    batch_df <- filter(batch_df, .data$gene_name %in% VGs)
 
     batch_df$d_diff <- (batch_df$dev_default-batch_df$dev_batch)/
                         batch_df$dev_batch
