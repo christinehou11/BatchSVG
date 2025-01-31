@@ -125,9 +125,13 @@ from <a href="https://christinehou11.github.io/BiasDetect">GitHub</a>.</p>
 <p>Load required packages</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://christinehou11.github.io/BiasDetect/">BiasDetect</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ExperimentHub</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/drighelli/SpatialExperiment" class="external-link">SpatialExperiment</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://httr.r-lib.org/" class="external-link">httr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://httr.r-lib.org/" class="external-link">httr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
@@ -139,52 +143,87 @@ from <a href="(https://github.com/christinehou11/humanHippocampus2024)" class="e
 is available. The package has not been publicly available, but the data
 objects can be accessed via GitHub installation and tutorial is <a href="https://christinehou11.github.io/humanHippocampus2024/" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">github</span> <span class="op">&lt;-</span> <span class="st">"https://github.com/christinehou11/BiasDetect-analyses/"</span></span>
-<span><span class="va">subdir</span> <span class="op">&lt;-</span> <span class="st">"raw/refs/heads/main/processed-data/spatialHPC_SRT/"</span></span>
-<span><span class="va">csv1</span> <span class="op">&lt;-</span> <span class="st">"spe-hpc_sub4_svgs-only_counts-1.csv"</span></span>
-<span><span class="va">csv2</span> <span class="op">&lt;-</span> <span class="st">"spe-hpc_sub4_svgs-only_counts-2.csv"</span></span>
-<span><span class="va">cdata</span> <span class="op">&lt;-</span> <span class="st">"spe-hpc_sub4_svgs-only_colData.csv"</span></span>
-<span><span class="va">rdata</span> <span class="op">&lt;-</span> <span class="st">"spe-hpc_sub4_svgs-only_rowData.csv"</span></span>
-<span></span>
-<span><span class="va">url1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">github</span>,<span class="va">subdir</span>,<span class="va">csv1</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span><span class="va">url2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">github</span>,<span class="va">subdir</span>,<span class="va">csv2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span><span class="va">url3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">github</span>,<span class="va">subdir</span>,<span class="va">cdata</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span><span class="va">url4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">github</span>,<span class="va">subdir</span>,<span class="va">rdata</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">file1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">url1</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">file2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">url2</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">file1</span>, <span class="va">file2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\."</span>,<span class="st">"-"</span>,<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">cdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">url3</span>, row.names<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">rdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">url4</span>, row.names<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment.html" class="external-link">SpatialExperiment</a></span><span class="op">(</span></span>
-<span>    assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"counts"</span><span class="op">=</span><span class="va">counts</span><span class="op">)</span>, </span>
-<span>    colData <span class="op">=</span> <span class="va">cdata</span>, rowData <span class="op">=</span> <span class="va">rdata</span>,</span>
-<span>    spatialCoordsNames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"array_row"</span>, <span class="st">"array_col"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"christinehou11/BiasDetect"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>ehub <span class="ot">&lt;-</span> <span class="fu">ExperimentHub</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>spe <span class="ot">&lt;-</span> ehub[[<span class="st">"EH9605"</span>]]</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>spe <span class="co"># 31483, 150917 </span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>class<span class="sc">:</span> SpatialExperiment </span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>dim<span class="sc">:</span> <span class="dv">31483</span> <span class="dv">150917</span> </span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">metadata</span>(<span class="dv">1</span>)<span class="sc">:</span> Obtained_from</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">assays</span>(<span class="dv">2</span>)<span class="sc">:</span> counts logcounts</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="fu">rownames</span>(<span class="dv">31483</span>)<span class="sc">:</span> MIR1302<span class="dv">-2</span>HG AL627309<span class="fl">.1</span> ... AC007325<span class="fl">.4</span> AC007325<span class="fl">.2</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>rowData <span class="fu">names</span>(<span class="dv">7</span>)<span class="sc">:</span> source type ... gene_type gene_search</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">colnames</span>(<span class="dv">150917</span>)<span class="sc">:</span> AAACAACGAATAGTTC<span class="dv">-1</span>_V10B01<span class="dv">-086</span>_D1</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  AAACAAGTATCTCCCA<span class="dv">-1</span>_V10B01<span class="dv">-086</span>_D1 ... TTGTTTCCATACAACT<span class="dv">-1</span>_Br2720_B1</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  TTGTTTGTATTACACG<span class="dv">-1</span>_Br2720_B1</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>colData <span class="fu">names</span>(<span class="dv">150</span>)<span class="sc">:</span> sample_id in_tissue ... nmf99 nmf100</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="fu">reducedDimNames</span>(<span class="dv">3</span>)<span class="sc">:</span> <span class="dv">10</span>x_pca <span class="dv">10</span>x_tsne <span class="dv">10</span>x_umap</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>mainExpName<span class="sc">:</span> <span class="cn">NULL</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="fu">altExpNames</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>spatialCoords <span class="fu">names</span>(<span class="dv">2</span>) <span class="sc">:</span> pxl_col_in_fullres pxl_row_in_fullres</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>imgData <span class="fu">names</span>(<span class="dv">4</span>)<span class="sc">:</span> sample_id image_id data scaleFactor</span></code></pre></div>
 <p>The dataset in this tutorial section is from <a href="https://github.com/LieberInstitute/spatial_hpc" class="external-link">spatialHPC</a>. We
-filtered out 4 samples. We then ran <a href="https://www.nature.com/articles/s41467-023-39748-z" class="external-link">nnSVG</a> to
+filtered out 4 samples.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>fix_order <span class="ot">&lt;-</span> <span class="fu">distinct</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="fu">as.data.frame</span>(<span class="fu">colData</span>(spe)), slide, array, brnum, sample_id, </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    position, sex) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="fu">arrange</span>(slide, array)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>sub4 <span class="ot">&lt;-</span> fix_order<span class="sc">$</span>sample_id[<span class="fu">c</span>(<span class="dv">14</span>,<span class="dv">16</span>, <span class="dv">20</span>,<span class="dv">21</span>)]</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>spe_sub4 <span class="ot">&lt;-</span> spe[,spe<span class="sc">$</span>sample_id <span class="sc">%in%</span> sub4]</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>spe_sub4 <span class="co"># 31483, 18945</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>class<span class="sc">:</span> SpatialExperiment </span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>dim<span class="sc">:</span> <span class="dv">31483</span> <span class="dv">18945</span> </span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="fu">metadata</span>(<span class="dv">1</span>)<span class="sc">:</span> Obtained_from</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="fu">assays</span>(<span class="dv">2</span>)<span class="sc">:</span> counts logcounts</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="fu">rownames</span>(<span class="dv">31483</span>)<span class="sc">:</span> MIR1302<span class="dv">-2</span>HG AL627309<span class="fl">.1</span> ... AC007325<span class="fl">.4</span> AC007325<span class="fl">.2</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>rowData <span class="fu">names</span>(<span class="dv">7</span>)<span class="sc">:</span> source type ... gene_type gene_search</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="fu">colnames</span>(<span class="dv">18945</span>)<span class="sc">:</span> AAACAACGAATAGTTC<span class="dv">-1</span>_V11L05<span class="dv">-333</span>_B1</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  AAACAAGTATCTCCCA<span class="dv">-1</span>_V11L05<span class="dv">-333</span>_B1 ... TTGTTTGTATTACACG<span class="dv">-1</span>_V11L05<span class="dv">-336</span>_A1</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  TTGTTTGTGTAAATTC<span class="dv">-1</span>_V11L05<span class="dv">-336</span>_A1</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>colData <span class="fu">names</span>(<span class="dv">150</span>)<span class="sc">:</span> sample_id in_tissue ... nmf99 nmf100</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="fu">reducedDimNames</span>(<span class="dv">3</span>)<span class="sc">:</span> <span class="dv">10</span>x_pca <span class="dv">10</span>x_tsne <span class="dv">10</span>x_umap</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>mainExpName<span class="sc">:</span> <span class="cn">NULL</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="fu">altExpNames</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>spatialCoords <span class="fu">names</span>(<span class="dv">2</span>) <span class="sc">:</span> pxl_col_in_fullres pxl_row_in_fullres</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>imgData <span class="fu">names</span>(<span class="dv">4</span>)<span class="sc">:</span> sample_id image_id data scaleFactor</span></code></pre></div>
+<p>We then ran <a href="https://www.nature.com/articles/s41467-023-39748-z" class="external-link">nnSVG</a> to
 identify spatially-variable genes (SVGs). We filtered to only the top
-2000 significant features in the 4 samples we’re using and further
+2000 significant features in the 4 samples. We’re using and further
 filterer to only features that are in the top 2000 of &gt;1 sample.
 Finally, we obtained 2082 SVGs.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>spe</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>class<span class="sc">:</span> SpatialExperiment </span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>dim<span class="sc">:</span> <span class="dv">2082</span> <span class="dv">18945</span> </span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">metadata</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">assays</span>(<span class="dv">1</span>)<span class="sc">:</span> counts</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">rownames</span>(<span class="dv">2082</span>)<span class="sc">:</span> ENSG00000002330 ENSG00000002586 ... ENSG00000286214</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  ENSG00000286961</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>rowData <span class="fu">names</span>(<span class="dv">6</span>)<span class="sc">:</span> source type ... gene_name gene_type</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">colnames</span>(<span class="dv">18945</span>)<span class="sc">:</span> AAACAACGAATAGTTC<span class="dv">-1</span>_V11L05<span class="dv">-333</span>_B1</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  AAACAAGTATCTCCCA<span class="dv">-1</span>_V11L05<span class="dv">-333</span>_B1 ... TTGTTTGTATTACACG<span class="dv">-1</span>_V11L05<span class="dv">-336</span>_A1</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  TTGTTTGTGTAAATTC<span class="dv">-1</span>_V11L05<span class="dv">-336</span>_A1</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>colData <span class="fu">names</span>(<span class="dv">10</span>)<span class="sc">:</span> sample_id slide ... expr_chrM expr_chrM_ratio</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="fu">reducedDimNames</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>mainExpName<span class="sc">:</span> <span class="cn">NULL</span></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="fu">altExpNames</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>spatialCoords <span class="fu">names</span>(<span class="dv">2</span>) <span class="sc">:</span> array_row array_col</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>imgData <span class="fu">names</span>(<span class="dv">0</span>)<span class="sc">:</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>res_ranks <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="fu">system.file</span>(<span class="st">"extdata"</span>,<span class="st">"res_ranks.csv"</span>,<span class="at">package =</span> <span class="st">"BiasDetect"</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="at">row.names =</span> <span class="dv">1</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>res_df_sub4 <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="fu">rownames_to_column</span>(<span class="fu">as.data.frame</span>(res_ranks), var<span class="ot">&lt;-</span><span class="st">"gene_id"</span>), </span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="fu">colnames</span>(res_ranks), <span class="at">names_to=</span><span class="st">"sample_id"</span>, <span class="at">values_to=</span><span class="st">"rank"</span>, </span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">values_drop_na=</span><span class="cn">TRUE</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>res_df2_sub4 <span class="ot">&lt;-</span> <span class="fu">filter</span>(res_df_sub4, sample_id <span class="sc">%in%</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"V11L05-333_B1"</span>,<span class="st">"V11L05-333_D1"</span>,<span class="st">"V11L05-335_D1"</span>,<span class="st">"V11L05-336_A1"</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>        rank <span class="sc">&lt;=</span> <span class="dv">2000</span>) <span class="co"># top 2k sig features</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="fu">nrow</span>(res_df2_sub4) <span class="co"># 7559</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">7559</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>svgs_sub4 <span class="ot">&lt;-</span> <span class="fu">group_by</span>(res_df2_sub4, gene_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="fu">tally</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="fu">filter</span>(n<span class="sc">&gt;</span><span class="dv">1</span>) <span class="co"># &gt;1 sample</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="fu">nrow</span>(svgs_sub4) <span class="co"># 2082</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2082</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="fu">head</span>(svgs_sub4)</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co"># A tibble: 6 × 2 [39m</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  gene_id             n</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>   [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>chr<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m            [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>int<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m1 [<span class="dv">39</span>m ENSG00000002330     <span class="dv">2</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m2 [<span class="dv">39</span>m ENSG00000002586     <span class="dv">4</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m3 [<span class="dv">39</span>m ENSG00000004059     <span class="dv">4</span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m4 [<span class="dv">39</span>m ENSG00000004660     <span class="dv">4</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m5 [<span class="dv">39</span>m ENSG00000004779     <span class="dv">4</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m6 [<span class="dv">39</span>m ENSG00000005022     <span class="dv">2</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="bias-genes-identification">Bias Genes Identification<a class="anchor" aria-label="anchor" href="#bias-genes-identification"></a>
@@ -195,8 +234,8 @@ includes <code>nSD_dev</code> and <code>nSD_rank</code>, and we can use
 the self-selected <code>nSD</code> integer thresholds for deviance and
 rank respectively. The default threshold is 5 for deviance and 5 for
 rank.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>SVGs <span class="ot">&lt;-</span> <span class="fu">rowData</span>(spe)<span class="sc">$</span>gene_id</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>batch_df <span class="ot">&lt;-</span> <span class="fu">featureSelect</span>(spe, <span class="at">batch_effect =</span> <span class="st">"sample_id"</span>, <span class="at">VGs =</span> SVGs)</span>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>SVGs <span class="ot">&lt;-</span> svgs_sub4<span class="sc">$</span>gene_id</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>batch_df <span class="ot">&lt;-</span> <span class="fu">featureSelect</span>(spe_sub4, <span class="at">batch_effect =</span> <span class="st">"sample_id"</span>, <span class="at">VGs =</span> SVGs)</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>Step <span class="dv">1</span><span class="sc">:</span> Running feature selection without batch...</span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>Step <span class="dv">2</span><span class="sc">:</span> Running feature selection with batch...</span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>Step <span class="dv">3</span><span class="sc">:</span> Calculating deviance and rank difference...</span>
@@ -204,19 +243,19 @@ rank.</p>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2082</span>   <span class="dv">10</span></span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="fu">head</span>(batch_df)</span>
 <span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>             gene gene_name dev_default rank_default dev_batch rank_batch</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="dv">1</span> ENSG00000002330       BAD    <span class="fl">15830.43</span>         <span class="dv">1310</span>  <span class="fl">15785.12</span>       <span class="dv">1289</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="dv">2</span> ENSG00000002586      CD99    <span class="fl">18837.21</span>          <span class="dv">865</span>  <span class="fl">18616.10</span>        <span class="dv">858</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="dv">3</span> ENSG00000004059      ARF5    <span class="fl">15033.32</span>         <span class="dv">1443</span>  <span class="fl">14985.57</span>       <span class="dv">1417</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="dv">4</span> ENSG00000004660    CAMKK1    <span class="fl">14586.54</span>         <span class="dv">1506</span>  <span class="fl">14479.27</span>       <span class="dv">1487</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="dv">5</span> ENSG00000004779   NDUFAB1    <span class="fl">19859.78</span>          <span class="dv">756</span>  <span class="fl">19469.72</span>        <span class="dv">764</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="dv">6</span> ENSG00000005022   SLC25A5    <span class="fl">16842.03</span>         <span class="dv">1150</span>  <span class="fl">16739.61</span>       <span class="dv">1131</span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>       d_diff     nSD_dev r_diff   nSD_rank</span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="dv">1</span> <span class="fl">0.002870288</span> <span class="sc">-</span><span class="fl">0.31052071</span>    <span class="sc">-</span><span class="dv">21</span> <span class="sc">-</span><span class="fl">0.4914075</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.011877487</span> <span class="sc">-</span><span class="fl">0.13869673</span>     <span class="sc">-</span><span class="dv">7</span> <span class="sc">-</span><span class="fl">0.1638025</span></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="dv">3</span> <span class="fl">0.003186151</span> <span class="sc">-</span><span class="fl">0.30449522</span>    <span class="sc">-</span><span class="dv">26</span> <span class="sc">-</span><span class="fl">0.6084093</span></span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.007408683</span> <span class="sc">-</span><span class="fl">0.22394495</span>    <span class="sc">-</span><span class="dv">19</span> <span class="sc">-</span><span class="fl">0.4446068</span></span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="dv">5</span> <span class="fl">0.020034113</span>  <span class="fl">0.01690146</span>      <span class="dv">8</span>  <span class="fl">0.1872029</span></span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="dv">6</span> <span class="fl">0.006118529</span> <span class="sc">-</span><span class="fl">0.24855631</span>    <span class="sc">-</span><span class="dv">19</span> <span class="sc">-</span><span class="fl">0.4446068</span></span></code></pre></div>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="dv">1</span> ENSG00000131584     ACAP3    <span class="fl">16125.31</span>         <span class="dv">1262</span>  <span class="fl">15900.14</span>       <span class="dv">1269</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="dv">2</span> ENSG00000175756  AURKAIP1    <span class="fl">17344.09</span>         <span class="dv">1060</span>  <span class="fl">17167.86</span>       <span class="dv">1058</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="dv">3</span> ENSG00000242485    MRPL20    <span class="fl">17629.33</span>         <span class="dv">1023</span>  <span class="fl">17517.05</span>       <span class="dv">1004</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="dv">4</span> ENSG00000179403      VWA1    <span class="fl">12860.93</span>         <span class="dv">1726</span>  <span class="fl">12825.66</span>       <span class="dv">1702</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="dv">5</span> ENSG00000160075     SSU72    <span class="fl">16145.20</span>         <span class="dv">1255</span>  <span class="fl">16136.31</span>       <span class="dv">1220</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="dv">6</span> ENSG00000078369      GNB1    <span class="fl">22402.83</span>          <span class="dv">516</span>  <span class="fl">22271.32</span>        <span class="dv">497</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>        d_diff     nSD_dev r_diff    nSD_rank</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="dv">1</span> <span class="fl">0.0141612453</span> <span class="sc">-</span><span class="fl">0.09513109</span>      <span class="dv">7</span>  <span class="fl">0.16380252</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.0102651525</span> <span class="sc">-</span><span class="fl">0.16945410</span>     <span class="sc">-</span><span class="dv">2</span> <span class="sc">-</span><span class="fl">0.04680072</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="dv">3</span> <span class="fl">0.0064098269</span> <span class="sc">-</span><span class="fl">0.24299943</span>    <span class="sc">-</span><span class="dv">19</span> <span class="sc">-</span><span class="fl">0.44460683</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.0027493688</span> <span class="sc">-</span><span class="fl">0.31282741</span>    <span class="sc">-</span><span class="dv">24</span> <span class="sc">-</span><span class="fl">0.56160863</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="dv">5</span> <span class="fl">0.0005506572</span> <span class="sc">-</span><span class="fl">0.35477067</span>    <span class="sc">-</span><span class="dv">35</span> <span class="sc">-</span><span class="fl">0.81901258</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="dv">6</span> <span class="fl">0.0059049925</span> <span class="sc">-</span><span class="fl">0.25262980</span>    <span class="sc">-</span><span class="dv">19</span> <span class="sc">-</span><span class="fl">0.44460683</span></span></code></pre></div>
 <p>What’s more, <code>biasDetect</code> function allows to return the
 biased genes either in data frame format or in plots. The default format
 is in data frame.</p>
@@ -245,9 +284,9 @@ mean</em></p>
 <p><img src="spe_files/figure-html/rank-1.png" width="700"></p>
 <p>Finally, we can obtain a newer <code>spe_sub4</code> object without
 the biased genes.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>svgs_filt <span class="ot">=</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(spe), bias)</span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>svgs_filt <span class="ot">=</span> <span class="fu">setdiff</span>(<span class="fu">rownames</span>(svgs_sub4), bias)</span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">length</span>(svgs_filt)</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2067</span></span></code></pre></div>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2082</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="additional-information">Additional information<a class="anchor" aria-label="anchor" href="#additional-information"></a>
@@ -287,39 +326,48 @@ removing the biased gene.</p>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] httr_1.4.7                  SpatialExperiment_1.16.0   </span></span>
-<span><span class="co">#&gt;  [3] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0</span></span>
-<span><span class="co">#&gt;  [5] Biobase_2.66.0              GenomicRanges_1.58.0       </span></span>
-<span><span class="co">#&gt;  [7] GenomeInfoDb_1.42.1         IRanges_2.40.1             </span></span>
-<span><span class="co">#&gt;  [9] S4Vectors_0.44.0            BiocGenerics_0.52.0        </span></span>
-<span><span class="co">#&gt; [11] MatrixGenerics_1.18.1       matrixStats_1.5.0          </span></span>
-<span><span class="co">#&gt; [13] BiasDetect_0.99.0           BiocStyle_2.34.0           </span></span>
+<span><span class="co">#&gt;  [1] tibble_3.2.1                dplyr_1.1.4                </span></span>
+<span><span class="co">#&gt;  [3] tidyr_1.3.1                 httr_1.4.7                 </span></span>
+<span><span class="co">#&gt;  [5] SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1</span></span>
+<span><span class="co">#&gt;  [7] SummarizedExperiment_1.36.0 Biobase_2.66.0             </span></span>
+<span><span class="co">#&gt;  [9] GenomicRanges_1.58.0        GenomeInfoDb_1.42.3        </span></span>
+<span><span class="co">#&gt; [11] IRanges_2.40.1              S4Vectors_0.44.0           </span></span>
+<span><span class="co">#&gt; [13] MatrixGenerics_1.18.1       matrixStats_1.5.0          </span></span>
+<span><span class="co">#&gt; [15] ExperimentHub_2.14.0        AnnotationHub_3.14.0       </span></span>
+<span><span class="co">#&gt; [17] BiocFileCache_2.14.0        dbplyr_2.5.0               </span></span>
+<span><span class="co">#&gt; [19] BiocGenerics_0.52.0         BiasDetect_0.99.0          </span></span>
+<span><span class="co">#&gt; [21] BiocStyle_2.34.0           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] gtable_0.3.6            rjson_0.2.23            xfun_0.50              </span></span>
-<span><span class="co">#&gt;  [4] bslib_0.8.0             ggplot2_3.5.1           ggrepel_0.9.6          </span></span>
-<span><span class="co">#&gt;  [7] lattice_0.22-6          vctrs_0.6.5             tools_4.4.2            </span></span>
-<span><span class="co">#&gt; [10] generics_0.1.3          parallel_4.4.2          tibble_3.2.1           </span></span>
-<span><span class="co">#&gt; [13] pkgconfig_2.0.3         Matrix_1.7-1            RColorBrewer_1.1-3     </span></span>
-<span><span class="co">#&gt; [16] desc_1.4.3              lifecycle_1.0.4         GenomeInfoDbData_1.2.13</span></span>
-<span><span class="co">#&gt; [19] farver_2.1.2            compiler_4.4.2          textshaping_1.0.0      </span></span>
-<span><span class="co">#&gt; [22] munsell_0.5.1           codetools_0.2-20        htmltools_0.5.8.1      </span></span>
-<span><span class="co">#&gt; [25] sass_0.4.9              yaml_2.3.10             pkgdown_2.1.1          </span></span>
-<span><span class="co">#&gt; [28] pillar_1.10.1           crayon_1.5.3            jquerylib_0.1.4        </span></span>
-<span><span class="co">#&gt; [31] BiocParallel_1.40.0     DelayedArray_0.32.0     cachem_1.1.0           </span></span>
-<span><span class="co">#&gt; [34] magick_2.8.5            abind_1.4-8             rsvd_1.0.5             </span></span>
-<span><span class="co">#&gt; [37] tidyselect_1.2.1        digest_0.6.37           BiocSingular_1.22.0    </span></span>
-<span><span class="co">#&gt; [40] dplyr_1.1.4             bookdown_0.42           labeling_0.4.3         </span></span>
-<span><span class="co">#&gt; [43] fastmap_1.2.0           grid_4.4.2              colorspace_2.1-1       </span></span>
-<span><span class="co">#&gt; [46] cli_3.6.3               SparseArray_1.6.1       magrittr_2.0.3         </span></span>
-<span><span class="co">#&gt; [49] S4Arrays_1.6.0          withr_3.0.2             UCSC.utils_1.2.0       </span></span>
-<span><span class="co">#&gt; [52] scales_1.3.0            rmarkdown_2.29          XVector_0.46.0         </span></span>
-<span><span class="co">#&gt; [55] ragg_1.3.3              beachmat_2.22.0         ScaledMatrix_1.14.0    </span></span>
-<span><span class="co">#&gt; [58] evaluate_1.0.3          knitr_1.49              irlba_2.3.5.1          </span></span>
-<span><span class="co">#&gt; [61] rlang_1.1.5             Rcpp_1.0.14             glue_1.8.0             </span></span>
-<span><span class="co">#&gt; [64] BiocManager_1.30.25     scry_1.18.0             jsonlite_1.8.9         </span></span>
-<span><span class="co">#&gt; [67] R6_2.5.1                systemfonts_1.2.1       fs_1.6.5               </span></span>
-<span><span class="co">#&gt; [70] zlibbioc_1.52.0</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] DBI_1.2.3               rlang_1.1.5             magrittr_2.0.3         </span></span>
+<span><span class="co">#&gt;  [4] compiler_4.4.2          RSQLite_2.3.9           png_0.1-8              </span></span>
+<span><span class="co">#&gt;  [7] systemfonts_1.2.1       vctrs_0.6.5             pkgconfig_2.0.3        </span></span>
+<span><span class="co">#&gt; [10] crayon_1.5.3            fastmap_1.2.0           magick_2.8.5           </span></span>
+<span><span class="co">#&gt; [13] XVector_0.46.0          labeling_0.4.3          utf8_1.2.4             </span></span>
+<span><span class="co">#&gt; [16] rmarkdown_2.29          UCSC.utils_1.2.0        ragg_1.3.3             </span></span>
+<span><span class="co">#&gt; [19] purrr_1.0.2             bit_4.5.0.1             xfun_0.50              </span></span>
+<span><span class="co">#&gt; [22] zlibbioc_1.52.0         cachem_1.1.0            beachmat_2.22.0        </span></span>
+<span><span class="co">#&gt; [25] jsonlite_1.8.9          blob_1.2.4              DelayedArray_0.32.0    </span></span>
+<span><span class="co">#&gt; [28] BiocParallel_1.40.0     irlba_2.3.5.1           parallel_4.4.2         </span></span>
+<span><span class="co">#&gt; [31] R6_2.5.1                bslib_0.8.0             RColorBrewer_1.1-3     </span></span>
+<span><span class="co">#&gt; [34] jquerylib_0.1.4         Rcpp_1.0.14             bookdown_0.42          </span></span>
+<span><span class="co">#&gt; [37] knitr_1.49              Matrix_1.7-1            tidyselect_1.2.1       </span></span>
+<span><span class="co">#&gt; [40] abind_1.4-8             yaml_2.3.10             codetools_0.2-20       </span></span>
+<span><span class="co">#&gt; [43] curl_6.2.0              lattice_0.22-6          scry_1.18.0            </span></span>
+<span><span class="co">#&gt; [46] withr_3.0.2             KEGGREST_1.46.0         evaluate_1.0.3         </span></span>
+<span><span class="co">#&gt; [49] desc_1.4.3              Biostrings_2.74.1       pillar_1.10.1          </span></span>
+<span><span class="co">#&gt; [52] BiocManager_1.30.25     filelock_1.0.3          generics_0.1.3         </span></span>
+<span><span class="co">#&gt; [55] BiocVersion_3.20.0      ggplot2_3.5.1           munsell_0.5.1          </span></span>
+<span><span class="co">#&gt; [58] scales_1.3.0            glue_1.8.0              tools_4.4.2            </span></span>
+<span><span class="co">#&gt; [61] ScaledMatrix_1.14.0     fs_1.6.5                grid_4.4.2             </span></span>
+<span><span class="co">#&gt; [64] AnnotationDbi_1.68.0    colorspace_2.1-1        GenomeInfoDbData_1.2.13</span></span>
+<span><span class="co">#&gt; [67] BiocSingular_1.22.0     cli_3.6.3               rsvd_1.0.5             </span></span>
+<span><span class="co">#&gt; [70] rappdirs_0.3.3          textshaping_1.0.0       S4Arrays_1.6.0         </span></span>
+<span><span class="co">#&gt; [73] gtable_0.3.6            sass_0.4.9              digest_0.6.37          </span></span>
+<span><span class="co">#&gt; [76] SparseArray_1.6.1       ggrepel_0.9.6           farver_2.1.2           </span></span>
+<span><span class="co">#&gt; [79] rjson_0.2.23            memoise_2.0.1           htmltools_0.5.8.1      </span></span>
+<span><span class="co">#&gt; [82] pkgdown_2.1.1           lifecycle_1.0.4         mime_0.12              </span></span>
+<span><span class="co">#&gt; [85] bit64_4.6.0-1</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
