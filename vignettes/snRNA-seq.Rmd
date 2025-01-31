@@ -5,12 +5,6 @@ author:
   - name: "Christine Hou"
     affiliation: Department of Biostatistics, Johns Hopkins University
     email: chris2018hou@gmail.com
-  - name: "Jacqui Thompson"
-    affiliation: Department of Biostatistics, Johns Hopkins University
-    email: jthom338@jh.edu
-  - name: "Stephanie Hicks"
-    affiliation: Department of Biostatistics, Johns Hopkins University
-    email: shicks19@jhu.edu
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{01 Find Bias Features - Spatial Transcriptomics Data}

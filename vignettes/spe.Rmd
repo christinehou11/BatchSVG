@@ -5,12 +5,6 @@ author:
   - name: "Christine Hou"
     affiliation: Department of Biostatistics, Johns Hopkins University
     email: chris2018hou@gmail.com
-  - name: "Jacqui Thompson"
-    affiliation: Department of Biostatistics, Johns Hopkins University
-    email: jthom338@jh.edu
-  - name: "Stephanie Hicks"
-    affiliation: Department of Biostatistics, Johns Hopkins University
-    email: shicks19@jhu.edu
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{01 Tutorial for spe data object}
@@ -75,7 +69,6 @@ library(BiasDetect)
 library(ExperimentHub)
 library(SpatialExperiment)
 library(SummarizedExperiment)
-library(httr)
 library(tidyr)
 library(dplyr)
 library(tibble)
@@ -83,19 +76,10 @@ library(tibble)
 
 ### Data
 
-The `spe` object used for this tutorial is stored in
-[Dropbox](https://www.dropbox.com/home/biasDetect_vignette?preview=spe.rda). 
-
 The object is also saved in the `ExperimentHub` package named
 `humanHippocampus2024`, and the development version from
 [GitHub]((https://github.com/christinehou11/humanHippocampus2024)) is
-available. The package has not been publicly available, but the data objects
-can be accessed via GitHub installation and tutorial is
-[here](https://christinehou11.github.io/humanHippocampus2024/).
-
-```{r,comment=NA, eval=FALSE}
-BiocManager::install("christinehou11/BiasDetect")
-```
+available. 
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
 ehub <- ExperimentHub()

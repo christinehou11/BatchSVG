@@ -46,30 +46,37 @@
 #' @export
 #'
 #' @examples
-#' github <- "https://github.com/christinehou11/BiasDetect-analyses/"
-#' subdir <- "raw/refs/heads/main/processed-data/spatialHPC_SRT/"
-#' csv1 <- "spe-hpc_sub4_svgs-only_counts-1.csv"
-#' csv2 <- "spe-hpc_sub4_svgs-only_counts-2.csv"
-#' cdata <- "spe-hpc_sub4_svgs-only_colData.csv"
-#' rdata <- "spe-hpc_sub4_svgs-only_rowData.csv"
-#' 
-#' url1 <- paste0(github,subdir,csv1, sep = "")
-#' url2 <- paste0(github,subdir,csv2, sep = "")
-#' url3 <- paste0(github,subdir,cdata, sep = "")
-#' url4 <- paste0(github,subdir,rdata, sep = "")
-#' 
-#' file1 <- read.csv(url(url1), row.names = 1)
-#' file2 <- read.csv(url(url2), row.names = 1)
-#' counts = rbind(file1, file2)
-#' colnames(counts) = gsub("\\.","-",colnames(counts))
-#' cdata = read.csv(url(url3), row.names=1)
-#' rdata = read.csv(url(url4), row.names=1)
-#' spe = SpatialExperiment::SpatialExperiment(
-#' assay = list("counts"=counts), 
-#' colData = cdata, rowData = rdata,
-#' spatialCoordsNames = c("array_row", "array_col"))
-#' SVGs <- SummarizedExperiment::rowData(spe)$gene_id
-#' batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
+#' # retrieve raw spe input
+#' ehub <- ExperimentHub::ExperimentHub()
+#' spe <- ehub[["EH9605"]]
+#' # subset 4 samples out
+#' fix_order <- dplyr::distinct(
+#'     as.data.frame(SpatialExperiment::colData(spe)), slide, array, 
+#'     brnum, sample_id, position, sex) %>% 
+#'     dplyr::arrange(slide, array)
+#' sub4 <- fix_order$sample_id[c(14, 16, 20, 21)]
+#' spe_sub4 <- spe[,spe$sample_id %in% sub4]
+#' # retrieve SVGs
+#' res_ranks <- read.csv(
+#'     system.file("extdata","res_ranks.csv",package = "BiasDetect"),
+#'     row.names = 1, check.names = FALSE)
+#' res_df_sub4 <- tidyr::pivot_longer(
+#'     tibble::rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 
+#'     colnames(res_ranks), 
+#'     names_to = "sample_id", 
+#'     values_to = "rank", 
+#'     values_drop_na = TRUE)
+#' # subset to 4 samples (rank <= 2000, n > 1)
+#' res_df2_sub4 <- dplyr::filter(res_df_sub4, 
+#'     sample_id %in%
+#'     c("V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"),
+#'     rank <= 2000)
+#' svgs_sub4 <- dplyr::group_by(res_df2_sub4, gene_id) %>% 
+#'     dplyr::tally() %>% 
+#'     dplyr::filter(n > 1)
+#' SVGs <- svgs_sub4$gene_id
+#' # feature selection
+#' batch_df <- featureSelect(svgs_sub4, batch_effect = "sample_id", VGs = SVGs)
 #' 
 featureSelect <- function(input, batch_effect = NULL, VGs = NULL) {
 

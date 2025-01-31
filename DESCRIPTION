@@ -51,7 +51,6 @@ Suggests:
     knitr,
     rmarkdown,
     BiocStyle,
-    httr,
     ExperimentHub,
     tidyr,
     SpatialExperiment
