@@ -27,13 +27,27 @@ knitr::opts_chunk$set(
 
 ### Introduction
 
-`BiasDetect` package was developed on an unrelated DLPFC dataset available through the [spatialLIBD](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08601-w) package. We first chose **binomial deviance model** from [scry](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6) as the feature selection method that can incorporate a batch variable into the model. Next, we compared the per-gene ranks and dispersion values when the model was run with and without a batch effect. Our data-driven thresholding approach is using the cutoffs based on the number of standard deviance (nSD) of deviance and rank difference metrics. Based on self-selected nSD cutoffs, the genes identified as biased can be filtered out.
+`BiasDetect` package was developed on an unrelated DLPFC dataset available
+through the 
+[spatialLIBD](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08601-w) 
+package. We first chose **binomial deviance model** from
+[scry](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6) 
+as the feature selection method that can incorporate a batch variable into the
+model. Next, we compared the per-gene ranks and dispersion values when the
+model was run with and without a batch effect. Our data-driven thresholding
+approach is using the cutoffs based on the number of standard deviance (nSD) of
+deviance and rank difference metrics. Based on self-selected nSD cutoffs, the
+genes identified as biased can be filtered out.
 
-The methodology details can be found in [Find Bias Feature](https://jac-thom.github.io/findBiasedFeatures/) written by Jacqui Thompson, and the documentation related codes can be found on [GitHub](https://github.com/jac-thom/findBiasedFeatures).
+The methodology details can be found in 
+[Find Bias Feature](https://jac-thom.github.io/findBiasedFeatures/) 
+written by Jacqui Thompson, and the documentation related codes can be found on
+[GitHub](https://github.com/jac-thom/findBiasedFeatures).
 
 ### Installation
 
-`BiasDetect` is a R package. Install development version from [GitHub](https://christinehou11.github.io/BiasDetect).
+`BiasDetect` is a R package. Install development version from
+[GitHub](https://christinehou11.github.io/BiasDetect).
 
 ```{r 'install dev', eval = FALSE}
 remotes::install("christinehou11/BiasDetect")
@@ -58,66 +72,107 @@ Load required packages
 
 ```{r 'library', message=FALSE}
 library(BiasDetect)
+library(ExperimentHub)
 library(SpatialExperiment)
 library(SummarizedExperiment)
+library(humanHippocampus2024)
 library(httr)
+library(tidyr)
+library(dplyr)
+library(tibble)
 ```
 
 ### Data
 
-The `spe` object used for this tutorial is stored in [Dropbox](https://www.dropbox.com/home/biasDetect_vignette?preview=spe.rda). 
+The `spe` object used for this tutorial is stored in
+[Dropbox](https://www.dropbox.com/home/biasDetect_vignette?preview=spe.rda). 
 
-The object is also saved in the `ExperimentHub` package named `humanHippocampus2024`, and the development version from [GitHub]((https://github.com/christinehou11/humanHippocampus2024)) is available. The package has not been publicly available, but the data objects can be accessed via GitHub installation and tutorial is [here](https://christinehou11.github.io/humanHippocampus2024/).
+The object is also saved in the `ExperimentHub` package named
+`humanHippocampus2024`, and the development version from
+[GitHub]((https://github.com/christinehou11/humanHippocampus2024)) is
+available. The package has not been publicly available, but the data objects
+can be accessed via GitHub installation and tutorial is
+[here](https://christinehou11.github.io/humanHippocampus2024/).
 
-```{r urls,message=FALSE, warning=FALSE}
-github <- "https://github.com/christinehou11/BiasDetect-analyses/"
-subdir <- "raw/refs/heads/main/processed-data/spatialHPC_SRT/"
-csv1 <- "spe-hpc_sub4_svgs-only_counts-1.csv"
-csv2 <- "spe-hpc_sub4_svgs-only_counts-2.csv"
-cdata <- "spe-hpc_sub4_svgs-only_colData.csv"
-rdata <- "spe-hpc_sub4_svgs-only_rowData.csv"
-
-url1 <- paste0(github,subdir,csv1, sep = "")
-url2 <- paste0(github,subdir,csv2, sep = "")
-url3 <- paste0(github,subdir,cdata, sep = "")
-url4 <- paste0(github,subdir,rdata, sep = "")
+```{r,comment=NA, eval=FALSE}
+BiocManager::install("christinehou11/BiasDetect")
 ```
 
-```{r read urls, message=FALSE, warning=FALSE}
-file1 <- read.csv(url1, row.names = 1)
-file2 <- read.csv(url2, row.names = 1)
-counts <- rbind(file1, file2)
-colnames(counts) = gsub("\\.","-",colnames(counts))
-cdata <- read.csv(url3, row.names=1)
-rdata <- read.csv(url4, row.names=1)
+```{r load data, comment=NA, warning=FALSE, message=FALSE}
+ehub <- ExperimentHub()
+myfiles <- query(ehub, "humanHippocampus2024")
+spe <- myfiles[["EH9605"]]
+spe # 31483, 150917 
 ```
 
-```{r build spe, message=FALSE, warning=FALSE}
-spe <- SpatialExperiment(
-    assay = list("counts"=counts), 
-    colData = cdata, rowData = rdata,
-    spatialCoordsNames = c("array_row", "array_col"))
+The dataset in this tutorial section is from
+[spatialHPC](https://github.com/LieberInstitute/spatial_hpc). We filtered out 4
+samples. 
+
+```{r subset, message=FALSE, warning=FALSE, comment=NA}
+fix_order <- distinct(
+    as.data.frame(colData(spe)), slide, array, brnum, sample_id, 
+    position, sex) %>% 
+    arrange(slide, array)
+sub4 <- fix_order$sample_id[c(14,16, 20,21)]
+
+spe_sub4 <- spe[,spe$sample_id %in% sub4]
+spe_sub4 # 31483, 18945
 ```
 
-The dataset in this tutorial section is from [spatialHPC](https://github.com/LieberInstitute/spatial_hpc). We filtered out 4 samples. We then ran [nnSVG](https://www.nature.com/articles/s41467-023-39748-z) to identify spatially-variable genes (SVGs). We filtered to only the top 2000 significant features in the 4 samples we're using and further filterer to only features that are in the top 2000 of >1 sample. Finally, we obtained 2082 SVGs.
+We then ran
+[nnSVG](https://www.nature.com/articles/s41467-023-39748-z) to identify
+spatially-variable genes (SVGs). We filtered to only the top 2000 significant
+features in the 4 samples. We're using and further filterer to only features
+that are in the top 2000 of >1 sample. Finally, we obtained 2082 SVGs.
 
-```{r data input, message=FALSE, warning=FALSE, comment=NA}
-spe
+```{r load svgs, comment=NA, message=FALSE, warning=FALSE}
+res_ranks <- read.csv(
+    system.file("extdata","res_ranks.csv",package = "BiasDetect"),
+    row.names = 1, check.names = FALSE)
+
+res_df_sub4 <- pivot_longer(
+    rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 
+    colnames(res_ranks), names_to="sample_id", values_to="rank", 
+    values_drop_na=TRUE)
+
+res_df2_sub4 <- filter(res_df_sub4, sample_id %in%
+    c("V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"),
+        rank <= 2000) # top 2k sig features
+nrow(res_df2_sub4) # 7559
+
+svgs_sub4 <- group_by(res_df2_sub4, gene_id) %>% 
+    tally() %>% 
+    filter(n>1) # >1 sample
+
+nrow(svgs_sub4) # 2082
+
+head(svgs_sub4)
 ```
 
 
 ### Bias Genes Identification
 
-The data frame created from `featureSelect()` function includes `nSD_dev` and `nSD_rank`, and we can use `biasDetect()` function to identify the bias genes based on the self-selected `nSD` integer thresholds for deviance and rank respectively. The default threshold is 5 for deviance and 5 for rank.
+The data frame created from `featureSelect()` function includes `nSD_dev` and
+`nSD_rank`, and we can use `biasDetect()` function to identify the bias genes
+based on the self-selected `nSD` integer thresholds for deviance and rank
+respectively. The default threshold is 5 for deviance and 5 for rank.
 
 ```{r feature select, comment = NA, warning=FALSE}
-SVGs <- rowData(spe)$gene_id
-batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
+SVGs <- svgs_sub4$gene_id
+batch_df <- featureSelect(spe_sub4, batch_effect = "sample_id", VGs = SVGs)
 dim(batch_df)
 head(batch_df)
 ```
 
-What's more, `biasDetect` function allows to return the biased genes either in data frame format or in plots. The default format is in data frame.
+What's more, `biasDetect` function allows to return the biased genes either in
+data frame format or in plots. The default format is in data frame.
+
+```{r, echo=FALSE}
+batch_df <- read.csv(
+    system.file("extdata","hpc_srt_batch_df.csv",package = "BiasDetect"),
+    row.names = 1)
+```
 
 ```{r bias genes identification, comment = NA, message=FALSE, warning=FALSE}
 bias <- biasDetect(batch_df = batch_df, nSD_dev = 10, nSD_rank = 5)
@@ -145,14 +200,20 @@ bias_fig$rank
 Finally, we can obtain a newer `spe_sub4` object without the biased genes.
 
 ```{r new spe_sub4, comment = NA, message=FALSE, warning=FALSE}
-svgs_filt = setdiff(rownames(spe), bias)
+svgs_filt = setdiff(rownames(svgs_sub4), bias)
 length(svgs_filt)
 ```
 
 
 ### Additional information
 
-Please read [reference documentation](https://github.com/jac-thom/findBiasedFeatures) for detailed codes and scripts conducting PRECAST clustering [before](https://github.com/jac-thom/findBiasedFeatures/blob/main/code/02_spatialHPC_PRECAST-svgs.R) and [after](https://github.com/jac-thom/findBiasedFeatures/blob/main/code/05_spatialHPC_PRECAST-svgs-no-bias.R) removing the biased gene.
+Please read 
+[reference documentation](https://github.com/jac-thom/findBiasedFeatures) 
+for detailed codes and scripts conducting PRECAST clustering
+[before](https://github.com/jac-thom/findBiasedFeatures/blob/main/code/02_spatialHPC_PRECAST-svgs.R) 
+and 
+[after](https://github.com/jac-thom/findBiasedFeatures/blob/main/code/05_spatialHPC_PRECAST-svgs-no-bias.R) 
+removing the biased gene.
 
 ### `R` session information {.unnumbered}
 

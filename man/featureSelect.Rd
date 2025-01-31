@@ -62,12 +62,10 @@ counts = rbind(file1, file2)
 colnames(counts) = gsub("\\\\.","-",colnames(counts))
 cdata = read.csv(url(url3), row.names=1)
 rdata = read.csv(url(url4), row.names=1)
-
 spe = SpatialExperiment::SpatialExperiment(
 assay = list("counts"=counts), 
 colData = cdata, rowData = rdata,
 spatialCoordsNames = c("array_row", "array_col"))
-
 SVGs <- SummarizedExperiment::rowData(spe)$gene_id
 batch_df <- featureSelect(spe, batch_effect = "sample_id", VGs = SVGs)
 

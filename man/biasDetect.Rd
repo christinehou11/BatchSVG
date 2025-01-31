@@ -33,15 +33,13 @@ Function to filter out the bias genes based on selected
 selected threshold of nSD of deviance and rank in data frame or plot.
 }
 \examples{
-batch_df <- read.csv(system.file("extdata","hpc_srt_batch_df.csv",package = "BiasDetect"))
-
+batch_df <- read.csv(
+    system.file("extdata","hpc_srt_batch_df.csv",package = "BiasDetect"))
 # data frame
 bias <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5)
 bias
-
 # plots
 bias_plot <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5, visual = TRUE)
-
 # deviance
 bias_plot$deviance
 # rank

@@ -52,6 +52,8 @@ Suggests:
     rmarkdown,
     BiocStyle,
     httr,
+    ExperimentHub,
+    tidyr,
     SpatialExperiment
 VignetteBuilder: knitr
 biocViews: GeneExpression, Spatial, Transcriptomics, BatchEffect, QualityControl

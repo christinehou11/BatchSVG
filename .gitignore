@@ -7,8 +7,5 @@ docs/
 vignettes/*.html
 vignettes/*.R
 docs
-data-raw/
-*.rda
 BiasDetect.Rproj
 *.RDataTmp
-inst/doc
