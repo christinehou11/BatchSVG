@@ -75,7 +75,6 @@ library(BiasDetect)
 library(ExperimentHub)
 library(SpatialExperiment)
 library(SummarizedExperiment)
-library(humanHippocampus2024)
 library(httr)
 library(tidyr)
 library(dplyr)
@@ -100,8 +99,7 @@ BiocManager::install("christinehou11/BiasDetect")
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
 ehub <- ExperimentHub()
-myfiles <- query(ehub, "humanHippocampus2024")
-spe <- myfiles[["EH9605"]]
+spe <- ehub[["EH9605"]]
 spe # 31483, 150917 
 ```
 
