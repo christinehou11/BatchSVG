@@ -46,14 +46,16 @@
 #' @export
 #'
 #' @examples
+#' library(dplyr)
+#' library(SummarizedExperiment)
 #' # retrieve raw spe input
 #' ehub <- ExperimentHub::ExperimentHub()
 #' spe <- ehub[["EH9605"]]
 #' # subset 4 samples out
-#' fix_order <- dplyr::distinct(
-#'     as.data.frame(SpatialExperiment::colData(spe)), slide, array, 
+#' fix_order <- distinct(
+#'     as.data.frame(colData(spe)), slide, array, 
 #'     brnum, sample_id, position, sex) %>% 
-#'     dplyr::arrange(slide, array)
+#'     arrange(slide, array)
 #' sub4 <- fix_order$sample_id[c(14, 16, 20, 21)]
 #' spe_sub4 <- spe[,spe$sample_id %in% sub4]
 #' # retrieve SVGs
@@ -67,16 +69,16 @@
 #'     values_to = "rank", 
 #'     values_drop_na = TRUE)
 #' # subset to 4 samples (rank <= 2000, n > 1)
-#' res_df2_sub4 <- dplyr::filter(res_df_sub4, 
+#' res_df2_sub4 <- filter(res_df_sub4, 
 #'     sample_id %in%
 #'     c("V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"),
 #'     rank <= 2000)
-#' svgs_sub4 <- dplyr::group_by(res_df2_sub4, gene_id) %>% 
-#'     dplyr::tally() %>% 
-#'     dplyr::filter(n > 1)
+#' svgs_sub4 <- group_by(res_df2_sub4, gene_id) %>% 
+#'     tally() %>% 
+#'     filter(n > 1)
 #' SVGs <- svgs_sub4$gene_id
 #' # feature selection
-#' batch_df <- featureSelect(svgs_sub4, batch_effect = "sample_id", VGs = SVGs)
+#' batch_df <- featureSelect(spe_sub4, batch_effect = "sample_id", VGs = SVGs)
 #' 
 featureSelect <- function(input, batch_effect = NULL, VGs = NULL) {
 
