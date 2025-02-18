@@ -1,6 +1,6 @@
-# Getting help with `BiasDetect`
+# Getting help with `BatchSVG`
 
-Thank you for using `BiasDetect`!
+Thank you for using `BatchSVG`!
 Before filing an issue, there are few things you should know to make the process
 as smooth as possible for both parties.
 
@@ -22,7 +22,7 @@ The [Bioconductor help](http://bioconductor.org/help/) web page gives an
 overview of places that may help answer your question.
 
 * Bioconductor software related questions, such as bug reports and feature
-  requests, should be addressed in the appropriate `Bioconductor/BiasDetect`
+  requests, should be addressed in the appropriate `Bioconductor/BatchSVG`
   GitHub repository. Follow our bug report and feature request templates on
   GitHub. If the package does not have a GitHub repository, see the next bullet
   point.
@@ -30,7 +30,7 @@ overview of places that may help answer your question.
 * Bioconductor software usage questions should be addressed in the
   [Bioconductor Support Website](https://support.bioconductor.org/). Make sure
   to use the
-  [appropriate package tag](https://support.bioconductor.org/tag/BiasDetect),
+  [appropriate package tag](https://support.bioconductor.org/tag/BatchSVG),
   otherwise the package authors will not get a notification.
   
 * General R questions can be posed at StackOverflow or at the
@@ -40,7 +40,7 @@ overview of places that may help answer your question.
 ## Issues or Feature Requests
 
 Before opening a new issue or feature request, be sure to
-[search issues and pull requests](https://github.com/christinehou11/BiasDetect/issues)
+[search issues and pull requests](https://github.com/christinehou11/BatchSVG/issues)
 to ensure that one does not already exist or has been implemented in the
 development version.
 

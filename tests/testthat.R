@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(BiasDetect)
+library(BatchSVG)
 
-test_check("BiasDetect")
+test_check("BatchSVG")

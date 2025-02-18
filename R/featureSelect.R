@@ -60,7 +60,7 @@
 #' spe_sub4 <- spe[,spe$sample_id %in% sub4]
 #' # retrieve SVGs
 #' res_ranks <- read.csv(
-#'     system.file("extdata","res_ranks.csv",package = "BiasDetect"),
+#'     system.file("extdata","res_ranks.csv",package = "BatchSVG"),
 #'     row.names = 1, check.names = FALSE)
 #' res_df_sub4 <- tidyr::pivot_longer(
 #'     tibble::rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 

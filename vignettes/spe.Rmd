@@ -1,6 +1,6 @@
 ---
 title: "Find Bias Features - Spatial Transcriptomics Data"
-package: "BiasDetect"
+package: "BatchSVG"
 author:
   - name: "Christine Hou"
     affiliation: Department of Biostatistics, Johns Hopkins University
@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ### Introduction
 
-`BiasDetect` package was developed on an unrelated DLPFC dataset available
+`BatchSVG` package was developed on an unrelated DLPFC dataset available
 through the 
 [spatialLIBD](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08601-w) 
 package. We first chose **binomial deviance model** from
@@ -40,23 +40,23 @@ written by Jacqui Thompson, and the documentation related codes can be found on
 
 ### Installation
 
-`BiasDetect` is a R package. Install development version from
-[GitHub](https://christinehou11.github.io/BiasDetect).
+`BatchSVG` is a R package. Install development version from
+[GitHub](https://christinehou11.github.io/BatchSVG).
 
 ```{r 'install dev', eval = FALSE}
-remotes::install("christinehou11/BiasDetect")
+remotes::install("christinehou11/BatchSVG")
 ```
 
 ### Setup
 
-Install `BiasDetect`
+Install `BatchSVG`
 
 ```{r, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
 
-BiocManager::install("BiasDetect")
+BiocManager::install("BatchSVG")
 
 ## Check that you have a valid Bioconductor installation
 BiocManager::valid()
@@ -65,7 +65,7 @@ BiocManager::valid()
 Load required packages
 
 ```{r 'library', message=FALSE}
-library(BiasDetect)
+library(BatchSVG)
 library(ExperimentHub)
 library(SpatialExperiment)
 library(SummarizedExperiment)
@@ -110,7 +110,7 @@ that are in the top 2000 of >1 sample. Finally, we obtained 2082 SVGs.
 
 ```{r load svgs, comment=NA, message=FALSE, warning=FALSE}
 res_ranks <- read.csv(
-    system.file("extdata","res_ranks.csv",package = "BiasDetect"),
+    system.file("extdata","res_ranks.csv",package = "BatchSVG"),
     row.names = 1, check.names = FALSE)
 
 res_df_sub4 <- pivot_longer(
@@ -152,7 +152,7 @@ data frame format or in plots. The default format is in data frame.
 
 ```{r, echo=FALSE}
 batch_df <- read.csv(
-    system.file("extdata","hpc_srt_batch_df.csv",package = "BiasDetect"),
+    system.file("extdata","hpc_srt_batch_df.csv",package = "BatchSVG"),
     row.names = 1)
 ```
 

@@ -1,7 +1,7 @@
-Package: BiasDetect
+Package: BatchSVG
 Type: Package
-Title: Find Biased Features
-Version: 0.99.0
+Title: Identify Batch-Biased Features in Spatially Variable Genes
+Version: 0.99.1
 Authors@R:
     c(person(
         given = "Christine",
@@ -23,10 +23,10 @@ Authors@R:
         email = "shicks19@jhu.edu", 
         comment = c(ORCID = "0000-0002-7858-0231"))
     )
-Description: `BiasDetect` is a feature-based Quality Control (QC) to identify 
+Description: `BatchSVG` is a feature-based Quality Control (QC) to identify 
     SVGs on spatial transcriptomics data with sometypes of batch effect. 
     Regarding to the spatial transcriptomics data experients, the batch can be 
-    defined as "slide" or "subject".The `BiasDetect` method is based on 
+    defined as "slide", "subject", and etc.The `BatchSVG` method is based on 
     binomial deviance model (Townes et al, 2019) and applies cutoffs based on 
     the number of standard deviation (nSD) of deviance and rank difference as 
     the data-driven thresholding approach to detect the batch-biased features.
@@ -56,7 +56,7 @@ Suggests:
     SpatialExperiment
 VignetteBuilder: knitr
 biocViews: GeneExpression, Spatial, Transcriptomics, BatchEffect, QualityControl
-URL: https://christinehou11.github.io/BiasDetect/, https://github.com/christinehou11/BiasDetect
-BugReports: https://github.com/christinehou11/BiasDetect/issues
+URL: https://christinehou11.github.io/BatchSVG/, https://github.com/christinehou11/BatchSVG
+BugReports: https://github.com/christinehou11/BatchSVG/issues
 Config/testthat/edition: 3
 LazyData: true

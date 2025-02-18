@@ -39,7 +39,7 @@
 #'
 #' @examples
 #' batch_df <- read.csv(
-#'     system.file("extdata","hpc_srt_batch_df.csv",package = "BiasDetect"),
+#'     system.file("extdata","hpc_srt_batch_df.csv",package = "BatchSVG"),
 #'     row.names = 1, check.names = FALSE)
 #' # data frame
 #' bias <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5)
