@@ -9,3 +9,5 @@ vignettes/*.R
 docs
 BiasDetect.Rproj
 *.RDataTmp
+*.csv
+*.rda
