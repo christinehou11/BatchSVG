@@ -45,24 +45,12 @@
 #' @examples
 #' library(dplyr)
 #' library(SummarizedExperiment)
+#' # "V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"
 #' load(system.file("extdata","spe_sub4.rda",package = "BatchSVG"))
-#' res_ranks <- read.csv(
-#'     system.file("extdata","res_ranks.csv",package = "BatchSVG"),
-#'     row.names = 1, check.names = FALSE)
-#' res_df_sub4 <- tidyr::pivot_longer(
-#'     tibble::rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 
-#'     colnames(res_ranks), 
-#'     names_to = "sample_id", 
-#'     values_to = "rank", 
-#'     values_drop_na = TRUE)
-#' # subset to 4 samples (rank <= 2000, n > 1)
-#' res_df2_sub4 <- filter(res_df_sub4, 
-#'     sample_id %in%
-#'     c("V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"),
-#'     rank <= 2000)
-#' svgs_sub4 <- group_by(res_df2_sub4, gene_id) %>% 
-#'     tally() %>% 
-#'     filter(n > 1)
+#' # load SVGs from 4 samples
+#' svgs_sub4 <- read.csv(
+#'     system.file("extdata","svgs_sub4.csv", package = "BatchSVG"),
+#'     row.names = 1, check.names = FALSE) # rank <= 2000, sample n > 1
 #' SVGs <- svgs_sub4$gene_id
 #' 
 #' batch_df <- featureSelect(spe_sub4, 
@@ -92,7 +80,7 @@ featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
     
     message("Step 1: Running feature selection without batch...")
     bd <- devianceFeatureSelection(input, assay = "counts", fam = "binomial")
-    bd_df <- cbind.data.frame("gene"=rownames(bd),
+    bd_df <- cbind.data.frame("gene_id"=rownames(bd),
                             "gene_name"=rowData(bd)$gene_name,
                             "dev"= rowData(bd)$binomial_deviance,
                             "rank"=(nrow(bd)+1)
