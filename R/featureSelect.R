@@ -74,7 +74,6 @@ featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
         stop("Please provide a valid batch_effect.")
     }
     
-    # Re-organize raw input
     input <- input[rowData(input)$gene_id %in% VGs, ]
     rownames(input) <- rowData(input)$gene_id
     

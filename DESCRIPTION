@@ -39,6 +39,8 @@ Imports:
     stats,
     rlang,
     ggrepel,
+    gridExtra,
+    scales,
     tibble,
     dplyr
 Encoding: UTF-8

@@ -4,78 +4,54 @@
 \alias{featureSelect}
 \title{Feature Selection}
 \usage{
-featureSelect(input, batch_effect = NULL, VGs = NULL)
+featureSelect(input, batch_effects = NULL, VGs = NULL)
 }
 \arguments{
-\item{input}{\code{SpatialExperiment} or \code{SingleCellExperiment}: Input
-data which can be either \code{SpatialExperiment} or
-\code{SingleCellExperiment}. It is assumed to have an \code{assays} slot
+\item{input}{\code{SpatialExperiment}: \code{SpatialExperiment} input data.
+It is assumed to have an \code{assays} slot
 containing \code{counts} assay for \code{devianceFeatureSelection()} to
 successfully operate and calculate the deviance and rank. The
 \code{logcounts} is strongly recommended to be included in \code{assays}.
 Also, the input data is assumed to set up \code{rownames(input)} as
 \code{genes} and \code{gene_name} in \code{rowData(input)}. The input can
 be either the raw and complete data object or the filtered data object
-containing only highly variable genes (HVGs) or spatially varaible genes
-(SVGs).}
+containing only spatially varaible genes (SVGs).}
 
-\item{batch_effect}{\code{character}: Either batch on \code{slide} or
-\code{subject} based on what metadata is available within input data.
-The name of \code{slide} or \code{subject} within each input object
+\item{batch_effects}{\code{list}: Any batch effect (\code{slide} or
+\code{subject}) based on what metadata is available within input data.
+The name of the batch effect within each input object
 should be specified based on different scenarios.}
 
-\item{VGs}{\code{character}: Highly Variable Genes (HVGs) for
-\code{SingleCelleExperiment} object or Spatially Variable Genes (SVGs)
+\item{VGs}{\code{character}: Spatially Variable Genes (SVGs)
 for \code{SpatialExperiment} object. If it is a data frame, it is assumed
 to contain one column of identified variable genes with column name as
 gene name/ID, e.g. "ENSG00000002330".}
 }
 \value{
-If the input was provided as a \code{SpatialExperiment} or
-\code{SingleCellExperiment} object, the output values are returned as
-a data frame containing the deviance and rank with and without the bacth
-effect, the corresponding difference, the corresponding nSD, gene, gene
-name, and whether the gene is outlier defined by the chosen deviance and
-rank cutoff.
+The output values are returned as
+a list of data frames containing the deviance and rank with and without
+the bacth effect, the corresponding difference, the corresponding nSD,
+gene, gene name, and whether the gene is outlier defined by the chosen
+deviance and rank cutoff. The length of the list of data frames is equal
+to the number of batch effects included.
 }
 \description{
-Function to conduct feature selection on snRNA-seq and spatial
+Function to conduct feature selection on spatial
 transcriptomics data and calculate the difference of deviance and rank
 with and without the selected batch effect.
 }
 \examples{
 library(dplyr)
 library(SummarizedExperiment)
-# retrieve raw spe input
-ehub <- ExperimentHub::ExperimentHub()
-spe <- ehub[["EH9605"]]
-# subset 4 samples out
-fix_order <- distinct(
-    as.data.frame(colData(spe)), slide, array, 
-    brnum, sample_id, position, sex) \%>\% 
-    arrange(slide, array)
-sub4 <- fix_order$sample_id[c(14, 16, 20, 21)]
-spe_sub4 <- spe[,spe$sample_id \%in\% sub4]
-# retrieve SVGs
-res_ranks <- read.csv(
-    system.file("extdata","res_ranks.csv",package = "BiasDetect"),
-    row.names = 1, check.names = FALSE)
-res_df_sub4 <- tidyr::pivot_longer(
-    tibble::rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 
-    colnames(res_ranks), 
-    names_to = "sample_id", 
-    values_to = "rank", 
-    values_drop_na = TRUE)
-# subset to 4 samples (rank <= 2000, n > 1)
-res_df2_sub4 <- filter(res_df_sub4, 
-    sample_id \%in\%
-    c("V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"),
-    rank <= 2000)
-svgs_sub4 <- group_by(res_df2_sub4, gene_id) \%>\% 
-    tally() \%>\% 
-    filter(n > 1)
+# "V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"
+load(system.file("extdata","spe_sub4.rda",package = "BatchSVG"))
+# load SVGs from 4 samples
+svgs_sub4 <- read.csv(
+    system.file("extdata","svgs_sub4.csv", package = "BatchSVG"),
+    row.names = 1, check.names = FALSE) # rank <= 2000, sample n > 1
 SVGs <- svgs_sub4$gene_id
-# feature selection
-batch_df <- featureSelect(spe_sub4, batch_effect = "sample_id", VGs = SVGs)
+
+batch_df <- featureSelect(spe_sub4, 
+    batch_effects = c("sample_id", "sex"), VGs = SVGs)
 
 }

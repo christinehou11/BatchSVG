@@ -7,19 +7,20 @@
 #' @description Function to the spatially variable genes in relative change in
 #'    deviance and rank difference colored by the number of standard deviation.
 #'
-#' @importFrom dplyr left_join filter
-#' @importFrom SummarizedExperiment colData rowData
-#' @importFrom stats sd
-#' @importFrom ggplot2
+#' @importFrom ggplot2 ggplot geom_histogram scale_fill_manual labs
+#'                scale_y_continuous theme_bw theme margin
+#' @importFrom gridExtra arrangeGrob grid.arrange
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom scales pseudo_log_trans
 #'
-#' @param batch_df \code{data.frame} : Input data frame generated from
-#'    `featureSelection()` function using \code{SpatialExperiment} 
-#'    object containing the raw data.
+#' @param list_batch_df \code{list} : The list of data frame(s) generated from
+#'    `featureSelection()` function. The length of the data frame list
+#'    should be at least one.
 #'    
-#' @param nSD_dev \code{integer}: Number of standard deviation (nSD) on relative
-#'    change in deviance. The default value is 5.
+#' @param sd_interval_dev \code{integer}: Interval of standard deviation on 
+#'    relative change in deviance. The default value is 5.
 #'
-#' @param nSD_rank \code{integer}: Number of standard deviation (nSD) on rank
+#' @param sd_interval_rank \code{integer}: Number of standard deviation on rank
 #'     difference. The default value is 5.
 #'
 #' @return The output values are returned as
@@ -39,11 +40,71 @@
 #' plots <- svg_nSD(sample_id_df, nSD_dev = 5, nSD_rank)
 #' 
 
-biasDetect <- function(batch_df, nSD_dev = 5, nSD_rank = 5) {
-    
+svg_nSD <- function(list_batch_df, 
+                        sd_interval_dev = 5, sd_interval_rank = 5) {
+  
     stopifnot(
-        
+        is.list(list_batch_df), length(list_batch_df) > 0,
+        all(sd_interval_dev == floor(sd_interval_dev), 
+            sd_interval_rank == floor(sd_interval_rank))
     )
     
-    plots
+    plot_list <- list()
+    
+    for (batch in names(list_batch_df)) {
+        
+        batch_df <- list_batch_df[[batch]]
+        stopifnot(is.data.frame(batch_df))
+        
+        # deviance plot
+        batch_df$nSD_bin_dev <- cut(abs(batch_df$nSD_dev), right = FALSE,
+            breaks=seq(0,max(batch_df$nSD_dev) + sd_interval_dev, 
+                    by=sd_interval_dev), include.lowest=TRUE)
+        
+        col_pal_dev <- brewer.pal(length(unique(batch_df$nSD_bin_dev)), 
+                                    "YlOrRd")
+        col_pal_dev[1] <- "grey"
+        
+        dev_sd_plot <- ggplot(batch_df, 
+                            aes(x = d_diff, fill=  nSD_bin_dev)) +
+            geom_histogram(color = "grey20", bins=50) +
+            scale_fill_manual(values = col_pal_dev) +
+            labs(x = "\u0394 deviance", y = "# SVGs", 
+                fill = paste("nSD Interval: ", batch),
+                title = paste("nSD bin width = ", sd_interval_dev), 
+                subtitle = paste("Batch: ", batch)) +
+            scale_y_continuous(trans = pseudo_log_trans(sigma = 1),
+                breaks = 10^(0:4), labels = format(10^(0:4), scientific = F)) +
+            theme_bw() + 
+            theme(legend.position = "right", plot.margin = margin(5, 10, 5, 5))
+        
+        # rank plot
+        batch_df$nSD_bin_rank <- cut(abs(batch_df$nSD_rank), right=FALSE,
+            breaks=seq(0,max(batch_df$nSD_rank) + sd_interval_rank, 
+                    by=sd_interval_rank),include.lowest=TRUE)
+        
+        col_pal_rank <- brewer.pal(length(unique(batch_df$nSD_bin_rank)), 
+                                    "YlOrRd")
+        col_pal_rank[1] <- "grey"
+        
+        rank_sd_plot <- ggplot(batch_df, 
+                            aes(x = r_diff, fill = nSD_bin_rank)) +
+            geom_histogram(color = "grey20", bins = 50) +
+            scale_fill_manual(values = col_pal_rank) +
+            labs(x = "rank difference", y = NULL, 
+                title = paste("nSD bin width = ", sd_interval_rank),
+                subtitle = paste("Batch: ", batch)) +
+            scale_y_continuous(trans = pseudo_log_trans(sigma = 1),
+                breaks = 10^(0:4), labels = format(10^(0:4), scientific = F)) +
+            theme_bw() + 
+            theme(legend.position = "none")
+        
+        # combine deviance and rank plots
+        plot_list[[batch]] <- arrangeGrob(dev_sd_plot, rank_sd_plot, 
+                                ncol = 2, widths = c(1, 1))
+    }
+
+    final_plot <- do.call(grid.arrange, c(plot_list, nrow = 2))
+    
+    final_plot
     }
