@@ -43,7 +43,10 @@
 #'
 #' @examples
 #' 
-#' plots <- svg_nSD(sample_id_df, nSD_dev = 5, nSD_rank)
+#' load(system.file("extdata","list_batch_df.rda",package = "BatchSVG"))
+#' 
+#' plots <- svg_nSD(list_batch_df, 
+#'     sd_interval_dev = c(5,4), sd_interval_rank = c(4,6))
 #' 
 
 svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
