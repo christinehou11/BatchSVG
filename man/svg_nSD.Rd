@@ -12,14 +12,16 @@ svg_nSD(list_batch_df, sd_interval_dev, sd_interval_rank)
 should be at least one.}
 
 \item{sd_interval_dev}{\code{vector}: A numeric vector specifying the
-interval widths for standard deviation bins when analyzing the
-relative change in deviance.
+interval widths for standard deviation bins for each batch when analyzing
+the relative change in deviance. The order of values must correspond to
+the order of batches in \code{list_batch_df}.
 If a single value is provided, it is applied to all batches; otherwise,
 it must have the same length as \code{list_batch_df}.}
 
 \item{sd_interval_rank}{\code{vector}: A numeric vector specifying the
 interval widths for standard deviation bins when analyzing rank
-differences.
+differences. The order of values must correspond to the order of batches
+in \code{list_batch_df}.
 If a single value is provided, it is applied to all batches; otherwise,
 it must have the same length as \code{list_batch_df}.}
 }

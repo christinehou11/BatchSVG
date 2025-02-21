@@ -2,43 +2,47 @@
 #'
 #' @name featureSelect
 #'
-#' @title Feature Selection
+#' @title Feature selection
 #'
-#' @description Function to conduct feature selection on spatial
-#'     transcriptomics data and calculate the difference of deviance and rank
-#'     with and without the selected batch effect.
+#' @description The function computes batch-adjusted deviance values, ranks the 
+#'    genes accordingly, and quantifies batch effects in terms of standard 
+#'    deviations from the mean difference. The list follows the order of batch 
+#'    effects provided in \code{batch_effects}.
 #'
 #' @importFrom scry devianceFeatureSelection
 #' @importFrom dplyr left_join filter
 #' @importFrom SummarizedExperiment colData rowData
 #' @importFrom stats sd
 #'
-#' @param input  \code{SpatialExperiment}: \code{SpatialExperiment} input data.
-#'     It is assumed to have an \code{assays} slot
-#'     containing \code{counts} assay for \code{devianceFeatureSelection()} to
-#'     successfully operate and calculate the deviance and rank. The
-#'     \code{logcounts} is strongly recommended to be included in \code{assays}.
-#'     Also, the input data is assumed to set up \code{rownames(input)} as
-#'     \code{genes} and \code{gene_name} in \code{rowData(input)}. The input can
-#'     be either the raw and complete data object or the filtered data object
-#'     containing only spatially varaible genes (SVGs).
+#' @param input A \code{SpatialExperiment} object containing spatial 
+#'    transcriptomics data..
+#' @param batch_effects A character vector specifying column names in 
+#'    \code{colData(input)} that indicate batch effects. Must match existing 
+#'    column names.
+#' @param VGs A character vector specifying the variable genes (VGs) to be 
+#'     analyzed. Only genes present in this vector will be retained for 
+#'     feature selection.
 #'
-#' @param batch_effects \code{list}: Any batch effect (\code{slide} or
-#'     \code{subject}) based on what metadata is available within input data.
-#'     The name of the batch effect within each input object
-#'     should be specified based on different scenarios.
-#'
-#' @param VGs \code{character}: Spatially Variable Genes (SVGs)
-#'     for \code{SpatialExperiment} object. If it is a data frame, it is assumed
-#'     to contain one column of identified variable genes with column name as
-#'     gene name/ID, e.g. "ENSG00000002330".
-#'
-#' @return The output values are returned as
-#'     a list of data frames containing the deviance and rank with and without 
-#'     the bacth effect, the corresponding difference, the corresponding nSD, 
-#'     gene, gene name, and whether the gene is outlier defined by the chosen 
-#'     deviance and rank cutoff. The length of the list of data frames is equal
-#'     to the number of batch effects included.
+#' @return A named list where each element corresponds to a batch effect. 
+#'    Each batch contains a data frame with the following columns:
+#'    \itemize{
+#'    \item \strong{"gene_id"}: Gene identifier.
+#'    \item \strong{"gene_name"}: Gene name.
+#'    \item \strong{"dev_default"}: Deviance score without batch correction.
+#'    \item \strong{"dev_<batch>"}: Deviance score with batch correction.
+#'    \item \strong{"rank_default"}: Rank of the gene based on deviance 
+#'        without batch correction.
+#'    \item \strong{"rank_<batch>"}: Rank of the gene based on deviance with 
+#'        batch correction.
+#'    \item \strong{"d_diff"}: Relative change in deviance between default 
+#'        and batch-corrected models.
+#'    \item \strong{"nSD_dev_<batch>"}: number of standard deviation of  
+#'        relative change in deviance for the batch.
+#'    \item \strong{"r_diff"}: Rank difference between default and 
+#'        batch-corrected models.
+#'    \item \strong{"nSD_rank_<batch>"}: number of standard deviation of 
+#'        rank difference for the batch.
+#'    }
 #'
 #' @export
 #'
@@ -96,7 +100,7 @@ featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
         
         bd_batch <- devianceFeatureSelection(input, assay = "counts",
                     fam = "binomial",batch = as.factor(batch_data))
-        bd_batch_df <- cbind.data.frame("gene"=rownames(bd_batch),
+        bd_batch_df <- cbind.data.frame("gene_id"=rownames(bd_batch),
                                   "gene_name"=rowData(bd_batch)$gene_name,
                                   "dev"= rowData(bd_batch)$binomial_deviance,
                                   "rank"=(nrow(bd_batch)+1)
@@ -104,7 +108,7 @@ featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
         rownames(bd_batch_df) <- bd_batch_df$gene
     
         message("Calculating deviance and rank difference...")
-        batch_df <- left_join(bd_df, bd_batch_df, by=c("gene", "gene_name"),
+        batch_df <- left_join(bd_df, bd_batch_df, by=c("gene_id", "gene_name"),
                                 suffix=c("_default",paste0("_", batch)))
     
         batch_df$d_diff <- 

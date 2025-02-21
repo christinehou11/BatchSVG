@@ -2,10 +2,13 @@
 #'
 #' @name svg_nSD
 #'
-#' @title SVGs Plots with Relative Change in Deviance and Rank Difference
+#' @title SVGs Plots
 #'
-#' @description Function to the spatially variable genes in relative change in
-#'    deviance and rank difference colored by the number of standard deviation.
+#' @description This function generates visualizations to assess the impact 
+#'    of batch effects on spatially variable genes (SVGs) by analyzing changes 
+#'    in deviance and rank. The function bins the deviations into normalized 
+#'    standard deviation (nSD) intervals and creates histograms and scatter 
+#'    plots to illustrate the distribution of batch effects.
 #'
 #' @importFrom ggplot2 ggplot geom_histogram scale_fill_manual labs
 #'                scale_y_continuous theme_bw theme margin geom_point
@@ -15,29 +18,45 @@
 #' @importFrom ggpubr ggarrange
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom scales pseudo_log_trans
+#' @importFrom rlang .data
 #'
-#' @param list_batch_df \code{list} : The list of data frame(s) generated from
-#'    `featureSelection()` function. The length of the data frame list
-#'    should be at least one.
+#' @param list_batch_df A named list of data frames, where each data frame 
+#'    corresponds to a batch effect and contains columns with deviance and 
+#'    rank differences.
 #'    
-#' @param sd_interval_dev \code{vector}: A numeric vector specifying the 
-#'    interval widths for standard deviation bins when analyzing the 
-#'    relative change in deviance. 
+#' @param sd_interval_dev A numeric vector specifying the 
+#'    interval widths for standard deviation bins for each batch when analyzing 
+#'    the relative change in deviance. The order of values must correspond to 
+#'    the order of batches in \code{list_batch_df} . 
 #'    If a single value is provided, it is applied to all batches; otherwise, 
-#'    it must have the same length as `list_batch_df`.
+#'    it must have the same length as \code{list_batch_df}.
 #'
 #' @param sd_interval_rank \code{vector}: A numeric vector specifying the 
 #'    interval widths for standard deviation bins when analyzing rank 
-#'    differences.
+#'    differences. The order of values must correspond to the order of batches 
+#'    in \code{list_batch_df}.
 #'    If a single value is provided, it is applied to all batches; otherwise, 
-#'    it must have the same length as `list_batch_df`.
+#'    it must have the same length as \code{list_batch_df}.
 #'
-#' @return The output values are returned as
-#'     a list of data frames containing the deviance and rank with and without 
-#'     the bacth effect, the corresponding difference, the corresponding nSD, 
-#'     gene, gene name, and whether the gene is outlier defined by the chosen 
-#'     deviance and rank cutoff. The length of the list of data frames is equal
-#'     to the number of batch effects included.
+#' @return A combined \code{ggplot} object containing:
+#'    \itemize{
+#'        \item \strong{Deviance Plots}:
+#'        \itemize{
+#'          \item Histogram of deviance differences across SVGs, colored by 
+#'          nSD intervals.
+#'          \item Scatter plot comparing deviance values before and after 
+#'          batch correction.
+#'        }
+#'      \item \strong{Rank Plots}:
+#'        \itemize{
+#'          \item Histogram of rank differences across SVGs, colored by 
+#'          nSD intervals.
+#'          \item Scatter plot comparing ranks before and after batch 
+#'          correction.
+#'        }
+#'    }
+#'    The function arranges plots for each batch in a grid format for 
+#'    easy comparison.
 #'
 #' @export
 #'
@@ -76,11 +95,12 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
         sd_rank <- sd_interval_rank[i]
         
         # deviance plot
-        batch_df$nSD_bin_dev <- cut(abs(batch_df$nSD_dev), right = FALSE,
-            breaks=seq(0,max(batch_df$nSD_dev) + sd_dev, 
+        dev_colname <- paste0("nSD_dev_",batch)
+        batch_df$nSD_bin_dev <- cut(abs(batch_df[[dev_colname]]), right = FALSE,
+            breaks=seq(0,max(batch_df[[dev_colname]]) + sd_dev, 
                     by=sd_dev), include.lowest=TRUE)
         
-        col_pal_dev <- brewer.pal(length(unique(batch_df[["nSD_bin_dev"]])), 
+        col_pal_dev <- brewer.pal(length(unique(batch_df$nSD_bin_dev)), 
                                     "YlOrRd")
         col_pal_dev[1] <- "grey"
         
@@ -89,7 +109,7 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
             geom_histogram(color = "grey20", bins=50) +
             scale_fill_manual(values = col_pal_dev) +
             labs(x = "\u0394 deviance", y = "# SVGs", 
-                fill = "nSD Interval   ") +
+                fill = "nSD Interval") +
             scale_y_continuous(trans = pseudo_log_trans(sigma = 1),
                 breaks = 10^(0:4), labels = format(10^(0:4), scientific = F)) +
             theme_bw()
@@ -117,8 +137,9 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
                         grobHeight(sg) + margin, unit(1,"null")))
         
         # rank plot
-        batch_df$nSD_bin_rank <- cut(abs(batch_df$nSD_rank), right=FALSE,
-            breaks=seq(0,max(batch_df$nSD_rank) + sd_rank, 
+        rank_colname <- paste0("nSD_rank_", batch)
+        batch_df$nSD_bin_rank<-cut(abs(batch_df[[rank_colname]]), right=FALSE,
+            breaks=seq(0,max(batch_df[[rank_colname]]) + sd_rank, 
                     by=sd_rank),include.lowest=TRUE)
         
         col_pal_rank <- brewer.pal(length(unique(batch_df$nSD_bin_rank)), 
@@ -130,7 +151,7 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
             geom_histogram(color = "grey20", bins = 50) +
             scale_fill_manual(values = col_pal_rank) +
             labs(x = "rank difference", y = "# SVGs",
-                fill = "nSD Interval   ") +
+                fill = "nSD Interval") +
             scale_y_continuous(trans = pseudo_log_trans(sigma = 1),
                 breaks = 10^(0:4), labels = format(10^(0:4), scientific = F)) +
             theme_bw()
@@ -160,7 +181,6 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
         batch_plots <- grid.arrange(dev_sd_plots, rank_sd_plots, nrow = 2)
         plot_list[[batch]] <- batch_plots
     }
-
     final_plot <- do.call(grid.arrange, c(plot_list, ncol = 2))
     
     final_plot

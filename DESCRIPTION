@@ -33,15 +33,17 @@ Description: `BatchSVG` is a feature-based Quality Control (QC) to identify
 License: Artistic-2.0
 Imports:
     scry,
-    SummarizedExperiment,
-    ggplot2,
-    RColorBrewer,
+    tibble,
+    dplyr,
     stats,
     rlang,
     gridExtra,
+    grDevices,
+    ggpubr,
+    ggplot2,
+    RColorBrewer,
     scales,
-    tibble,
-    dplyr
+    SummarizedExperiment
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

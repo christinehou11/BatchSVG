@@ -2,35 +2,42 @@
 % Please edit documentation in R/biasDetect.R
 \name{biasDetect}
 \alias{biasDetect}
-\title{Find Bias Genes}
+\title{Biased Genes Identification}
 \usage{
-biasDetect(batch_df, nSD_dev = 5, nSD_rank = 5, visual = FALSE)
+biasDetect(list_batch_df, nSD_dev, nSD_rank)
 }
 \arguments{
-\item{batch_df}{\code{data.frame} : Input data frame generated from
-\code{featureSelection()} function using \code{SpatialExperiment} or
-\code{SingleCellExperiment} object containing the raw data.}
+\item{list_batch_df}{\code{list} : The list of data frame(s) generated from
+\code{featureSelection()} function. The length of the data frame list
+should be at least one.}
 
-\item{nSD_dev}{\code{integer}: Number of standard deviation (nSD) on deviance
-difference. The default value is 5.}
+\item{nSD_dev}{\code{integer}: A numeric vector specifying the
+number of standard deviation (nSD) for each batch when analyzing the
+relative change in deviance. The order of values must correspond to
+the order of batches in \code{list_batch_df}.
+If a single value is provided, it is applied to all batches; otherwise,
+it must have the same length as \code{list_batch_df}.}
 
-\item{nSD_rank}{\code{integer}: Number of standard deviation (nSD) on rank
-difference. The default value is 5.}
+\item{nSD_rank}{\code{vector}: A numeric vector specifying the
+number of standard deviation (nSD) for each batch when analyzing rank
+differences. The order of values must correspond to the order of batches
+in \code{list_batch_df}.
+If a single value is provided, it is applied to all batches; otherwise,
+it must have the same length as \code{list_batch_df}.}
 
 \item{visual}{\code{logical}: Whether to display the detected bias genes by
-visualizations of \code{deviance} and \code{rank}. Default = FALSE to
-return the data frame. If it is TRUE, the returned format will be
-two parallel plots presenting bias genes based on both \code{nSD_dev} and
-\code{nSD_rank}.}
+visualizations of \code{deviance} and \code{rank}. Default is FALSE.
+If visual = TRUE, the returned format will be two parallel plots
+presenting bias genes based on both \code{nSD_dev} and \code{nSD_rank}.}
 }
 \value{
-The output values will be the identified bias genes. The returned
-format can be either a data frame or a list with two elements, giving
-option to see either \code{deviance} or \code{rank} plot.
+The output values will be the list of lists with the identified bias
+genes.
 }
 \description{
-Function to filter out the bias genes based on selected
-selected threshold of nSD of deviance and rank in data frame or plot.
+Function to identify the bias genes based on user-selected
+threshold of number of standard deviation in relative change in deviance
+and rank difference.
 }
 \examples{
 batch_df <- read.csv(
