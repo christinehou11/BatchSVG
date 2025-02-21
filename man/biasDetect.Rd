@@ -31,8 +31,18 @@ If visual = TRUE, the returned format will be two parallel plots
 presenting bias genes based on both \code{nSD_dev} and \code{nSD_rank}.}
 }
 \value{
-The output values will be the list of lists with the identified bias
-genes.
+The named list where each element corresponds to a batch.
+Each batch contains:
+\itemize{
+\item \strong{"Plot"}: A combined ggplot object displaying two scatter
+plots—one for deviance and one for rank—with an enforced 1:1 aspect
+ratio.
+\item \strong{"Table"}: A data frame containing identified biased genes,
+with columns indicating whether they are outliers based on
+deviance or rank thresholds.
+}
+The order of batches in the list follows the order of \code{nSD_dev} and
+\code{nSD_rank} provided by the user.
 }
 \description{
 Function to identify the bias genes based on user-selected
@@ -40,16 +50,10 @@ threshold of number of standard deviation in relative change in deviance
 and rank difference.
 }
 \examples{
-batch_df <- read.csv(
-    system.file("extdata","hpc_srt_batch_df.csv",package = "BatchSVG"),
-    row.names = 1, check.names = FALSE)
-# data frame
-bias <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5)
-bias
-# plots
-bias_plot <- biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5, visual = TRUE)
-# deviance
-bias_plot$deviance
-# rank
-bias_plot$rank
+load(system.file("extdata","list_batch_df.rda",package = "BatchSVG"))
+
+biaGenes <- biasDetect(list_batch_df, nSD_dev = c(5,4), nSD_rank = c(4,6))
+
+biaGenes[["sample_id"]][["Table"]] # see biased genes in table format
+biaGenes[["sex"]][["Plot"]] # see biased genes in plot format
 }

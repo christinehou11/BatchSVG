@@ -2,19 +2,19 @@
 % Please edit documentation in R/svg_nSD.R
 \name{svg_nSD}
 \alias{svg_nSD}
-\title{SVGs Plots with Relative Change in Deviance and Rank Difference}
+\title{SVGs Plots}
 \usage{
 svg_nSD(list_batch_df, sd_interval_dev, sd_interval_rank)
 }
 \arguments{
-\item{list_batch_df}{\code{list} : The list of data frame(s) generated from
-\code{featureSelection()} function. The length of the data frame list
-should be at least one.}
+\item{list_batch_df}{A named list of data frames, where each data frame
+corresponds to a batch effect and contains columns with deviance and
+rank differences.}
 
-\item{sd_interval_dev}{\code{vector}: A numeric vector specifying the
+\item{sd_interval_dev}{A numeric vector specifying the
 interval widths for standard deviation bins for each batch when analyzing
 the relative change in deviance. The order of values must correspond to
-the order of batches in \code{list_batch_df}.
+the order of batches in \code{list_batch_df} .
 If a single value is provided, it is applied to all batches; otherwise,
 it must have the same length as \code{list_batch_df}.}
 
@@ -26,16 +26,32 @@ If a single value is provided, it is applied to all batches; otherwise,
 it must have the same length as \code{list_batch_df}.}
 }
 \value{
-The output values are returned as
-a list of data frames containing the deviance and rank with and without
-the bacth effect, the corresponding difference, the corresponding nSD,
-gene, gene name, and whether the gene is outlier defined by the chosen
-deviance and rank cutoff. The length of the list of data frames is equal
-to the number of batch effects included.
+A combined \code{ggplot} object containing:
+\itemize{
+\item \strong{Deviance Plots}:
+\itemize{
+\item Histogram of deviance differences across SVGs, colored by
+nSD intervals.
+\item Scatter plot comparing deviance values before and after
+batch correction.
+}
+\item \strong{Rank Plots}:
+\itemize{
+\item Histogram of rank differences across SVGs, colored by
+nSD intervals.
+\item Scatter plot comparing ranks before and after batch
+correction.
+}
+}
+The function arranges plots for each batch in a grid format for
+easy comparison.
 }
 \description{
-Function to the spatially variable genes in relative change in
-deviance and rank difference colored by the number of standard deviation.
+This function generates visualizations to assess the impact
+of batch effects on spatially variable genes (SVGs) by analyzing changes
+in deviance and rank. The function bins the deviations into normalized
+standard deviation (nSD) intervals and creates histograms and scatter
+plots to illustrate the distribution of batch effects.
 }
 \examples{
 
