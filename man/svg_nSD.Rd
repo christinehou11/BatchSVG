@@ -4,18 +4,24 @@
 \alias{svg_nSD}
 \title{SVGs Plots with Relative Change in Deviance and Rank Difference}
 \usage{
-svg_nSD(list_batch_df, sd_interval_dev = 5, sd_interval_rank = 5)
+svg_nSD(list_batch_df, sd_interval_dev, sd_interval_rank)
 }
 \arguments{
 \item{list_batch_df}{\code{list} : The list of data frame(s) generated from
 \code{featureSelection()} function. The length of the data frame list
 should be at least one.}
 
-\item{sd_interval_dev}{\code{integer}: Interval of standard deviation on
-relative change in deviance. The default value is 5.}
+\item{sd_interval_dev}{\code{vector}: A numeric vector specifying the
+interval widths for standard deviation bins when analyzing the
+relative change in deviance.
+If a single value is provided, it is applied to all batches; otherwise,
+it must have the same length as \code{list_batch_df}.}
 
-\item{sd_interval_rank}{\code{integer}: Number of standard deviation on rank
-difference. The default value is 5.}
+\item{sd_interval_rank}{\code{vector}: A numeric vector specifying the
+interval widths for standard deviation bins when analyzing rank
+differences.
+If a single value is provided, it is applied to all batches; otherwise,
+it must have the same length as \code{list_batch_df}.}
 }
 \value{
 The output values are returned as
@@ -30,9 +36,6 @@ Function to the spatially variable genes in relative change in
 deviance and rank difference colored by the number of standard deviation.
 }
 \examples{
-sample_id_df <- utils::read.csv(
-    system.file("extdata","sample_id_df.csv",package = "BatchSVG"),
-    row.names = 1, check.names = FALSE)
 
 plots <- svg_nSD(sample_id_df, nSD_dev = 5, nSD_rank)
 
