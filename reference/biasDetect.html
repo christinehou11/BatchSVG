@@ -89,29 +89,30 @@ presenting bias genes based on both <code>nSD_dev</code> and <code>nSD_rank</cod
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The output values will be the list of lists with the identified bias
-genes.</p>
+    <p>The named list where each element corresponds to a batch.
+Each batch contains:</p><ul><li><p><strong>"Plot"</strong>: A combined ggplot object displaying two scatter
+plots—one for deviance and one for rank—with an enforced 1:1 aspect
+ratio.</p></li>
+<li><p><strong>"Table"</strong>: A data frame containing identified biased genes,
+with columns indicating whether they are outliers based on
+deviance or rank thresholds.</p></li>
+</ul><p>The order of batches in the list follows the order of <code>nSD_dev</code> and
+<code>nSD_rank</code> provided by the user.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">batch_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>,<span class="st">"hpc_srt_batch_df.csv"</span>,package <span class="op">=</span> <span class="st">"BatchSVG"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># data frame</span></span></span>
-<span class="r-in"><span><span class="va">bias</span> <span class="op">&lt;-</span> <span class="fu">biasDetect</span><span class="op">(</span><span class="va">batch_df</span>, nSD_dev <span class="op">=</span> <span class="fl">10</span>, nSD_rank <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5):</span> is.data.frame(batch_df) is not TRUE</span>
-<span class="r-in"><span><span class="va">bias</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'bias' not found</span>
-<span class="r-in"><span><span class="co"># plots</span></span></span>
-<span class="r-in"><span><span class="va">bias_plot</span> <span class="op">&lt;-</span> <span class="fu">biasDetect</span><span class="op">(</span><span class="va">batch_df</span>, nSD_dev <span class="op">=</span> <span class="fl">10</span>, nSD_rank <span class="op">=</span> <span class="fl">5</span>, visual <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in biasDetect(batch_df, nSD_dev = 10, nSD_rank = 5, visual = TRUE):</span> unused argument (visual = TRUE)</span>
-<span class="r-in"><span><span class="co"># deviance</span></span></span>
-<span class="r-in"><span><span class="va">bias_plot</span><span class="op">$</span><span class="va">deviance</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'bias_plot' not found</span>
-<span class="r-in"><span><span class="co"># rank</span></span></span>
-<span class="r-in"><span><span class="va">bias_plot</span><span class="op">$</span><span class="va">rank</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'bias_plot' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>,<span class="st">"list_batch_df.rda"</span>,package <span class="op">=</span> <span class="st">"BatchSVG"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open compressed file '', probable reason 'No such file or directory'</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in readChar(con, 5L, useBytes = TRUE):</span> cannot open the connection</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">biaGenes</span> <span class="op">&lt;-</span> <span class="fu">biasDetect</span><span class="op">(</span><span class="va">list_batch_df</span>, nSD_dev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span><span class="op">)</span>, nSD_rank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'list_batch_df' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">biaGenes</span><span class="op">[[</span><span class="st">"sample_id"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"Table"</span><span class="op">]</span><span class="op">]</span> <span class="co"># see biased genes in table format</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'biaGenes' not found</span>
+<span class="r-in"><span><span class="va">biaGenes</span><span class="op">[[</span><span class="st">"sex"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"Plot"</span><span class="op">]</span><span class="op">]</span> <span class="co"># see biased genes in plot format</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'biaGenes' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
