@@ -57,7 +57,7 @@ plots to illustrate the distribution of batch effects.
 
 load(system.file("extdata","list_batch_df.rda",package = "BatchSVG"))
 
-plots <- svg_nSD(list_batch_df, 
+plots <- svg_nSD(list_batch_df = list_batch_df, 
     sd_interval_dev = c(5,4), sd_interval_rank = c(4,6))
 
 }

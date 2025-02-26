@@ -4,17 +4,27 @@
 \alias{biasDetect}
 \title{Biased Genes Identification}
 \usage{
-biasDetect(list_batch_df, nSD_dev, nSD_rank)
+biasDetect(list_batch_df, threshold = "both", nSD_dev = NULL, nSD_rank = NULL)
 }
 \arguments{
 \item{list_batch_df}{\code{list} : The list of data frame(s) generated from
 \code{featureSelection()} function. The length of the data frame list
 should be at least one.}
 
+\item{threshold}{A character string specifying the filtering criterion.
+Must be one of:
+\itemize{
+\item \code{"dev"}: Filters genes based on the deviance threshold only.
+\item \code{"rank"}: Filters genes based on the rank threshold only.
+\item \code{"both"}: Filters genes based on either the deviance or rank threshold.
+Default is "both".
+}}
+
 \item{nSD_dev}{\code{integer}: A numeric vector specifying the
 number of standard deviation (nSD) for each batch when analyzing the
 relative change in deviance. The order of values must correspond to
 the order of batches in \code{list_batch_df}.
+Required if \code{threshold} is "dev" or "both".
 If a single value is provided, it is applied to all batches; otherwise,
 it must have the same length as \code{list_batch_df}.}
 
@@ -22,27 +32,17 @@ it must have the same length as \code{list_batch_df}.}
 number of standard deviation (nSD) for each batch when analyzing rank
 differences. The order of values must correspond to the order of batches
 in \code{list_batch_df}.
+Required if \code{threshold} is "rank" or "both".
 If a single value is provided, it is applied to all batches; otherwise,
 it must have the same length as \code{list_batch_df}.}
-
-\item{visual}{\code{logical}: Whether to display the detected bias genes by
-visualizations of \code{deviance} and \code{rank}. Default is FALSE.
-If visual = TRUE, the returned format will be two parallel plots
-presenting bias genes based on both \code{nSD_dev} and \code{nSD_rank}.}
 }
 \value{
-The named list where each element corresponds to a batch.
-Each batch contains:
+A named list where each element corresponds to a batch and contains:
 \itemize{
-\item \strong{"Plot"}: A combined ggplot object displaying two scatter
-plots—one for deviance and one for rank—with an enforced 1:1 aspect
-ratio.
-\item \strong{"Table"}: A data frame containing identified biased genes,
-with columns indicating whether they are outliers based on
-deviance or rank thresholds.
+\item \code{"Plot"}: A diagnostic plot (either deviance, rank, or both).
+\item \code{"Table"}: A filtered data frame containing outlier genes based on the
+specified threshold.
 }
-The order of batches in the list follows the order of \code{nSD_dev} and
-\code{nSD_rank} provided by the user.
 }
 \description{
 Function to identify the bias genes based on user-selected
@@ -52,7 +52,8 @@ and rank difference.
 \examples{
 load(system.file("extdata","list_batch_df.rda",package = "BatchSVG"))
 
-biaGenes <- biasDetect(list_batch_df, nSD_dev = c(5,4), nSD_rank = c(4,6))
+biaGenes <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
+    nSD_dev = c(5,4), nSD_rank = c(4,6))
 
 biaGenes[["sample_id"]][["Table"]] # see biased genes in table format
 biaGenes[["sex"]][["Plot"]] # see biased genes in plot format

@@ -57,7 +57,7 @@ svgs_sub4 <- read.csv(
     row.names = 1, check.names = FALSE) # rank <= 2000, sample n > 1
 SVGs <- svgs_sub4$gene_id
 
-batch_df <- featureSelect(spe_sub4, 
+batch_df <- featureSelect(input = spe_sub4, 
     batch_effects = c("sample_id", "sex"), VGs = SVGs)
 
 }
