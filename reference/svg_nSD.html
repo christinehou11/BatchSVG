@@ -105,12 +105,18 @@ easy comparison.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"spe_sub4"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>data set ‘spe_sub4’ not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>file ‘spe_sub4.rda’ has magic number 'versi'</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Use of save versions prior to 2 is deprecated</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in load(file, envir = tmp_env):</span> bad restore file magic number (file may be corrupted) -- no data loaded</span>
 <span class="r-in"><span><span class="va">spe_sub4</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'spe_sub4' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"svgs_sub4"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>file ‘svgs_sub4.rda’ has magic number 'versi'</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Use of save versions prior to 2 is deprecated</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in load(file, envir = tmp_env):</span> bad restore file magic number (file may be corrupted) -- no data loaded</span>
 <span class="r-in"><span><span class="va">SVGs</span> <span class="op">&lt;-</span> <span class="va">svgs_sub4</span><span class="op">$</span><span class="va">gene_id</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'svgs_sub4' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">list_batch_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="featureSelect.html">featureSelect</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">spe_sub4</span>, </span></span>
 <span class="r-in"><span>    batch_effects <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>, <span class="st">"sex"</span><span class="op">)</span>, VGs <span class="op">=</span> <span class="va">SVGs</span><span class="op">)</span></span></span>
