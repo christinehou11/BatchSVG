@@ -140,6 +140,11 @@ svgs_sub4 <- read.csv(
 nrow(svgs_sub4)
 ```
 
+```{r}
+data("svgs_sub4")
+```
+
+
 ```{r nrow svgs_sub4, message=FALSE, warning=FALSE, comment=NA, eval=FALSE}
 nrow(svgs_sub4)
 ```
