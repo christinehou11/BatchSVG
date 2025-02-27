@@ -197,9 +197,9 @@ genes across the four samples.</p>
 <span><span class="va">svgs_sub4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">res_df_sub</span>, <span class="va">gene_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span><span class="op">&gt;</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<pre><code>[1] 2082</code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">svgs_sub4</span><span class="op">)</span></span></code></pre></div>
+<pre><code>[1] 2082</code></pre>
 </div>
 <div class="section level4">
 <h4 id="perform-feature-selection-using-featureselect">Perform Feature Selection using <code>featureSelect()</code><a class="anchor" aria-label="anchor" href="#perform-feature-selection-using-featureselect"></a>

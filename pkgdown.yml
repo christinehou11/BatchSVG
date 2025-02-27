@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   spe: spe.html
-last_built: 2025-02-27T17:33Z
+last_built: 2025-02-27T18:26Z
 urls:
   reference: https://christinehou11.github.io/BatchSVG/reference
   article: https://christinehou11.github.io/BatchSVG/articles
