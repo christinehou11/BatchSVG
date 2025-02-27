@@ -105,7 +105,8 @@ biasDetect <- function(list_batch_df, threshold = "both",
             geom_text_repel(
                 aes(label = ifelse(.data[[dev_colname]] > sd_dev,
                 .data[["gene_name"]], "")), size = 3, max.overlaps = Inf)
-        batch_df$dev_outlier <- batch_df$nSD_dev >= sd_dev}
+        batch_df$dev_outlier <- batch_df$nSD_dev >= sd_dev
+        }
         
         if (!is.null(nSD_rank)) {
         sd_rank <- nSD_rank[i]
@@ -125,7 +126,8 @@ biasDetect <- function(list_batch_df, threshold = "both",
             geom_text_repel(
                 aes(label = ifelse(.data[[rank_colname]] > sd_rank,
                 .data[["gene_name"]], "")), size = 3, max.overlaps = Inf)
-        batch_df$rank_outlier <- batch_df$nSD_rank >= sd_rank}
+        batch_df$rank_outlier <- batch_df$nSD_rank >= sd_rank
+        }
         
         if (filter_condition == "dev") {
             biased_list[[batch]][["Plot"]] <- dev_sd_plot
