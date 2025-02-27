@@ -78,22 +78,21 @@ project.
 ehub <- ExperimentHub()
 spe <- ehub[["EH9605"]]
 spe
-#> class: SpatialExperiment 
-#> dim: 2082 18945 
-#> metadata(1): Obtained_from
-#> assays(2): counts logcounts
-#> rownames(2082): ENSG00000131584 ENSG00000175756 ... ENSG00000198695
-#>   ENSG00000198727
-#> rowData names(7): source type ... gene_type gene_search
-#> colnames(18945): AAACAACGAATAGTTC-1_V11L05-333_B1
-#>   AAACAAGTATCTCCCA-1_V11L05-333_B1 ... TTGTTTGTATTACACG-1_V11L05-336_A1
-#>   TTGTTTGTGTAAATTC-1_V11L05-336_A1
-#> colData names(150): sample_id in_tissue ... nmf99 nmf100
-#> reducedDimNames(3): 10x_pca 10x_tsne 10x_umap
-#> mainExpName: NULL
-#> altExpNames(0):
-#> spatialCoords names(2) : pxl_col_in_fullres pxl_row_in_fullres
-#> imgData names(4): sample_id image_id data scaleFactor
+class: SpatialExperiment 
+dim: 31483 150917 
+metadata(1): Obtained_from
+assays(2): counts logcounts
+rownames(31483): MIR1302-2HG AL627309.1 ... AC007325.4 AC007325.2
+rowData names(7): source type ... gene_type gene_search
+colnames(150917): AAACAACGAATAGTTC-1_V10B01-086_D1
+  AAACAAGTATCTCCCA-1_V10B01-086_D1 ... TTGTTTCCATACAACT-1_Br2720_B1
+  TTGTTTGTATTACACG-1_Br2720_B1
+colData names(150): sample_id in_tissue ... nmf99 nmf100
+reducedDimNames(3): 10x_pca 10x_tsne 10x_umap
+mainExpName: NULL
+altExpNames(0):
+spatialCoords names(2) : pxl_col_in_fullres pxl_row_in_fullres
+imgData names(4): sample_id image_id data scaleFactor
 ```
 
 We will use the spatially variable genes set generated from 
@@ -121,16 +120,11 @@ sub4 <- fix_order$sample_id[c(14,16, 20,21)]
 
 spe_sub4 <- spe[,spe$sample_id %in% sub4]
 spe_sub4 # 31483, 18945
-```
-
-
-```
 class: SpatialExperiment 
-dim: 2082 18945 
+dim: 31483 18945 
 metadata(1): Obtained_from
 assays(2): counts logcounts
-rownames(2082): ENSG00000131584 ENSG00000175756 ... ENSG00000198695
-  ENSG00000198727
+rownames(31483): MIR1302-2HG AL627309.1 ... AC007325.4 AC007325.2
 rowData names(7): source type ... gene_type gene_search
 colnames(18945): AAACAACGAATAGTTC-1_V11L05-333_B1
   AAACAAGTATCTCCCA-1_V11L05-333_B1 ... TTGTTTGTATTACACG-1_V11L05-336_A1
@@ -171,6 +165,9 @@ svgs_sub4 <- group_by(res_df_sub, gene_id) |>
 ```
 
 
+```
+[1] 2082
+```
 
 
 ``` r
@@ -519,16 +516,16 @@ sessionInfo()
 #> [8] base     
 #> 
 #> other attached packages:
-#>  [1] tibble_3.2.1                dplyr_1.1.4                
-#>  [3] tidyr_1.3.1                 ExperimentHub_2.14.0       
-#>  [5] AnnotationHub_3.14.0        BiocFileCache_2.14.0       
-#>  [7] dbplyr_2.5.0                SpatialExperiment_1.16.0   
-#>  [9] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0
-#> [11] Biobase_2.66.0              GenomicRanges_1.58.0       
-#> [13] GenomeInfoDb_1.42.0         IRanges_2.40.0             
-#> [15] S4Vectors_0.44.0            BiocGenerics_0.52.0        
-#> [17] MatrixGenerics_1.18.0       matrixStats_1.5.0          
-#> [19] BatchSVG_0.99.1            
+#>  [1] humanHippocampus2024_0.99.8 tibble_3.2.1               
+#>  [3] dplyr_1.1.4                 tidyr_1.3.1                
+#>  [5] ExperimentHub_2.14.0        AnnotationHub_3.14.0       
+#>  [7] BiocFileCache_2.14.0        dbplyr_2.5.0               
+#>  [9] SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1
+#> [11] SummarizedExperiment_1.36.0 Biobase_2.66.0             
+#> [13] GenomicRanges_1.58.0        GenomeInfoDb_1.42.0        
+#> [15] IRanges_2.40.0              S4Vectors_0.44.0           
+#> [17] BiocGenerics_0.52.0         MatrixGenerics_1.18.0      
+#> [19] matrixStats_1.5.0           BatchSVG_0.99.1            
 #> 
 #> loaded via a namespace (and not attached):
 #>   [1] DBI_1.2.3               remotes_2.5.0           rlang_1.1.5            

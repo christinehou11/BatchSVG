@@ -75,26 +75,10 @@ on Bioconductor 3.21, and it is the `spatialExperiment` object generated and
 processed from the [spatial_HPC](https://github.com/LieberInstitute/spatial_hpc)
 project. 
 
-```{r load data, comment=NA, warning=FALSE, message=FALSE, eval=FALSE}
+```{r load data, comment=NA, warning=FALSE, message=FALSE}
 ehub <- ExperimentHub()
 spe <- ehub[["EH9605"]]
 spe
-#> class: SpatialExperiment 
-#> dim: 2082 18945 
-#> metadata(1): Obtained_from
-#> assays(2): counts logcounts
-#> rownames(2082): ENSG00000131584 ENSG00000175756 ... ENSG00000198695
-#>   ENSG00000198727
-#> rowData names(7): source type ... gene_type gene_search
-#> colnames(18945): AAACAACGAATAGTTC-1_V11L05-333_B1
-#>   AAACAAGTATCTCCCA-1_V11L05-333_B1 ... TTGTTTGTATTACACG-1_V11L05-336_A1
-#>   TTGTTTGTGTAAATTC-1_V11L05-336_A1
-#> colData names(150): sample_id in_tissue ... nmf99 nmf100
-#> reducedDimNames(3): 10x_pca 10x_tsne 10x_umap
-#> mainExpName: NULL
-#> altExpNames(0):
-#> spatialCoords names(2) : pxl_col_in_fullres pxl_row_in_fullres
-#> imgData names(4): sample_id image_id data scaleFactor
 ```
 
 We will use the spatially variable genes set generated from 
@@ -112,7 +96,7 @@ We will select four samples from the raw data as an example:
 
 - V11L05-336_A1. 
 
-```{r subset, message=FALSE, warning=FALSE, comment=NA, eval=FALSE}
+```{r subset, message=FALSE, warning=FALSE, comment=NA}
 fix_order <- distinct(
     as.data.frame(colData(spe)), slide, array, brnum, sample_id, 
     position, sex) %>% 
@@ -121,11 +105,6 @@ sub4 <- fix_order$sample_id[c(14,16, 20,21)]
 
 spe_sub4 <- spe[,spe$sample_id %in% sub4]
 spe_sub4 # 31483, 18945
-```
-
-```{r subset load, message=FALSE, warning=FALSE, comment=NA, echo=FALSE}
-data("spe_sub4")
-spe_sub4
 ```
 
 We will refine our selection to include only the top 2,000 ranked 
@@ -155,7 +134,10 @@ svgs_sub4 <- group_by(res_df_sub, gene_id) |>
 ```
 
 ```{r load svgs_sub4, message=FALSE, warning=FALSE, comment=NA, echo=FALSE}
-data("svgs_sub4")
+svgs_sub4 <- read.csv(
+    system.file("extdata","svgs_sub4.csv",package = "BatchSVG"),
+    row.names = 1, check.names = FALSE)
+nrow(svgs_sub4)
 ```
 
 ```{r nrow svgs_sub4, message=FALSE, warning=FALSE, comment=NA}
