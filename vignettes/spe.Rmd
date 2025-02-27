@@ -141,6 +141,7 @@ nrow(svgs_sub4)
 svgs_sub4 <- read.csv(
     system.file("extdata","svgs_sub4.csv",package = "BatchSVG"),
     row.names = 1, check.names = FALSE)
+
 nrow(svgs_sub4)
 ```
 
@@ -168,6 +169,9 @@ We will use the example of applying `featureSelect()` to a four sample dataset
 while adjusting for the batch effect *sample_id* and *sex*.
 
 ```{r feature select, comment = NA, warning=FALSE}
+spe_sub4 <- spe_sub4[rowData(spe_sub4)$gene_id %in% svgs_sub4$gene_id,]
+rownames(spe_sub4) <- rowData(spe_sub4)$gene_id
+
 SVGs <- svgs_sub4$gene_id
 list_batch_df <- featureSelect(input = spe_sub4, 
     batch_effect = c("sample_id", "sex"), VGs = SVGs)
