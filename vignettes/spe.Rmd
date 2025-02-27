@@ -133,14 +133,14 @@ svgs_sub4 <- group_by(res_df_sub, gene_id) |>
     filter(n>1)
 ```
 
+```{r nrow svgs_sub4, message=FALSE, warning=FALSE, comment=NA, eval=FALSE}
+nrow(svgs_sub4)
+```
+
 ```{r load svgs_sub4, message=FALSE, warning=FALSE, comment=NA, echo=FALSE}
 svgs_sub4 <- read.csv(
     system.file("extdata","svgs_sub4.csv",package = "BatchSVG"),
     row.names = 1, check.names = FALSE)
-nrow(svgs_sub4)
-```
-
-```{r nrow svgs_sub4, message=FALSE, warning=FALSE, comment=NA, eval=FALSE}
 nrow(svgs_sub4)
 ```
 

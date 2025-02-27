@@ -16,7 +16,7 @@ within the top 2,000 spatially variable genes.}
 Filtered subset from \code{res_ranks} (ranked \code{nnSVG()} results).
 }
 \usage{
-data("svgs_sub4")
+data(svgs_sub4)
 }
 \description{
 \code{svgs_sub4} is a subset of spatially variable genes (SVGs) derived from the
@@ -24,6 +24,6 @@ data("svgs_sub4")
 in at least two of the selected samples from the original dataset.
 }
 \examples{
-data("svgs_sub4")
+data(svgs_sub4)
 }
 \keyword{datasets}

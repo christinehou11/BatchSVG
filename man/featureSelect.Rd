@@ -47,10 +47,10 @@ deviations from the mean difference. The list follows the order of batch
 effects provided in \code{batch_effects}.
 }
 \examples{
-data("spe_sub4")
+data(spe_sub4)
 spe_sub4
 
-data("svgs_sub4")
+data(svgs_sub4)
 SVGs <- svgs_sub4$gene_id
 
 batch_df <- featureSelect(input = spe_sub4, 

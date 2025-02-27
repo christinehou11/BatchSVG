@@ -25,7 +25,7 @@ row and column positions.}
 Processed spatial transcriptomics data for demonstration purposes.
 }
 \usage{
-data("svgs_sub4")
+data(svgs_sub4)
 }
 \description{
 \code{spe_sub4} is an example \code{SpatialExperiment} object used to demonstrate
@@ -35,6 +35,6 @@ batch effect correction and spatially variable gene (SVG) selection in the
 transcriptomics data stored in the \code{humanHippocampus2024} data package.
 }
 \examples{
-data("svgs_sub4")
+data(svgs_sub4)
 }
 \keyword{datasets}

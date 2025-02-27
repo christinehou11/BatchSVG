@@ -22,12 +22,12 @@
 #'    \item{Image metadata}{Includes fields such as \code{sample_id}, 
 #'        \code{image_id}, and \code{scaleFactor}.}}
 #'        
-#' @usage data("svgs_sub4")
+#' @usage data(svgs_sub4)
 #'
 #' @source Processed spatial transcriptomics data for demonstration purposes.
 #'
 #' @examples
-#' data("svgs_sub4")
+#' data(svgs_sub4)
 "spe_sub4"
 
 #' Filtered Spatially Variable Genes (SVGs) Subset
@@ -45,8 +45,8 @@
 #'
 #' @source Filtered subset from `res_ranks` (ranked `nnSVG()` results).
 #' 
-#' @usage data("svgs_sub4")
+#' @usage data(svgs_sub4)
 #' 
 #' @examples
-#' data("svgs_sub4")
+#' data(svgs_sub4)
 "svgs_sub4"

@@ -50,10 +50,10 @@ threshold of number of standard deviation in relative change in deviance
 and rank difference.
 }
 \examples{
-data("spe_sub4")
+data(spe_sub4)
 spe_sub4
 
-data("svgs_sub4")
+data(svgs_sub4)
 SVGs <- svgs_sub4$gene_id
 
 list_batch_df <- featureSelect(input = spe_sub4, 
