@@ -9,5 +9,4 @@ vignettes/*.R
 docs
 BiasDetect.Rproj
 *.RDataTmp
-*.csv
 spe_sub4.rda
