@@ -7,7 +7,7 @@
     plot +
     geom_histogram(color = "grey20", bins = 50) +
     scale_y_continuous(trans = pseudo_log_trans(sigma = 1),
-        breaks = 10^(0:4), labels = format(10^(0:4), scientific = F)) +
+        breaks = 10^(0:4), labels = format(10^(0:4), scientific = FALSE)) +
     theme_bw() + 
     theme(legend.position = "right", aspect.ratio = 1,
         plot.title = element_text(size = 12, face = "bold"), 
@@ -16,8 +16,8 @@
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10)) +
     labs(x = "\u0394 deviance", y = "# SVGs", 
-         fill = "nSD Deviance Interval",
-         title = "SVGs with relative change in deviance")
+        fill = "nSD Deviance Interval",
+        title = "SVGs with relative change in deviance")
     }
 
 #' @importFrom ggplot2 scale_y_continuous element_text theme theme_bw
@@ -27,7 +27,7 @@
     plot +
     geom_histogram(color = "grey20", bins = 50) +
     scale_y_continuous(trans = pseudo_log_trans(sigma = 1),
-        breaks = 10^(0:4), labels = format(10^(0:4), scientific = F)) +
+        breaks = 10^(0:4), labels = format(10^(0:4), scientific = FALSE)) +
     theme_bw() + 
     theme(legend.position = "right", aspect.ratio = 1,
         plot.title = element_text(size = 12, face = "bold"), 
@@ -36,8 +36,8 @@
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10)) +
     labs(x = "rank difference", y = "# SVGs",
-         fill = "nSD Rank Interval",
-         title = "SVGs with rank difference")
+        fill = "nSD Rank Interval",
+        title = "SVGs with rank difference")
     }
 
 #' @importFrom ggplot2 geom_point scale_x_log10 scale_y_log10 geom_abline
@@ -72,6 +72,6 @@
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10)) +
     labs(x= "dev (no batch)", y="dev (batch)", 
-         color = "nSD Rank Interval",
-         title = "Rank without vs. with batch")
+        color = "nSD Rank Interval",
+        title = "Rank without vs. with batch")
     }

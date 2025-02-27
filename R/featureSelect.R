@@ -47,89 +47,73 @@
 #' @export
 #'
 #' @examples
-#' library(dplyr)
-#' library(SummarizedExperiment)
-#' # "V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"
-#' load(system.file("extdata","spe_sub4.rda",package = "BatchSVG"))
-#' # load SVGs from 4 samples
-#' svgs_sub4 <- read.csv(
-#'     system.file("extdata","svgs_sub4.csv", package = "BatchSVG"),
-#'     row.names = 1, check.names = FALSE) # rank <= 2000, sample n > 1
+#' data("spe_sub4")
+#' spe_sub4
+#' 
+#' data("svgs_sub4")
 #' SVGs <- svgs_sub4$gene_id
 #' 
 #' batch_df <- featureSelect(input = spe_sub4, 
 #'     batch_effects = c("sample_id", "sex"), VGs = SVGs)
 #' 
 featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
-
+    
     stopifnot(
-        inherits(input, c("SpatialExperiment")),
+        inherits(input, c("SpatialExperiment")), 
         is.character(VGs)
     )
-
+    
     if (!is.null(batch_effects)) {
         stopifnot(is.character(batch_effects))
         for (batch in batch_effects) {
             if (!batch %in% names(colData(input))) {
-                stop(paste("The batch_effect", batch, "is not a valid column"))
+                stop("The batch_effect is not a valid column")
             }
         }
-    } else { 
+    } else {
         stop("Please provide a valid batch_effect.")
     }
     
     input <- input[rowData(input)$gene_id %in% VGs, ]
     rownames(input) <- rowData(input)$gene_id
     
-    message("Step 1: Running feature selection without batch...")
+    message("Running feature selection without batch...")
     bd <- devianceFeatureSelection(input, assay = "counts", fam = "binomial")
     bd_df <- cbind.data.frame("gene_id"=rownames(bd),
-                            "gene_name"=rowData(bd)$gene_name,
-                            "dev"= rowData(bd)$binomial_deviance,
-                            "rank"=(nrow(bd)+1)
-                                -rank(rowData(bd)$binomial_deviance))
+        "gene_name"=rowData(bd)$gene_name, "dev"= rowData(bd)$binomial_deviance,
+        "rank"=(nrow(bd) + 1) - rank(rowData(bd)$binomial_deviance))
     rownames(bd_df) <- bd_df$gene
     
     results_list <- list()
     
     for (batch in batch_effects) {
-        message(paste("Batch Effect:", batch))
-        message("Running feature selection...")
-        
+        message("Batch Effect: ", batch)
+        message("Running feature selection without batch...")
         batch_data <- colData(input)[[batch]]
-        
         bd_batch <- devianceFeatureSelection(input, assay = "counts",
-                    fam = "binomial",batch = as.factor(batch_data))
+            fam = "binomial",batch = as.factor(batch_data))
         bd_batch_df <- cbind.data.frame("gene_id"=rownames(bd_batch),
-                                  "gene_name"=rowData(bd_batch)$gene_name,
-                                  "dev"= rowData(bd_batch)$binomial_deviance,
-                                  "rank"=(nrow(bd_batch)+1)
-                                  -rank(rowData(bd_batch)$binomial_deviance))
+            "gene_name"=rowData(bd_batch)$gene_name,
+            "dev"= rowData(bd_batch)$binomial_deviance,
+            "rank"=(nrow(bd_batch)+1)-rank(rowData(bd_batch)$binomial_deviance))
         rownames(bd_batch_df) <- bd_batch_df$gene
-    
+        
         message("Calculating deviance and rank difference...")
         batch_df <- left_join(bd_df, bd_batch_df, by=c("gene_id", "gene_name"),
-                                suffix=c("_default",paste0("_", batch)))
-    
+            suffix=c("_default",paste0("_", batch)))
+        
         batch_df$d_diff <- 
             (batch_df$dev_default- batch_df[[paste0("dev_", batch)]]) /
             batch_df[[paste0("dev_", batch)]]
-        mean_dev <- mean(batch_df$d_diff)
-        sd_dev <- sd(batch_df$d_diff)
         batch_df[[paste0("nSD_dev_", batch)]] <- 
-            (batch_df$d_diff - mean_dev) / sd_dev
-    
+            (batch_df$d_diff - mean(batch_df$d_diff)) / sd(batch_df$d_diff)
+        
         batch_df$r_diff <- 
             batch_df[[paste0("rank_", batch)]] - batch_df$rank_default
-        mean_rank <- mean(batch_df$r_diff)
-        sd_rank <- sd(batch_df$r_diff)
         batch_df[[paste0("nSD_rank_", batch)]] <- 
-            (batch_df$r_diff - mean_rank) / sd_rank
+            (batch_df$r_diff - mean(batch_df$r_diff)) / sd(batch_df$r_diff)
         
         results_list[[batch]] <- batch_df
     }
-
     results_list
     }
-
-

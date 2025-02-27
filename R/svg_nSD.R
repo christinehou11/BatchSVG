@@ -56,13 +56,17 @@
 #' @export
 #'
 #' @examples
+#' data("spe_sub4")
+#' spe_sub4
 #' 
-#' load(system.file("extdata","list_batch_df.rda",package = "BatchSVG"))
+#' data("svgs_sub4")
+#' SVGs <- svgs_sub4$gene_id
+#' 
+#' list_batch_df <- featureSelect(input = spe_sub4, 
+#'     batch_effects = c("sample_id", "sex"), VGs = SVGs)
 #' 
 #' plots <- svg_nSD(list_batch_df = list_batch_df, 
 #'     sd_interval_dev = c(5,4), sd_interval_rank = c(4,6))
-#' 
-
 svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
     # input check
     num_batches <- length(list_batch_df)
@@ -115,7 +119,7 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
             breaks=seq(0,max(batch_df[[rank_colname]]) + sd_rank, 
             by=sd_rank),include.lowest=TRUE)
         col_pal_rank <- brewer.pal(length(unique(batch_df$nSD_bin_rank)), 
-                                  "YlOrRd")
+            "YlOrRd")
         col_pal_rank[1] <- "grey"
         
         rank_sd_plot1 <- ggplot(batch_df, 
@@ -131,8 +135,8 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
             scale_color_manual(values = col_pal_rank) +
             labs(subtitle = paste0("Batch: ", batch,"; nSD width = ", sd_rank))
         
-        plot_list[[batch]] <- plot_grid(dev_sd_plot1, dev_sd_plot2, rank_sd_plot1, 
-            rank_sd_plot2, ncol = 2, align = "hv")
+        plot_list[[batch]] <- plot_grid(dev_sd_plot1, dev_sd_plot2, 
+            rank_sd_plot1, rank_sd_plot2, ncol = 2, align = "hv")
     }
     plot_list
     }

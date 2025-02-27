@@ -47,14 +47,10 @@ deviations from the mean difference. The list follows the order of batch
 effects provided in \code{batch_effects}.
 }
 \examples{
-library(dplyr)
-library(SummarizedExperiment)
-# "V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"
-load(system.file("extdata","spe_sub4.rda",package = "BatchSVG"))
-# load SVGs from 4 samples
-svgs_sub4 <- read.csv(
-    system.file("extdata","svgs_sub4.csv", package = "BatchSVG"),
-    row.names = 1, check.names = FALSE) # rank <= 2000, sample n > 1
+data("spe_sub4")
+spe_sub4
+
+data("svgs_sub4")
 SVGs <- svgs_sub4$gene_id
 
 batch_df <- featureSelect(input = spe_sub4, 

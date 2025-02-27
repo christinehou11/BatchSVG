@@ -1,0 +1,18 @@
+pkgVer <- function(pkg) {
+    if (!exists("meta") || is.null(meta)) meta <- packageDescription(pkg)
+    ver <- meta$Version
+    paste0('https://github.com/christinehou11/BatchSVG', pkg, ' - R package version ', ver)
+}
+
+c(
+    # Manual citation for the package itself
+    bibentry(bibtype = "manual",
+        title = "BatchSVG: Identify Batch-Biased Features in Spatially Variable Genes",
+        author = personList(
+            as.person("Christine Hou")
+        ),
+        year = format(Sys.Date(), "%Y"),
+        url = "http://www.bioconductor.org/packages/BatchSVG",
+        note = pkgVer('BatchSVG')
+    )
+)

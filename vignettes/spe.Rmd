@@ -8,7 +8,7 @@ author:
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{01 Tutorial for spe data object}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -78,7 +78,23 @@ project.
 ```{r load data, comment=NA, warning=FALSE, message=FALSE, eval=FALSE}
 ehub <- ExperimentHub()
 spe <- ehub[["EH9605"]]
-spe # 31483, 150917 
+spe
+#> class: SpatialExperiment 
+#> dim: 2082 18945 
+#> metadata(1): Obtained_from
+#> assays(2): counts logcounts
+#> rownames(2082): ENSG00000131584 ENSG00000175756 ... ENSG00000198695
+#>   ENSG00000198727
+#> rowData names(7): source type ... gene_type gene_search
+#> colnames(18945): AAACAACGAATAGTTC-1_V11L05-333_B1
+#>   AAACAAGTATCTCCCA-1_V11L05-333_B1 ... TTGTTTGTATTACACG-1_V11L05-336_A1
+#>   TTGTTTGTGTAAATTC-1_V11L05-336_A1
+#> colData names(150): sample_id in_tissue ... nmf99 nmf100
+#> reducedDimNames(3): 10x_pca 10x_tsne 10x_umap
+#> mainExpName: NULL
+#> altExpNames(0):
+#> spatialCoords names(2) : pxl_col_in_fullres pxl_row_in_fullres
+#> imgData names(4): sample_id image_id data scaleFactor
 ```
 
 We will use the spatially variable genes set generated from 
@@ -86,21 +102,7 @@ We will use the spatially variable genes set generated from
 result is generated from 
 [nnSVG]((https://www.nature.com/articles/s41467-023-39748-z)) package.
 
-```{r load svg, echo = FALSE, comment=NA, warning=FALSE, message=FALSE}
-res_ranks <- read.csv(
-    system.file("extdata","res_ranks.csv",package = "BatchSVG"),
-    row.names = 1, check.names = FALSE)
-```
-
-```{r view svg, comment=NA, message=FALSE, warning=FALSE}
-# res_ranks
-dim(res_ranks)
-head(res_ranks)[,1:5]
-```
-
-To focus on the most significant spatially variable genes (SVGs), we will filter
-the dataset to retain only the top 2,000 ranked features (rank $\leq$ 2000) from 
-four selected samples:
+We will select four samples from the raw data as an example:
 
 - V11L05-333_B1
 
@@ -109,12 +111,6 @@ four selected samples:
 - V11L05-335_D1
 
 - V11L05-336_A1. 
-
-Additionally, we will refine our selection to include only genes that appear in
-more than one sample (n > 1).
-
-After applying these criteria, we obtain 2,082 spatially variable genes across 
-the four samples.
 
 ```{r subset, message=FALSE, warning=FALSE, comment=NA, eval=FALSE}
 fix_order <- distinct(
@@ -127,29 +123,43 @@ spe_sub4 <- spe[,spe$sample_id %in% sub4]
 spe_sub4 # 31483, 18945
 ```
 
-```{r read subset, message=FALSE, warning=FALSE, comment=NA, echo=FALSE}
-load(system.file("extdata","spe_sub4.rda",package = "BatchSVG"))
+```{r subset load, message=FALSE, warning=FALSE, comment=NA, echo=FALSE}
+data("spe_sub4")
 spe_sub4
 ```
 
-```{r sub sample filter, message=FALSE, warning=FALSE, comment=NA}
-res_df_sub4 <- pivot_longer(
+We will refine our selection to include only the top 2,000 ranked 
+features (rank$\leq$ 2000) and only genes that appear in more than one sample
+(n > 1).
+
+After applying these criteria, we obtain 2,082 spatially variable genes across 
+the four samples.
+
+```{r svgs_sub4, message=FALSE, warning=FALSE, comment=NA, eval=FALSE}
+# res_ranks: SVGs results with rank values
+res_df_sub <- pivot_longer(
     rownames_to_column(as.data.frame(res_ranks), var<-"gene_id"), 
-    colnames(res_ranks), names_to="sample_id", values_to="rank", 
+        colnames(res_ranks), 
+    names_to="sample_id", 
+    values_to="rank", 
     values_drop_na=TRUE)
+    
+res_df_sub <- filter(res_df_sub,
+    sample_id %in% 
+        c("V11L05-333_B1", "V11L05-333_D1", "V11L05-335_D1", "V11L05-336_A1"), 
+    rank <= 2000) # top 2k sig features
+    
+svgs_sub4 <- group_by(res_df_sub, gene_id) |>
+    tally() |> 
+    filter(n>1)
+```
 
-res_df2_sub4 <- filter(res_df_sub4, sample_id %in%
-    c("V11L05-333_B1","V11L05-333_D1","V11L05-335_D1","V11L05-336_A1"),
-        rank <= 2000) # top 2k sig features
-nrow(res_df2_sub4) # 7559
+```{r load svgs_sub4, message=FALSE, warning=FALSE, comment=NA, echo=FALSE}
+data("svgs_sub4")
+```
 
-svgs_sub4 <- group_by(res_df2_sub4, gene_id) %>% 
-    tally() %>% 
-    filter(n>1) # >1 sample
-
-nrow(svgs_sub4) # 2082
-
-head(svgs_sub4)
+```{r nrow svgs_sub4, message=FALSE, warning=FALSE, comment=NA}
+nrow(svgs_sub4)
 ```
 
 #### Perform Feature Selection using `featureSelect()`
@@ -177,11 +187,20 @@ while adjusting for the batch effect *sample_id* and *sex*.
 
 ```{r feature select, comment = NA, warning=FALSE}
 SVGs <- svgs_sub4$gene_id
-batch_df <- featureSelect(input = spe_sub4, 
+list_batch_df <- featureSelect(input = spe_sub4, 
     batch_effect = c("sample_id", "sex"), VGs = SVGs)
-class(batch_df)
-head(batch_df$sample_id)
-head(batch_df$sex)
+```
+
+```{r feature select class, comment = NA, warning=FALSE}
+class(list_batch_df)
+```
+
+```{r feature select head sample id, comment = NA, warning=FALSE}
+head(list_batch_df$sample_id)
+```
+
+```{r feature select head sex, comment = NA, warning=FALSE}
+head(list_batch_df$sex)
 ```
 
 #### Visualize SVG Selection Using `svg_nSD` for Batch Effects
@@ -198,7 +217,7 @@ in terms of deviance and rank difference, while the right panels compare values
 before and after accounting for batch effects.
 
 ```{r svg nSD two plots, comment=NA, warning=FALSE, message=FALSE}
-plots <- svg_nSD(list_batch_df = batch_df, 
+plots <- svg_nSD(list_batch_df = list_batch_df, 
                 sd_interval_dev = c(5,4), sd_interval_rank = c(4,6))
 plots$sample_id
 plots$sex
@@ -209,7 +228,7 @@ requires the input to be a list of data frames, even when analyzing only one
 batch.
 
 ```{r svg nSD one plot, comment=NA, warning=FALSE, message=FALSE}
-plots <- svg_nSD(list_batch_df = batch_df[1], 
+plots <- svg_nSD(list_batch_df = list_batch_df[1], 
                 sd_interval_dev = 5, sd_interval_rank = 7)
 plots$sample_id
 ```
@@ -237,8 +256,15 @@ in deviance. Genes with deviance changes exceeding the specified `nSD_dev`
 threshold are identified as batch-affected and can be removed.
 
 ```{r bias detect dev, comment = NA, message=FALSE, warning=FALSE}
-bias_dev <- biasDetect(list_batch_df = batch_df, threshold = "dev", nSD_dev = 7)
+bias_dev <- biasDetect(list_batch_df = list_batch_df, 
+                        threshold = "dev", nSD_dev = 7)
+```
+
+```{r bias detect dev table, comment = NA, message=FALSE, warning=FALSE}
 head(bias_dev$sample_id$Table)
+```
+
+```{r bias detect dev plot, comment = NA, message=FALSE, warning=FALSE}
 bias_dev$sample_id$Plot
 ```
 
@@ -246,9 +272,15 @@ bias_dev$sample_id$Plot
 Genes with rank shifts exceeding `nSD_rank` are considered biased.
 
 ```{r bias detect rank, comment = NA, message=FALSE, warning=FALSE}
-bias_rank <- biasDetect(list_batch_df = batch_df, threshold = "rank", 
+bias_rank <- biasDetect(list_batch_df = list_batch_df, threshold = "rank", 
                         nSD_rank = 6)
+```
+
+```{r bias detect rank table, comment = NA, message=FALSE, warning=FALSE}
 head(bias_rank$sex$Table)
+```
+
+```{r bias detect rank plot, comment = NA, message=FALSE, warning=FALSE}
 bias_rank$sex$Plot
 ```
 
@@ -256,11 +288,23 @@ bias_rank$sex$Plot
 rank difference, providing a more stringent filtering approach.
 
 ```{r bias detect both, comment = NA, message=FALSE, warning=FALSE}
-bias_both <- biasDetect(list_batch_df = batch_df, threshold = "both",
+bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
                     nSD_dev = 7, nSD_rank = 6)
+```
+
+```{r both sample id table, comment = NA, message=FALSE, warning=FALSE}
 head(bias_both$sample_id$Table)
+```
+
+```{r both sample id plot, comment = NA, message=FALSE, warning=FALSE}
 bias_both$sample_id$Plot
+```
+
+```{r bias detect both sex table, comment = NA, message=FALSE, warning=FALSE}
 head(bias_both$sex$Table)
+```
+
+```{r bias detect both sex plot, comment = NA, message=FALSE, warning=FALSE}
 bias_both$sex$Plot
 ```
 

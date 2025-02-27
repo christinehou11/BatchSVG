@@ -54,10 +54,15 @@ standard deviation (nSD) intervals and creates histograms and scatter
 plots to illustrate the distribution of batch effects.
 }
 \examples{
+data("spe_sub4")
+spe_sub4
 
-load(system.file("extdata","list_batch_df.rda",package = "BatchSVG"))
+data("svgs_sub4")
+SVGs <- svgs_sub4$gene_id
+
+list_batch_df <- featureSelect(input = spe_sub4, 
+    batch_effects = c("sample_id", "sex"), VGs = SVGs)
 
 plots <- svg_nSD(list_batch_df = list_batch_df, 
     sd_interval_dev = c(5,4), sd_interval_rank = c(4,6))
-
 }

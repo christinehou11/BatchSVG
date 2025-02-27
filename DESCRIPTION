@@ -33,7 +33,6 @@ Description: `BatchSVG` is a feature-based Quality Control (QC) to identify
 License: Artistic-2.0
 Imports:
     scry,
-    tibble,
     dplyr,
     stats,
     rlang,
@@ -51,14 +50,16 @@ Depends:
 Suggests:
     testthat (>= 3.0.0),
     knitr,
+    tibble,
+    tidyr,
     rmarkdown,
     BiocStyle,
     ExperimentHub,
-    tidyr,
     SpatialExperiment
 VignetteBuilder: knitr
 biocViews: GeneExpression, Spatial, Transcriptomics, BatchEffect, QualityControl
-URL: https://christinehou11.github.io/BatchSVG/, https://github.com/christinehou11/BatchSVG
+URL: https://github.com/christinehou11/BatchSVG,
+    https://christinehou11.github.io/BatchSVG
 BugReports: https://github.com/christinehou11/BatchSVG/issues
 Config/testthat/edition: 3
-LazyData: true
+LazyData: false

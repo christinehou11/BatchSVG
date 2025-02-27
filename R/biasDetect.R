@@ -48,14 +48,17 @@
 #' @export
 #'
 #' @examples
-#' load(system.file("extdata","list_batch_df.rda",package = "BatchSVG"))
+#' data("spe_sub4")
+#' spe_sub4
+#' 
+#' data("svgs_sub4")
+#' SVGs <- svgs_sub4$gene_id
+#' 
+#' list_batch_df <- featureSelect(input = spe_sub4, 
+#'     batch_effects = c("sample_id", "sex"), VGs = SVGs)
 #' 
 #' biaGenes <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
 #'     nSD_dev = c(5,4), nSD_rank = c(4,6))
-#' 
-#' biaGenes[["sample_id"]][["Table"]] # see biased genes in table format
-#' biaGenes[["sex"]][["Plot"]] # see biased genes in plot format
-
 biasDetect <- function(list_batch_df, threshold = "both", 
                         nSD_dev = NULL, nSD_rank = NULL) {
     
