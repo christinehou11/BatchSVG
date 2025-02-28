@@ -24,19 +24,6 @@ differences. The order of values must correspond to the order of batches
 in \code{list_batch_df}.
 If a single value is provided, it is applied to all batches; otherwise,
 it must have the same length as \code{list_batch_df}.}
-
-\item{plot_point_size}{\code{vector}: A numeric vector specifying point sizes
-in plots. If asingle value is provided, it is applied to all batches.}
-
-\item{plot_point_shape}{\code{vector}: A numeric vector specifying point
-shapes in plots. If a single value is provided, it is applied to all
-batches.}
-
-\item{plot_text_size}{\code{vector}: A numeric vector specifying text label
-size in plots. Default is \code{3}.}
-
-\item{plot_palette}{\code{vector}: A character string vector specifying the
-color palette for plots. Default is \code{"YlOrRd"}.}
 }
 \value{
 A combined \code{ggplot} object containing:

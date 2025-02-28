@@ -32,19 +32,6 @@
 #'    in \code{list_batch_df}.
 #'    If a single value is provided, it is applied to all batches; otherwise, 
 #'    it must have the same length as \code{list_batch_df}.
-#'    
-#' @param plot_point_size \code{vector}: A numeric vector specifying point sizes
-#'    in plots. If asingle value is provided, it is applied to all batches.
-#'    
-#' @param plot_point_shape \code{vector}: A numeric vector specifying point 
-#'    shapes in plots. If a single value is provided, it is applied to all 
-#'    batches.
-#'    
-#' @param plot_text_size \code{vector}: A numeric vector specifying text label 
-#'    size in plots. Default is `3`.
-#'    
-#' @param plot_palette \code{vector}: A character string vector specifying the 
-#'    color palette for plots. Default is `"YlOrRd"`.
 #'
 #' @return A combined \code{ggplot} object containing:
 #'    \itemize{
