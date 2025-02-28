@@ -291,7 +291,7 @@ bias_dev <- biasDetect(list_batch_df = list_batch_df,
 head(bias_dev$sample_id$Table)
 ```
 
-```{r bias detect dev plot, message=FALSE, warning=FALSE, fig.height=6}
+```{r bias detect dev plot, message=FALSE, warning=FALSE, fig.height=3}
 bias_dev$sample_id$Plot
 ```
 
@@ -317,7 +317,7 @@ bias_rank <- biasDetect(list_batch_df = list_batch_df,
 head(bias_rank$sex$Table)
 ```
 
-```{r bias detect rank plot, fig.height=6, message=FALSE, warning=FALSE}
+```{r bias detect rank plot, fig.height=3, message=FALSE, warning=FALSE}
 bias_rank$sex$Plot
 ```
 
