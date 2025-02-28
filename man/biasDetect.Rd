@@ -55,7 +55,7 @@ batches.}
 \item{plot_text_size}{\code{vector}: A numeric vector specifying text label
 size in plots. Default is \code{3}.}
 
-\item{plot_palette}{\code{vector}: A character string vector specifying the
+\item{plot_pallete}{\code{vector}: A character string vector specifying the
 color palette for plots. Default is \code{"YlOrRd"}.}
 }
 \value{

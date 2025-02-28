@@ -50,7 +50,7 @@
 #' @param plot_text_size \code{vector}: A numeric vector specifying text label 
 #'    size in plots. Default is `3`.
 #'    
-#' @param plot_palette \code{vector}: A character string vector specifying the 
+#' @param plot_pallete \code{vector}: A character string vector specifying the 
 #'    color palette for plots. Default is `"YlOrRd"`.
 #'
 #' @return A named list where each element corresponds to a batch and contains:
