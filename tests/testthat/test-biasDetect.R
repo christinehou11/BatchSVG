@@ -1,6 +1,8 @@
+suppressPackageStartupMessages({
 library(ExperimentHub)
 library(SummarizedExperiment)
 library(tibble)
+})
 
 ehub <- ExperimentHub()
 spe <- ehub[["EH9605"]]
