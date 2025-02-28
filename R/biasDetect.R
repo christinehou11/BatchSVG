@@ -75,7 +75,9 @@
 #' biaGenes <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
 #'    nSD_dev = c(5,4), nSD_rank = c(4,6))
 biasDetect <- function(list_batch_df, threshold = "both", 
-                        nSD_dev = NULL, nSD_rank = NULL) {
+                        nSD_dev = NULL, nSD_rank = NULL,
+                        plot_point_size = 3, plot_point_shape = 16,
+                        plot_text_size = 3, plot_pallete = "YlOrRd") {
     
     filter_condition <- match.arg(threshold, choices = c("dev", "rank", "both"))
     if (threshold %in% c("dev", "both") && is.null(nSD_dev)) {
@@ -84,15 +86,12 @@ biasDetect <- function(list_batch_df, threshold = "both",
         stop("When threshold = 'rank' or 'both', you must specify 'nSD_rank'.")}
     
     num_batches <- length(list_batch_df)
-    if (!is.null(nSD_dev)) {
-        if (!is.numeric(nSD_dev) || any(nSD_dev != floor(nSD_dev))) {
-            stop("'nSD_dev' must be an integer.")}
-        if (length(nSD_dev) == 1) { nSD_dev <- rep(nSD_dev, num_batches)}}
-    
-    if (!is.null(nSD_rank)) {
-        if (!is.numeric(nSD_rank) || any(nSD_rank != floor(nSD_rank))) {
-            stop("'nSD_rank' must be an integer.")}
-        if (length(nSD_rank) == 1) { nSD_rank <- rep(nSD_rank, num_batches)}}
+    nSD_rank <- .validate_integer(nSD_rank, num_batches)
+    nSD_dev <- .validate_integer(nSD_dev, num_batches)
+    plot_point_size <- .replicate_params(plot_point_size, num_batches)
+    plot_point_shape <- .replicate_params(plot_point_shape, num_batches)
+    plot_text_size <- .replicate_params(plot_text_size, num_batches)
+    plot_pallete <- .replicate_params(plot_pallete, num_batches)
     
     stopifnot(is.list(list_batch_df), length(list_batch_df) > 0)
     biased_list <- list()
@@ -109,17 +108,19 @@ biasDetect <- function(list_batch_df, threshold = "both",
             breaks=seq(0,max(batch_df[[dev_colname]]) + sd_dev, 
             by=sd_dev), include.lowest=TRUE)
         col_pal_dev <- brewer.pal(length(unique(batch_df[["nSD_bin_dev"]])), 
-            "YlOrRd")
+            plot_pallete[i])
         col_pal_dev[1] <- "grey"
         dev_sd_plot <- ggplot(batch_df,
             aes(x = .data[["dev_default"]], y = .data[[paste0("dev_", batch)]],
                 color = .data[["nSD_bin_dev"]]))
-        dev_sd_plot <- .theme_dev_point_plot(dev_sd_plot) +
+        dev_sd_plot <- .theme_dev_point_plot(dev_sd_plot,
+            point_size = plot_point_size[i], point_shape = plot_point_shape[i])+
             scale_color_manual(values=col_pal_dev) +
             labs(subtitle = paste0("Batch: ", batch, "; nSD width: ", sd_dev))+
             geom_text_repel(
                 aes(label = ifelse(.data[[dev_colname]] > sd_dev,
-                .data[["gene_name"]], "")), size = 3, max.overlaps = Inf)
+                .data[["gene_name"]], "")), size = plot_text_size[i], 
+                max.overlaps = Inf)
         batch_df$dev_outlier <- batch_df$nSD_dev >= sd_dev
         }
         
@@ -130,17 +131,19 @@ biasDetect <- function(list_batch_df, threshold = "both",
             breaks=seq(0,max(batch_df[[rank_colname]]) + sd_rank, 
             by=sd_rank),include.lowest=TRUE)
         col_pal_rank <- brewer.pal(length(unique(batch_df$nSD_bin_rank)), 
-            "YlOrRd")
+            plot_pallete[i])
         col_pal_rank[1] <- "grey"
         rank_sd_plot <- ggplot(batch_df, 
             aes(x = .data[["rank_default"]],y = .data[[paste0("rank_", batch)]],
                 color = .data[["nSD_bin_rank"]]))
-        rank_sd_plot <- .theme_rank_point_plot(rank_sd_plot) +
+        rank_sd_plot <- .theme_rank_point_plot(rank_sd_plot,
+            point_size = plot_point_size[i], point_shape = plot_point_shape[i])+
             scale_color_manual(values = col_pal_rank) +
             labs(subtitle = paste0("Batch: ", batch, "; nSD width: ", sd_rank))+
             geom_text_repel(
                 aes(label = ifelse(.data[[rank_colname]] > sd_rank,
-                .data[["gene_name"]], "")), size = 3, max.overlaps = Inf)
+                .data[["gene_name"]], "")), size = plot_text_size[i], 
+                max.overlaps = Inf)
         batch_df$rank_outlier <- batch_df$nSD_rank >= sd_rank
         }
         

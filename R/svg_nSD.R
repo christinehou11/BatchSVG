@@ -32,6 +32,19 @@
 #'    in \code{list_batch_df}.
 #'    If a single value is provided, it is applied to all batches; otherwise, 
 #'    it must have the same length as \code{list_batch_df}.
+#'    
+#' @param plot_point_size \code{vector}: A numeric vector specifying point sizes
+#'    in plots. If asingle value is provided, it is applied to all batches.
+#'    
+#' @param plot_point_shape \code{vector}: A numeric vector specifying point 
+#'    shapes in plots. If a single value is provided, it is applied to all 
+#'    batches.
+#'    
+#' @param plot_text_size \code{vector}: A numeric vector specifying text label 
+#'    size in plots. Default is `3`.
+#'    
+#' @param plot_palette \code{vector}: A character string vector specifying the 
+#'    color palette for plots. Default is `"YlOrRd"`.
 #'
 #' @return A combined \code{ggplot} object containing:
 #'    \itemize{
@@ -122,7 +135,8 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
         dev_sd_plot2 <- ggplot(batch_df,
             aes(x = .data[["dev_default"]],y = .data[[paste0("dev_", batch)]],
                 color = .data[["nSD_bin_dev"]]))
-        dev_sd_plot2 <- .theme_dev_point_plot(dev_sd_plot2) + 
+        dev_sd_plot2 <- .theme_dev_point_plot(dev_sd_plot2,
+            point_size = 3, point_shape = 16) + 
             scale_color_manual(values=col_pal_dev) +
             labs(subtitle = paste0("Batch: ",batch, "; nSD width = ", sd_dev))
         
@@ -146,7 +160,8 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
         rank_sd_plot2 <- ggplot(batch_df, 
             aes(x = .data[["rank_default"]],y = .data[[paste0("rank_", batch)]],
                 color = .data[["nSD_bin_rank"]]))
-        rank_sd_plot2 <- .theme_rank_point_plot(rank_sd_plot2) + 
+        rank_sd_plot2 <- .theme_rank_point_plot(rank_sd_plot2,
+            point_size = 3, point_shape = 16) + 
             scale_color_manual(values = col_pal_rank) +
             labs(subtitle = paste0("Batch: ", batch,"; nSD width = ", sd_rank))
         

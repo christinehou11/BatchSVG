@@ -42,9 +42,11 @@
 
 #' @importFrom ggplot2 geom_point scale_x_log10 scale_y_log10 geom_abline
 #'                theme_bw theme element_text labs aes
-.theme_dev_point_plot <- function(plot) {
+.theme_dev_point_plot <- function(plot, point_size, point_shape) {
     plot +
-    geom_point() + scale_x_log10() + scale_y_log10() +
+    geom_point(size = point_size, shape = point_shape) + 
+    scale_x_log10() + 
+    scale_y_log10() +
     geom_abline(aes(slope = 1, intercept = 0), lty = 2) +
     theme_bw() + 
     theme(legend.position = "right", aspect.ratio = 1,
@@ -60,9 +62,10 @@
 
 #' @importFrom ggplot2 geom_point scale_y_reverse geom_abline aes theme_bw
 #'                    element_text labs
-.theme_rank_point_plot <- function(plot) {
+.theme_rank_point_plot <- function(plot, point_size, point_shape) {
     plot +
-    geom_point() + scale_y_reverse() + 
+    geom_point(size = point_size, shape = point_shape) + 
+    scale_y_reverse() + 
     geom_abline(aes(slope = -1, intercept = 0), lty = 2) +
     theme_bw() + 
     theme(legend.position = "right", aspect.ratio = 1,
@@ -74,4 +77,24 @@
     labs(x= "dev (no batch)", y="dev (batch)", 
         color = "nSD Rank Interval",
         title = "Rank without vs. with batch")
+    }
+
+.replicate_params <- function(param, num_batches) {
+    if (!is.null(param)) {
+        if (length(param) == 1) rep(param, num_batches) else param
+    } 
+    else {
+        NULL
+    }
+    }
+
+.validate_integer <- function(param, num_batches) {
+    if (!is.null(param)) {
+        if (!is.numeric(param) || any(param != floor(param))) {
+            stop("nSD threshold must be an integer.")
+        }
+        if (length(param) == 1) rep(param, num_batches) else param
+    } else {
+      NULL
+    }
     }

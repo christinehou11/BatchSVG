@@ -4,7 +4,16 @@
 \alias{biasDetect}
 \title{Biased Genes Identification}
 \usage{
-biasDetect(list_batch_df, threshold = "both", nSD_dev = NULL, nSD_rank = NULL)
+biasDetect(
+  list_batch_df,
+  threshold = "both",
+  nSD_dev = NULL,
+  nSD_rank = NULL,
+  plot_point_size = 3,
+  plot_point_shape = 16,
+  plot_text_size = 3,
+  plot_pallete = "YlOrRd"
+)
 }
 \arguments{
 \item{list_batch_df}{\code{list} : The list of data frame(s) generated from

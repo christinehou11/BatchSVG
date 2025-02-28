@@ -24,12 +24,13 @@ Authors@R:
         comment = c(ORCID = "0000-0002-7858-0231"))
     )
 Description: `BatchSVG` is a feature-based Quality Control (QC) to identify 
-    SVGs on spatial transcriptomics data with sometypes of batch effect. 
+    SVGs on spatial transcriptomics data with specific types of batch effect. 
     Regarding to the spatial transcriptomics data experients, the batch can be 
-    defined as "slide", "subject", and etc.The `BatchSVG` method is based on 
+    defined as "sample", "sex", and etc.The `BatchSVG` method is based on 
     binomial deviance model (Townes et al, 2019) and applies cutoffs based on 
-    the number of standard deviation (nSD) of deviance and rank difference as 
-    the data-driven thresholding approach to detect the batch-biased features.
+    the number of standard deviation (nSD) of relative change in deviance and 
+    rank difference as the data-driven thresholding approach to detect the 
+    batch-biased outliers.
 License: Artistic-2.0
 Imports:
     scry,
@@ -57,8 +58,8 @@ Suggests:
     ExperimentHub,
     SpatialExperiment
 VignetteBuilder: knitr
-biocViews: GeneExpression, Spatial, Transcriptomics, BatchEffect, QualityControl
-URL: https://github.com/christinehou11/BatchSVG,
+biocViews: SpatialTranscriptomics, BatchEffect, QualityControl, SVGs
+URL: https://github.com/christinehou11/BatchSVG, 
     https://christinehou11.github.io/BatchSVG
 BugReports: https://github.com/christinehou11/BatchSVG/issues
 Config/testthat/edition: 3

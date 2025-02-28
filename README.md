@@ -1,12 +1,14 @@
 ## BatchSVG
 
-`BatchSVG` is a feature-based Quality Control (QC) for bias genes 
-identification on spatial transcriptomics and snRNA-seq data with some types of
-batch effect. The `BatchSVG` method is based on binomial deviance model 
-([Townes et al, 2019](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6)) 
-and applies cutoffs based on the standard deviation (SD) of deviance and rank 
-difference metrics as the data-driven thresholding approach to find the 
-batch-biased features.
+`BatchSVG` is a feature-based Quality Control (QC) to identify 
+SVGs on spatial transcriptomics data with specific types of batch effect. 
+Regarding to the spatial transcriptomics data experients, the batch can be 
+defined as "sample", "sex", and etc.The `BatchSVG` method is based on 
+binomial deviance model ([Townes et al, 2019](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6))) 
+and applies cutoffs based on 
+the number of standard deviation (nSD) of relative change in deviance and 
+rank difference as the data-driven thresholding approach to detect the 
+batch-biased outliers.
 
 #### Installation
 

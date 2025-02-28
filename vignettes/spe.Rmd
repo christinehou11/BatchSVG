@@ -1,5 +1,5 @@
 ---
-title: "Find Bias Features - Spatial Transcriptomics Data"
+title: "Find Batch-biased Features in SVGs"
 package: "BatchSVG"
 author:
   - name: "Christine Hou"
@@ -62,6 +62,7 @@ library(SummarizedExperiment)
 library(tidyr)
 library(dplyr)
 library(tibble)
+library(cowplot)
 ```
 
 #### Data
@@ -73,10 +74,36 @@ package which currently is in the
 [development version](https://bioconductor.org/packages/humanHippocampus2024/)
 on Bioconductor 3.21, and it is the `spatialExperiment` object generated and 
 processed from the [spatial_HPC](https://github.com/LieberInstitute/spatial_hpc)
-project. 
+project. Please read 
+[here](https://christinehou11.github.io/humanHippocampus2024/articles/humanHippocampus2024.html)
+if interested in `humanHippocampus2024` data package.
+
+(The codes to access the *spe* dataset in `humanHippocampus2024` package will
+be updated after the official release of Bioconductor 3.21.)
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
 ehub <- ExperimentHub()
+
+# Load the datasets of the package
+# myfiles <- query(ehub, "humanHippocampus2024")
+# Resulting humanHippocampus2024 datasets from ExperimentHub query
+# myfiles
+# ExperimentHub with 2 records
+# # snapshotDate(): 2024-10-24
+# # $dataprovider: Lieber Institute for Brain Development (LIBD)
+# # $species: Homo sapiens
+# # $rdataclass: SpatialExperiment, SingleCellExperiment
+# # additional mcols(): taxonomyid, genome, description,
+# #   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,
+# #   rdatapath, sourceurl, sourcetype 
+# # retrieve records with, e.g., 'object[["EH9605"]]' 
+# 
+#            title
+#   EH9605 | spe  
+#   EH9606 | sce
+#   
+# spe <- myfiles[["EH9605"]]
+
 spe <- ehub[["EH9605"]]
 spe
 ```
@@ -202,10 +229,16 @@ filtering biased features. The left panels illustrate the distribution of SVGs
 in terms of deviance and rank difference, while the right panels compare values 
 before and after accounting for batch effects.
 
-```{r svg nSD two plots, comment=NA, warning=FALSE, message=FALSE}
+```{r svg, comment=NA, warning=FALSE, message=FALSE}
 plots <- svg_nSD(list_batch_df = list_batch_df, 
                 sd_interval_dev = c(5,4), sd_interval_rank = c(4,6))
+```
+
+```{r svg sample, warning=FALSE, message=FALSE, fig.width=10, fig.height=10}
 plots$sample_id
+```
+
+```{r svg sex, warning=FALSE, message=FALSE, fig.width=10, fig.height=10}
 plots$sex
 ```
 
@@ -213,7 +246,7 @@ We can also apply `svg_nSD()` to a single batch effect. Note that the function
 requires the input to be a list of data frames, even when analyzing only one 
 batch.
 
-```{r svg nSD one plot, comment=NA, warning=FALSE, message=FALSE}
+```{r svg one plot, warning=FALSE, message=FALSE,fig.width=10, fig.height=10}
 plots <- svg_nSD(list_batch_df = list_batch_df[1], 
                 sd_interval_dev = 5, sd_interval_rank = 7)
 plots$sample_id
@@ -232,6 +265,14 @@ without batch effects. Genes with high deviations, highlighted in color, are
 identified as potentially biased and can be excluded based on the selected nSD 
 thresholds.
 
+The function offers flexibility in customizing the plot aesthetics, 
+allowing users to adjust the data point size (**plot_point_size**), 
+shape (**plot_point_shape**), annotated text size (**plot_text_size**), and 
+data point color pallete (**plot_pallete**). Default values are provided for 
+these parameters if not specified. Users should refer to 
+[ggplot2](https://ggplot2.tidyverse.org/index.html) aesthetic guidelines to 
+ensure appropriate values are assigned for each parameter.
+
 We will use `nSD_dev = 7` and `nSD_rank = 6` as the example. The user should 
 adjust the value based on their dataset features.
 
@@ -243,55 +284,92 @@ threshold are identified as batch-affected and can be removed.
 
 ```{r bias detect dev, comment = NA, message=FALSE, warning=FALSE}
 bias_dev <- biasDetect(list_batch_df = list_batch_df, 
-                        threshold = "dev", nSD_dev = 7)
+    threshold = "dev", nSD_dev = 7)
 ```
 
 ```{r bias detect dev table, comment = NA, message=FALSE, warning=FALSE}
 head(bias_dev$sample_id$Table)
 ```
 
-```{r bias detect dev plot, comment = NA, message=FALSE, warning=FALSE}
+```{r bias detect dev plot, message=FALSE, warning=FALSE, fig.height=6}
 bias_dev$sample_id$Plot
+```
+
+We can change the data point size using **plot_point_size**.
+
+```{r size change, message=FALSE, warning=FALSE, fig.width= 10, fig.height=6}
+# size default = 3
+bias_dev_size <- biasDetect(list_batch_df = list_batch_df, 
+    threshold = "dev", nSD_dev = 7, plot_point_size = c(2,4))
+
+plot_grid(bias_dev_size$sample_id$Plot,bias_dev_size$sex$Plot)
 ```
 
 - `threshold = "rank"`: Identifies biased genes based solely on rank difference.
 Genes with rank shifts exceeding `nSD_rank` are considered biased.
 
 ```{r bias detect rank, comment = NA, message=FALSE, warning=FALSE}
-bias_rank <- biasDetect(list_batch_df = list_batch_df, threshold = "rank", 
-                        nSD_rank = 6)
+bias_rank <- biasDetect(list_batch_df = list_batch_df, 
+    threshold = "rank", nSD_rank = 6)
 ```
 
 ```{r bias detect rank table, comment = NA, message=FALSE, warning=FALSE}
 head(bias_rank$sex$Table)
 ```
 
-```{r bias detect rank plot, comment = NA, message=FALSE, warning=FALSE}
+```{r bias detect rank plot, fig.height=6, message=FALSE, warning=FALSE}
 bias_rank$sex$Plot
+```
+
+We can change the data point shape using **plot_point_shape**.
+
+```{r shape change, message=FALSE, warning=FALSE, fig.width= 10, fig.height=6}
+# shape default = 16
+bias_rank_shape <- biasDetect(list_batch_df = list_batch_df, threshold = "rank", 
+    nSD_rank = 6, plot_point_shape = c(2, 18))
+
+plot_grid(bias_rank_shape$sample_id$Plot,bias_rank_shape$sex$Plot)
 ```
 
 - `threshold = "both"`: Detects biased genes based on both deviance change and 
 rank difference, providing a more stringent filtering approach.
 
-```{r bias detect both, comment = NA, message=FALSE, warning=FALSE}
+```{r both, comment = NA, message=FALSE, warning=FALSE}
 bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
-                    nSD_dev = 7, nSD_rank = 6)
+    nSD_dev = 7, nSD_rank = 6)
 ```
 
-```{r both sample id table, comment = NA, message=FALSE, warning=FALSE}
-head(bias_both$sample_id$Table)
-```
-
-```{r both sample id plot, comment = NA, message=FALSE, warning=FALSE}
+```{r both plot,message=FALSE,warning=FALSE,fig.width=10, fig.height=6}
 bias_both$sample_id$Plot
 ```
 
-```{r bias detect both sex table, comment = NA, message=FALSE, warning=FALSE}
+```{r both table, comment = NA, message=FALSE, warning=FALSE}
 head(bias_both$sex$Table)
 ```
 
-```{r bias detect both sex plot, comment = NA, message=FALSE, warning=FALSE}
-bias_both$sex$Plot
+We can change the data point color using **plot_pallete**. The color pallete
+[here](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html) can be 
+referenced on since the function uses `RColorBrewer` to generate colors.
+
+```{r color change, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
+# color default = "YlOrRd"
+bias_both_color <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
+    nSD_dev = 7, nSD_rank = 6, plot_pallete = "Greens")
+
+plot_grid(bias_both_color$sample_id$Plot,bias_both_color$sex$Plot,nrow = 2)
+```
+
+We can change the text size using **plot_text_size**. We also specify
+the color palletes for both batch effects at the same time.
+
+```{r text change, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
+# text size default = 3
+bias_both_color_text <- biasDetect(list_batch_df = list_batch_df, 
+    threshold = "both", nSD_dev = 7, nSD_rank = 6, 
+    plot_pallete = c("Blues","Greens"), plot_text_size = c(2,4))
+
+plot_grid(bias_both_color_text$sample_id$Plot,
+    bias_both_color_text$sex$Plot,nrow = 2)
 ```
 
 #### Refine SVGs by Removing Batch-Affected Outliers
