@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Identify Batch-Biased Features in Spatially Variable Genes">
-<meta name="description" content='`BatchSVG` is a feature-based Quality Control (QC) to identify SVGs on spatial transcriptomics data with sometypes of batch effect. Regarding to the spatial transcriptomics data experients, the batch can be defined as "slide", "subject", and etc.The `BatchSVG` method is based on binomial deviance model (Townes et al, 2019) and applies cutoffs based on the number of standard deviation (nSD) of deviance and rank difference as the data-driven thresholding approach to detect the batch-biased features.'>
-<meta property="og:description" content='`BatchSVG` is a feature-based Quality Control (QC) to identify SVGs on spatial transcriptomics data with sometypes of batch effect. Regarding to the spatial transcriptomics data experients, the batch can be defined as "slide", "subject", and etc.The `BatchSVG` method is based on binomial deviance model (Townes et al, 2019) and applies cutoffs based on the number of standard deviation (nSD) of deviance and rank difference as the data-driven thresholding approach to detect the batch-biased features.'>
+<meta name="description" content='`BatchSVG` is a feature-based Quality Control (QC) to identify SVGs on spatial transcriptomics data with specific types of batch effect. Regarding to the spatial transcriptomics data experients, the batch can be defined as "sample", "sex", and etc.The `BatchSVG` method is based on binomial deviance model (Townes et al, 2019) and applies cutoffs based on the number of standard deviation (nSD) of relative change in deviance and rank difference as the data-driven thresholding approach to detect the batch-biased outliers.'>
+<meta property="og:description" content='`BatchSVG` is a feature-based Quality Control (QC) to identify SVGs on spatial transcriptomics data with specific types of batch effect. Regarding to the spatial transcriptomics data experients, the batch can be defined as "sample", "sex", and etc.The `BatchSVG` method is based on binomial deviance model (Townes et al, 2019) and applies cutoffs based on the number of standard deviation (nSD) of relative change in deviance and rank difference as the data-driven thresholding approach to detect the batch-biased outliers.'>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -35,7 +35,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/spe.html">Find Bias Features - Spatial Transcriptomics Data</a></li>
+<li><a class="dropdown-item" href="articles/spe.html">Find Batch-biased Features in SVGs</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -55,7 +55,7 @@
   <main id="main" class="col-md-9"><div class="section level2">
 <h2 id="batchsvg">BatchSVG<a class="anchor" aria-label="anchor" href="#batchsvg"></a>
 </h2>
-<p><code>BatchSVG</code> is a feature-based Quality Control (QC) for bias genes identification on spatial transcriptomics and snRNA-seq data with some types of batch effect. The <code>BatchSVG</code> method is based on binomial deviance model (<a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6" class="external-link">Townes et al, 2019</a>) and applies cutoffs based on the standard deviation (SD) of deviance and rank difference metrics as the data-driven thresholding approach to find the batch-biased features.</p>
+<p><code>BatchSVG</code> is a feature-based Quality Control (QC) to identify SVGs on spatial transcriptomics data with specific types of batch effect. Regarding to the spatial transcriptomics data experients, the batch can be defined as “sample”, “sex”, and etc.The <code>BatchSVG</code> method is based on binomial deviance model (<a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6" class="external-link">Townes et al, 2019</a>)) and applies cutoffs based on the number of standard deviation (nSD) of relative change in deviance and rank difference as the data-driven thresholding approach to detect the batch-biased outliers.</p>
 <div class="section level4">
 <h4 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h4>
