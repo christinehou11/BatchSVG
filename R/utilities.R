@@ -95,6 +95,6 @@
         }
         if (length(param) == 1) rep(param, num_batches) else param
     } else {
-      NULL
+        NULL
     }
     }

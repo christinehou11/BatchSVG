@@ -58,7 +58,7 @@ Suggests:
     ExperimentHub,
     SpatialExperiment
 VignetteBuilder: knitr
-biocViews: SpatialTranscriptomics, BatchEffect, QualityControl, SVGs
+biocViews: Spatial, Transcriptomics, BatchEffect, QualityControl
 URL: https://github.com/christinehou11/BatchSVG, 
     https://christinehou11.github.io/BatchSVG
 BugReports: https://github.com/christinehou11/BatchSVG/issues

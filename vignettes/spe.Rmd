@@ -75,7 +75,7 @@ package which currently is in the
 on Bioconductor 3.21, and it is the `spatialExperiment` object generated and 
 processed from the [spatial_HPC](https://github.com/LieberInstitute/spatial_hpc)
 project. Please read 
-[here](https://christinehou11.github.io/humanHippocampus2024/articles/humanHippocampus2024.html)
+[here](https://christinehou11.github.io/humanHippocampus2024/)
 if interested in `humanHippocampus2024` data package.
 
 (The codes to access the *spe* dataset in `humanHippocampus2024` package will
@@ -325,8 +325,8 @@ We can change the data point shape using **plot_point_shape**.
 
 ```{r shape change, message=FALSE, warning=FALSE, fig.width= 10, fig.height=6}
 # shape default = 16
-bias_rank_shape <- biasDetect(list_batch_df = list_batch_df, threshold = "rank", 
-    nSD_rank = 6, plot_point_shape = c(2, 18))
+bias_rank_shape <- biasDetect(list_batch_df = list_batch_df, 
+    threshold = "rank", nSD_rank = 6, plot_point_shape = c(2, 18))
 
 plot_grid(bias_rank_shape$sample_id$Plot,bias_rank_shape$sex$Plot)
 ```
@@ -353,8 +353,8 @@ referenced on since the function uses `RColorBrewer` to generate colors.
 
 ```{r color change, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
 # color default = "YlOrRd"
-bias_both_color <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
-    nSD_dev = 7, nSD_rank = 6, plot_pallete = "Greens")
+bias_both_color <- biasDetect(list_batch_df = list_batch_df, 
+    threshold = "both", nSD_dev = 7, nSD_rank = 6, plot_pallete = "Greens")
 
 plot_grid(bias_both_color$sample_id$Plot,bias_both_color$sex$Plot,nrow = 2)
 ```
