@@ -1,0 +1,740 @@
+---
+title: "Why we select Binomial Deviance Model"
+author:
+  - name: "Christine Hou"
+    affiliation: Department of Biostatistics, Johns Hopkins University
+    email: chris2018hou@gmail.com
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{02 Why we select Binomial Deviance Model}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+### Introduction
+
+The `BatchSVG` package implements feature selection using the binomial
+deviance model. In this vignette, we provide a detailed justification
+for selecting the binomial deviance model as the most appropriate
+approach for our method. Through comprehensive comparisons with
+alternative feature selection models, we demonstrate its advantages in
+ranking spatially variable genes (SVGs), ensuring reproducibility, and
+mitigating batch effects.
+
+### SpatialLIBD Dataset
+
+We chose the dorsolateral prefrontal cortex (DLPFC) dataset available
+through the
+[spatialLIBD](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08601-w)
+package to help determine the appropriate feature selection method.
+
+```{r spatialLIBD data, comment=NA, message=FALSE, warning=FALSE}
+library(spatialLIBD)
+spatialLIBD_spe <- fetch_data(type = "spe")
+table(colData(spatialLIBD_spe)[,c("sample_id","subject")])
+```
+
+We ran the [nnSVG](https://www.nature.com/articles/s41467-023-39748-z)
+model on the spatialLIBD data to identify SVGs.
+
+```{r svg data, comment=NA, message=FALSE, warning=FALSE}
+libd_svg <- read.csv(
+    system.file("extdata","libd-all_nnSVG_p-05-features-df.csv", 
+        package = "BatchSVG"), 
+    row.names = 1, check.names = FALSE)
+head(libd_svg)
+```
+
+### Feature Selection Comparisons
+
+#### Eligible Options
+
+Our feature selection method should incorporate the batch variable to
+assess per-gene deviance and ranking differences when the model is
+applied with and without batch correction. To achieve this, we compared
+three different approaches from two packages, each based on distinct
+statistical models:
+
+-   [scran](https://www.nature.com/articles/nmeth.2645)
+
+    The `scran` package employs a mean-variance modeling framework to
+    identify highly variable genes after normalizing the count matrix.
+    We refer to this method as **mean-variance model**.
+
+    -   `modelGeneVar()`: Estimates per-gene variance by fitting a
+        smooth trend to the mean-variance relationship, accounting for
+        complex noise structures in the data.
+
+    -   `modelGeneVarByPois()`: Assumes that the mean-variance
+        relationship primarily arises from technical noise following a
+        Poisson distribution.
+
+-   [scry](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02109-w)
+
+    The `scry` package implements a deviance-based feature selection
+    approach directly on the raw count matrix. Assumes that genes with
+    no biologically meaningful expression pattern will fit a binomial
+    distribution. We refer to this method as **binomial deviance
+    model**.
+
+    -   `devianceFeatureSelect()`: The greater the per-gene deviance
+        from this null model, the more likely the expression of said
+        gene is biologically meaningful as a top feature.
+
+#### Required package load
+
+```{r package, comment=NA, warning=FALSE, message=FALSE}
+library(scry)
+library(scran)
+library(SingleCellExperiment)
+library(SummarizedExperiment)
+library(ggplot2)
+library(gridExtra)
+library(tibble)
+library(tidyverse)
+library(tidyr)
+library(ggspavis)
+library(ggbreak)
+library(gt)
+```
+
+#### Similarly Identify SVGs as highly ranked features
+
+Our goal is to determine whether SVGs exhibit biased expression
+according of different batch variables. Therefore, the ideal feature
+selection model would similarly identify SVGs as highly ranked features.
+
+```{r similarly identify, comment=NA, message=FALSE, warning=FALSE}
+mv <- modelGeneVar(logcounts(spatialLIBD_spe))
+mv$ensembl <- rownames(mv)
+mv$rank <- (nrow(mv)+1)-rank(mv$bio)
+top_hvgs_mv <- getTopHVGs(mv, n = 3000)
+mv$is_svg = factor(mv$ensembl %in% libd_svg$gene_id, 
+                    levels=c(TRUE, FALSE), labels=c("SVGs","not SVGs"))
+
+mvpois <- modelGeneVarByPoisson(logcounts(spatialLIBD_spe))
+mvpois$ensembl <- rownames(mvpois)
+mvpois$rank <- (nrow(mvpois) + 1) - rank(mvpois$bio)
+top_hvgs_mvpois <- getTopHVGs(mvpois, n = 3000)
+mvpois$is_svg = factor(mvpois$ensembl %in% libd_svg$gene_id, 
+                    levels = c(TRUE, FALSE), labels = c("SVGs","not SVGs"))
+
+bd <- devianceFeatureSelection(counts(spatialLIBD_spe), fam = "binomial")
+bd_df <- cbind.data.frame("gene" = names(bd),
+            "gene_name" = rowData(spatialLIBD_spe)[names(bd),"gene_name"],
+            "dev"= bd,
+            "rank" = (length(bd)+1) - rank(bd))
+rownames(bd_df) <- bd_df$gene
+bd_df$is_svg = factor(bd_df$gene %in% libd_svg$gene_id, 
+                    levels = c(TRUE, FALSE), labels = c("SVGs","not SVGs"))
+
+bd_batch <- devianceFeatureSelection(counts(spatialLIBD_spe), 
+            fam = "binomial", batch = as.factor(spatialLIBD_spe$subject))
+bd_batch_df <- cbind.data.frame("gene" = rownames(spatialLIBD_spe),
+            "gene_name" = rowData(spatialLIBD_spe)$gene_name,
+            "dev"= bd_batch,
+            "rank" = (length(bd_batch)+1) - rank(bd_batch))
+rownames(bd_batch_df) <- bd_batch_df$gene
+bd_batch_df$is_svg = factor(bd_batch_df$gene %in% libd_svg$gene_id, 
+            levels = c(TRUE, FALSE), labels = c("SVGs","not SVGs"))
+```
+
+We found that both `modelGeneVar()` and `modelGeneVarByPoisson()`
+approaches rank a considerable portion of the SVGs as some of the
+lowest features in the dataset. 
+
+```{r figure 1a,message=FALSE, warning=FALSE, echo=FALSE}
+mv_plot <- ggplot(mv, aes(x = rank, y = bio, color = is_svg)) +
+    geom_point(size = .5) +
+    scale_color_manual(values = c("tomato","black")) +
+    labs(title = "modelGeneVar()", y = "variance", color = "",
+        tag = "A") +
+    theme(legend.position = "inside", legend.position.inside = c(.8,.8))
+
+mvpois_plot<- ggplot(mvpois, aes(x = rank, y = bio, color = is_svg)) +
+    geom_point(size = .5) +
+    scale_color_manual(values = c("tomato","black")) +
+    labs(title = "modelGeneVarByPoisson()", y = "variance", color = "",
+        tag = "B") +
+    theme(legend.position = "inside", legend.position.inside = c(.8,.8))
+
+addSmallLegend <- function(myPlot, pointSize = 1, 
+                            textSize = 6, spaceLegend = 0.1) {
+    myPlot +
+    theme_bw() +
+    guides(color = guide_legend(
+        override.aes = list(size = pointSize, alpha=1))) +
+    theme(legend.title = element_text(size = textSize), 
+        legend.text  = element_text(size = textSize),
+        legend.key.size = unit(spaceLegend, "lines"),
+        aspect.ratio = 1,
+        title = element_text(size = 11),
+        subtitle = element_text(size = 7),
+        plot.tag = element_text(size = 11, face = "bold"))
+}
+```
+
+*Figure 1A. Mean-variance model rank some nnSVG results as low ranked features*
+
+```{r figure 1a print, fig.height=3, fig.width=7, warning=FALSE, echo=FALSE}
+grid.arrange(addSmallLegend(mv_plot, textSize = 8), 
+        addSmallLegend(mvpois_plot, textSize = 8), ncol = 2)
+```
+
+In contrast, all the SVGs are ranked highly with the binomial deviance model
+(`devianceFeatureSelection()`). We can also saw that including a subject-batch
+effect didn't dramatically change the rank of the SVGs. 
+
+```{r figure 1b,warning=FALSE, message=FALSE, echo=FALSE}
+bd_df_plot <- ggplot(bd_df, aes(x = rank, y = dev, color = is_svg)) +
+    geom_point(size=.5) + 
+    scale_color_manual(values = c("tomato","black")) +
+    labs(title = "devianceFeatureSelection()",  y="deviance", 
+        subtitle = "batch = NULL", color = "",
+        tag = "A") +
+    theme(legend.position = "inside", legend.position.inside = c(.75,.8))
+
+bd_df_batch_plot <- ggplot(bd_batch_df, 
+        aes(x = rank, y = dev, color = is_svg)) +
+    geom_point(size=.5) + 
+    scale_color_manual(values = c("tomato","black")) +
+    labs(title = "devianceFeatureSelection()",  y="deviance", 
+        subtitle = "batch = subject", color = "",
+        tag = "B") +
+    theme(legend.position = "inside", legend.position.inside = c(.75,.8))
+
+```
+
+*Figure 1B. Binomial deviance model better corresponds to nnSVG results*
+
+```{r figure 1b print, fig.height=3, fig.width=7,echo=FALSE, warning=FALSE}
+grid.arrange(addSmallLegend(bd_df_plot, textSize = 8), 
+        addSmallLegend(bd_df_batch_plot, textSize = 8), ncol = 2)
+```
+
+What's more, more than 90% of `spatialLIBD` SVGs are ranked in the top 3000 
+features by binomial deviance model with and without `batch = subject`.
+
+```{r 90% svgs ranked, comment=NA}
+quantile(bd_df[libd_svg$gene_id, "rank"], probs = seq(0, 1, 0.1))
+
+quantile(bd_batch_df[libd_svg$gene_id, "rank"], probs = seq(0, 1, 0.1))
+```
+
+#### Identify batch biased genes
+
+Using the `modelGeneVar()` function, we compared the rank with and without the
+`batch = subject` and we noticed that there are two groups of features ranked 
+highly in one model but lowly in another model (top left group and bottom right
+group).
+
+```{r batch biased, message=FALSE, warning=FALSE}
+mv_batch <- modelGeneVar(logcounts(spatialLIBD_spe),
+                        block=as.factor(spatialLIBD_spe$subject))
+mv_batch$ensembl <- rownames(mv_batch)
+mv_batch$rank <- (nrow(mv_batch) + 1) - rank(mv_batch$bio)
+
+mv_rank_diff <- left_join(
+    as.data.frame(mv[,c("ensembl","mean","bio","rank")]),
+    as.data.frame(mv_batch[,c("ensembl","mean","bio","rank")]),
+    by = c("ensembl"), suffix=c("_default","_subject"))
+mv_rank_diff$gene_name <- 
+    rowData(spatialLIBD_spe)[mv_rank_diff$ensembl,"gene_name"]
+
+top_3k_mv_batch <- mv_rank_diff |> 
+    filter(rank_default <= 3000 | rank_subject <= 3000) |>
+    mutate(batch_impact = rank_default > 30000 | rank_subject > 30000)
+top_3k_mv_batch_genes <- top_3k_mv_batch |>
+    filter(batch_impact == TRUE)
+```
+
+```{r figure 2a, echo=FALSE}
+mv_rank_diff_p1 <- ggplot(mv_rank_diff, 
+    aes(x = rank_default, y = rank_subject)) +
+    geom_point(size = 0.5) +
+    labs(x = "Rank (batch = NULL)", y = "Rank (batch = subject)",
+        title = "modelGeneVar()", subtitle = "All features", tag = "A")
+
+mv_rank_diff_p2 <- ggplot(top_3k_mv_batch, 
+    aes(x = rank_default, y = rank_subject, color = batch_impact)) +
+    geom_point(size = 0.5) +
+    scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+    labs(x = "Rank (batch = NULL)", y = "Rank (batch = subject)",
+        title = "modelGeneVar()", subtitle = "Top 3K Features", tag = "B")
+
+addPlotTheme2 <- function(myPlot) {
+    myPlot +
+        theme_bw() +
+        theme(aspect.ratio = 1, 
+        title = element_text(size = 11),
+        plot.tag = element_text(size = 11, face = "bold"),
+        legend.position = "none")
+}
+```
+
+*Fig2A. Comparison of feature rank with and without subject batch*
+
+```{r fig 2a print,fig.height=3, fig.width=7, echo=FALSE}
+grid.arrange(addPlotTheme2(mv_rank_diff_p1),
+            addPlotTheme2(mv_rank_diff_p2), ncol = 2)
+```
+
+Then, we looked at both groups of genes in red to see if they exhibit true
+subject-biased expression. Here we used **RAPGEF5** as example. 
+
+```{r RAPGEF5, message=FALSE, warning=FALSE}
+RAPGEF5_ensembl <- top_3k_mv_batch_genes |> filter(gene_name == "RAPGEF5") |>
+    pull(ensembl)
+RAPGEF5_expr <- logcounts(spatialLIBD_spe)[RAPGEF5_ensembl, , drop = FALSE]
+
+mv_expr_df <- cbind.data.frame(
+    as.data.frame(colData(spatialLIBD_spe)[,c("sample_id","subject",
+        "layer_guess_reordered_short")]),
+        avg.logcounts = as.vector(RAPGEF5_expr)) |>
+    group_by(sample_id, subject,  layer_guess_reordered_short) |>
+    summarise(avg.logcounts = mean(avg.logcounts, na.rm = TRUE), 
+        .groups = "drop") |>
+    filter(!is.na(layer_guess_reordered_short))
+```
+
+*Fig2B. RAPGEF5 is not subject biased but correlate with WM*
+
+```{r figure 2b, message=FALSE, warning=FALSE, echo=FALSE}
+RAPGEF5_expr_p3 <- ggplot(mv_expr_df, 
+    aes(x = layer_guess_reordered_short, y = avg.logcounts, 
+        fill = subject, color = subject)) +
+    geom_boxplot() +
+    scale_color_brewer(palette = "Dark2") +
+    scale_fill_brewer(palette = "Dark2") +
+    labs(y = "Mean Logcounts Expr",
+        title = "Average Domain Logcounts Expression - RAPGEF5",
+        subtitle = "modelGeneVar(), batch = subject", tag = "A") +
+    theme_bw()+
+    theme(plot.margin = unit(c(.2,0,.2,0), units = "cm"))
+
+RAPGEF5_expr_p4 <- plotSpots(spatialLIBD_spe, 
+    annotate = RAPGEF5_ensembl, assay = "logcounts", sample_id = "sample_id",
+    point_size=.1) + 
+    ggtitle("RAPGEF5") +
+    labs(tag = "B") +
+    scale_color_gradient(low = 'grey90', high = 'black') +
+    theme(aspect.ratio = 1,
+        plot.tag = element_text(size = 11, face = "bold"))
+
+addPlotTheme2b <- function(myPlot) {
+    myPlot +
+        theme_bw() +
+        theme(aspect.ratio = 1, 
+        title = element_text(size = 11),
+        plot.tag = element_text(size = 11, face = "bold"),
+        legend.position = "right",
+        axis.title.x = element_blank())
+}
+```
+
+```{r figure 2b print,fig.height=4, fig.width=10, echo=FALSE}
+grid.arrange(addPlotTheme2b(RAPGEF5_expr_p3), RAPGEF5_expr_p4, ncol = 2)
+```
+
+The plot illustrates the average expression of each sample across spatial
+domains alongside the spatial expression pattern of **RAPGEF5**. The graded
+expression across cortical layers suggests that **RAPGEF5** is spatially
+variable, with substantial differences in expression between subjects. However,
+its spatial expression pattern does not indicate subject bias.
+
+Thus, the changes in gene ranking when setting `batch = subject` in the
+`modelGeneVar()` function do not effectively identify potentially subject-biased
+genes.
+
+#### Reproducibility in multiple runs
+
+We set the seed to check the reproducibility of each approach.
+
+```{r set seed, message=FALSE, warning=FALSE}
+set.seed(123)
+```
+
+- devianceFeatureSelection()
+
+```{r repro bd, message=FALSE, warning=FALSE}
+bd1 <- devianceFeatureSelection(counts(spatialLIBD_spe), fam = "binomial")
+bd2 <- devianceFeatureSelection(counts(spatialLIBD_spe), fam = "binomial")
+
+bd_repro <- cbind(as.data.frame(bd1), as.data.frame(bd2)) |>
+    mutate(abs_diff_dev_is_zero = (abs(bd1 - bd2) < 1e-10))
+```
+
+- modelGeneVar()
+
+```{r repro mv, message=FALSE, warning=FALSE}
+mv1 <- modelGeneVar(logcounts(spatialLIBD_spe))
+mv2 <- modelGeneVar(logcounts(spatialLIBD_spe))
+
+mv1$ensembl <- rownames(mv1)
+mv1$rank <- (nrow(mv1) + 1) - rank(mv1$bio)
+top_hvgs_mv1 <- getTopHVGs(mv1, n = 3000)
+mv1_df <- as.data.frame(mv1[, c("ensembl", "bio", "rank")])
+
+mv2$ensembl <- rownames(mv2)
+mv2$rank <- (nrow(mv2) + 1) - rank(mv2$bio)
+top_hvgs_mv2 <- getTopHVGs(mv2, n = 3000)
+mv2_df <- as.data.frame(mv2[, c("ensembl", "bio", "rank")])
+
+mv_repro <- left_join(mv1_df, mv2_df,
+        by = "ensembl", suffix = c("_1", "_2"))
+mv_repro <- mv_repro |>
+    mutate(abs_diff_var = abs(bio_1 - bio_2),
+        abs_diff_var_is_zero = (abs_diff_var < 1e-10))
+```
+
+- modelGeneVarByPoisson()
+
+```{r repro mvpois, message=FALSE, warning=FALSE}
+mv_pois1 <- modelGeneVarByPoisson(logcounts(spatialLIBD_spe))
+mv_pois2 <- modelGeneVarByPoisson(logcounts(spatialLIBD_spe))
+
+mv_pois1$ensembl <- rownames(mv_pois1)
+mv_pois1$rank <- (nrow(mv_pois1) + 1) - rank(mv_pois1$bio)
+top_hvgs_mv_pois1 <- getTopHVGs(mv_pois1, n = 3000)
+mv_pois1_df <- as.data.frame(mv_pois1[, c("ensembl", "bio", "rank")])
+
+mv_pois2$ensembl <- rownames(mv_pois2)
+mv_pois2$rank <- (nrow(mv_pois2) + 1) - rank(mv_pois2$bio)
+top_hvgs_mv_pois2 <- getTopHVGs(mv_pois2, n = 3000)
+mv_pois2_df <- as.data.frame(mv_pois2[, c("ensembl", "bio", "rank")])
+
+mvpois_repro <- left_join(mv_pois1_df, mv_pois2_df,
+        by = "ensembl", suffix = c("_1", "_2"))
+mvpois_repro <- mvpois_repro |>
+    mutate(abs_diff_var = abs(bio_1 - bio_2),
+        abs_diff_var_is_zero = (abs_diff_var < 1e-10))
+```
+
+We observed that the `modelGeneVar()` function and 
+`devianceFeatureSelection()` function both produce identical results with 
+different runs, which ensures the reproducibility.
+
+```{r figure 3a, message=FALSE, warning=FALSE, echo=FALSE}
+bd_repro_p1 <- ggplot(bd_repro, 
+        aes(x = bd1, y = bd2, color = abs_diff_dev_is_zero)) +
+    geom_point(size = .5, alpha = 0.5) +
+    scale_color_manual(values = c("TRUE" = "black", "FALSE" = "red")) +
+    labs(x = "Deviance (run 1)", y = "Deviance (run 2)", 
+        title = "devianceFeatureSelection()",
+        color = "Absolute\nDifference\n= 0",
+        tag = "A") 
+
+mv_repro_p2 <- ggplot(mv_repro, 
+        aes(x = bio_1, y = bio_2, color = abs_diff_var_is_zero)) +
+    geom_point(size = .5, alpha = 0.5) +
+    scale_color_manual(values = c("TRUE" = "black", "FALSE" = "red")) +
+    labs(x = "Variance (run 1)", y = "Variance (run 2)", 
+        title = "modelGeneVar()",
+        color = "Absolute\nDifference\n= 0",
+        tag = "B") 
+
+addPlotTheme1 <- function(myPlot) {
+    myPlot +
+        theme_bw() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        aspect.ratio = 1, 
+        title = element_text(size = 11),
+        legend.text  = element_text(size = 8),
+        legend.title = element_text(size = 9),
+        plot.tag = element_text(size = 11, face = "bold"))
+}
+```
+
+*Fig3A. modelGeneVar() and modelGeneVarByPoisson() ensures reproducibility*
+
+```{r figure 3a print, fig.height=3, fig.width=7, echo=FALSE}
+grid.arrange(addPlotTheme1(bd_repro_p1), addPlotTheme1(mv_repro_p2), ncol = 2)
+```
+
+However, even with the same seed, the `modelGeneVarByPoisson()` function does
+not produce identical variance results, leading to rank fluctuations that can
+significantly impact the identification of highly variable genes (HVGs).
+
+```{r figure 3b, message=FALSE, warning=FALSE, echo=FALSE}
+mvpois_repro_p3 <- ggplot(mvpois_repro, 
+        aes(x = abs_diff_var, fill = abs_diff_var_is_zero)) +
+    geom_histogram(bins = 60) +
+    scale_fill_manual(values = c("TRUE" = "black", "FALSE" = "red")) +
+    labs(x = "Absolute Change in Variance", y = "Count",
+        title = "",
+        fill = "Absolute\nDifference\n= 0",
+        tag = "A") 
+
+mvpois_repro_p4 <- ggplot(mvpois_repro, 
+        aes(x = rank_1, y = rank_2, color = abs_diff_var_is_zero)) +
+    geom_point(size = .5, alpha = 0.5) +
+    scale_color_manual(values = c("TRUE" = "black", "FALSE" = "red")) +
+    labs(x = "Rank (run 1)", y = "Rank (run 2)", 
+        title = "All features",
+        color = "Absolute\nDifference\n= 0",
+        tag = "B") 
+
+mvpois_repro_p5 <- ggplot(filter(mvpois_repro, rank_1<=3000 | rank_2<=3000), 
+        aes(rank_1, rank_2, color = abs_diff_var_is_zero))+
+    geom_point(size = .5, alpha = 0.5) +
+    scale_color_manual(values = c("TRUE" = "black", "FALSE" = "red")) +
+    labs(x = "Rank (run 1)", y = "Rank (run 2)", 
+        title = "Top 3K Features",
+        color = "Absolute\nDifference\n= 0",
+        tag = "C") 
+```
+
+*Fig3B. modelGeneVarByPoisson() causes variance fluctuations (rank changes)*
+
+```{r figure 3b print, fig.height=4, fig.width=12, echo=FALSE}
+grid.arrange(addPlotTheme1(mvpois_repro_p3), 
+            addPlotTheme1(mvpois_repro_p4), 
+            addPlotTheme1(mvpois_repro_p5), ncol = 3)
+```
+
+Using the `modelGeneVarByPoisson()` function does identify some rank differences
+due to `batch = subject` but are inconsistent. Compared to `modelGeneVar()`
+function, the poisson assumptions for technical variation reduced the number of 
+features that were highly ranked with `batch = NULL` and highly ranked with
+`batch = subject`.
+
+```{r var diff pois, message=FALSE, warning=FALSE}
+mv_pois_batch <- modelGeneVarByPoisson(logcounts(spatialLIBD_spe),
+                    block = as.factor(spatialLIBD_spe$subject))
+
+mv_pois_batch$ensembl <- rownames(mv_pois_batch)
+mv_pois_batch$rank <- (nrow(mv_pois_batch) + 1) - rank(mv_pois_batch$bio)
+
+var_diff_pois <- mvpois_repro |>
+    left_join(as.data.frame(mv_pois_batch[,c("ensembl", "rank", "bio")]))
+var_diff_pois$gene_name <-
+    rowData(spatialLIBD_spe)[var_diff_pois$ensembl,"gene_name"]
+```
+
+```{r figure 3c, echo=FALSE}
+var_diff_pois_p1 <- ggplot(var_diff_pois, aes(x = rank_1, y = rank)) +
+    geom_point(size = 0.5) +
+    labs(x = "Rank (batch = NULL)", y = "Rank (batch = subject)",
+        title = "modelGeneVarByPoisson()", subtitle = "Run 1",
+        tag = "B")
+
+var_diff_pois_p2 <- ggplot(var_diff_pois, aes(x = rank_2, y = rank)) +
+    geom_point(size = 0.5) +
+    labs(x = "Rank (batch = NULL)", y = "Rank (batch = subject)",
+        title = "modelGeneVarByPoisson()", subtitle = "Run 2",
+        tag = "C")
+```
+
+*Fig3C. Poisson assumption reduced the number of highly ranked features*
+
+```{r figure 3c print, echo=FALSE, fig.height=4, fig.width=12}
+grid.arrange(addPlotTheme1(mv_rank_diff_p1), addPlotTheme1(var_diff_pois_p1),
+    addPlotTheme1(var_diff_pois_p2), ncol = 3)
+```
+
+Moreover, introducing the batch variable to the `modelGeneVarByPoisson()`
+function resulted in inconsistencies that altered the top-ranked features,
+potentially including genes that are not subject-biased (e.g., **COMMD6**).
+
+```{r figure 3d, message=FALSE, warning=FALSE, echo=FALSE}
+var_diff_pois_run1_3k <- var_diff_pois |> filter(rank_1 <= 3000 | rank <= 3000)
+var_diff_pois_p3 <- ggplot(var_diff_pois_run1_3k, 
+        aes(x = rank_1, y = rank)) +
+    geom_point(size = 0.5) +
+    geom_point(data = filter(var_diff_pois_run1_3k, 
+        rank_1 > 30000 | rank > 30000), color="red", size=.5) +
+    scale_y_break(c(15000, 30000)) +
+    geom_text_repel(data = filter(var_diff_pois_run1_3k, rank > 30000), 
+        aes(label = gene_name), size = 3) +
+    labs(x = "Rank (batch = NULL)", y = "Rank (batch = subject)", 
+        subtitle = "Run 1", title = "modelGeneVarByPoisson()", tag = "A")
+
+
+var_diff_pois_run2_3k <- var_diff_pois |> filter(rank_2 <= 3000 | rank <= 3000)
+var_diff_pois_p4 <- ggplot(var_diff_pois_run2_3k, 
+        aes(x = rank_2, y = rank)) +
+    geom_point(size = 0.5) +
+    geom_point(data = filter(var_diff_pois_run2_3k, 
+        rank_2 > 30000 | rank > 30000), color="red", size=.5) +
+    scale_y_break(c(15000, 30000)) +
+    geom_text_repel(data = filter(var_diff_pois_run2_3k, rank > 30000), 
+        aes(label = gene_name), size = 3) +
+    labs(x = "Rank (batch = NULL)", y = "Rank (batch = subject)", 
+        subtitle = "Run 2", title = "modelGeneVarByPoisson()", tag = "B")
+
+COMMD6_p5 <- plotSpots(spatialLIBD_spe, 
+    annotate="ENSG00000188243", assay="logcounts", 
+    sample_id="sample_id", point_size=.1) + 
+    ggtitle("COMMD6") +
+    scale_color_gradient(low='grey90', high='black') +
+    labs(tag = "C") +
+    theme(plot.tag = element_text(size = 10, face = "bold"))
+```
+
+
+*Fig3D. Introduction of batch to modelGeneVarByPoisson() causes inconsistencies*
+
+```{r figure 3d print, fig.height = 4, fig.width = 12, echo=FALSE}
+grid.arrange(addPlotTheme2(var_diff_pois_p3), 
+            addPlotTheme2(var_diff_pois_p4),
+            COMMD6_p5, ncol = 3)
+```
+
+Therefore, the inconsistencies in the `modelGeneVarByPoisson()` function may
+contribute to its failure in identifying subject-biased genes.
+
+#### Additional Property: match DLPFC cortical layer
+
+A separate but related property of the ideal feature selection model would be
+to generate a list of top features that are consistent with known DLPFC layer
+markers and comprise markers of all layer domains. We used the recently
+published list of 
+[DLPFC layer markers](https://www.science.org/doi/10.1126/science.adh1938) to
+characterize the top 3000 features of the mean-variance and binomial deviance 
+models.
+
+```{r cortical layer bd, comment=NA, message=FALSE, warning=FALSE}
+dlpfc_layer_marker <- read.csv(
+    system.file("extdata","TableS8_filtered-layer-markers.csv", 
+        package = "BatchSVG"),
+    row.names = 1, check.names = FALSE)
+
+# Binomial deviance model
+top_bd_3k <- bd_df |> filter(rank <= 3000)
+dlpfc_bd_is <- semi_join(
+    dlpfc_layer_marker[,c("gene","ensembl","domain_simple")], 
+    top_bd_3k, by=c("ensembl"="gene"))
+dlpfc_bd_not = anti_join(
+    top_bd_3k |> filter(gene %in% setdiff(top_bd_3k$gene, dlpfc_bd_is$ensembl)),
+    dlpfc_bd_is, by = c("gene" = "ensembl")) |>
+    mutate(domain_simple = "none") |> 
+    rename(ensembl = gene, gene = gene_name) |>
+    select(ensembl, gene, domain_simple) # not included in DLPFC marker table
+dlpfc_bd_3k <- rbind(dlpfc_bd_is, dlpfc_bd_not) |>
+    mutate(domain_simple=factor(domain_simple,
+        levels=c("L1","L2","L3","L4","L5","L6","WM","none")))
+
+# Mean-variance model
+top_3k_mv <- as.data.frame(mv[top_hvgs_mv,]) |>
+    select(ensembl)
+dlpfc_mv_is = semi_join(
+    dlpfc_layer_marker[,c("gene","ensembl","domain_simple")], 
+    top_3k_mv, by = c("ensembl")) |>
+    select(-gene)
+dlpfc_mv_not = anti_join(
+    filter(top_3k_mv, 
+        ensembl %in% setdiff(top_hvgs_mv, dlpfc_mv_is$ensembl)), 
+    dlpfc_mv_is, by = c("ensembl")) %>%
+    mutate(domain_simple = "none")
+dlpfc_mv_3k = rbind(dlpfc_mv_is, dlpfc_mv_not) %>% 
+    mutate(domain_simple = factor(domain_simple,
+        levels = c("L1","L2","L3","L4","L5","L6","WM","none")))
+
+# Mean-variance model - Pois
+top_3k_mvpois <- as.data.frame(mvpois[top_hvgs_mvpois,]) |>
+    select(ensembl)
+dlpfc_mvpois_is = semi_join(
+    dlpfc_layer_marker[,c("gene","ensembl","domain_simple")], 
+    top_3k_mvpois, by = c("ensembl")) |>
+    select(-gene)
+dlpfc_mvpois_not = anti_join(
+    filter(top_3k_mvpois, 
+        ensembl %in% setdiff(top_hvgs_mvpois, dlpfc_mvpois_is$ensembl)), 
+    dlpfc_mvpois_is, by = c("ensembl")) %>%
+    mutate(domain_simple = "none")
+dlpfc_mvpois_3k = rbind(dlpfc_mvpois_is, dlpfc_mvpois_not) %>% 
+    mutate(domain_simple = factor(domain_simple,
+        levels = c("L1","L2","L3","L4","L5","L6","WM","none")))
+```
+
+These results further supported the selection of the binomial deviance model, as
+the 3000 most highly ranked features represented significant markers for all 
+DLPFC cortical layers. In contrast, the 3000 most highly ranked features from 
+the mean-variance model were overwhelmingly L1 and white matter (WM) markers.
+
+```{r figure 4, message=FALSE, warning=FALSE, echo=FALSE}
+cols_cluster = c("#1f77b4FF","#aec7e8FF","#ff7f0eFF","#ffbb78FF",
+                "#2ca02cFF","#98df8aFF","#d62728FF")
+
+cols_7 = c(cols_cluster[c(4,2,1,5,6,7)],"grey40")
+
+dlpfc_bd_3k_p1 <- ggplot(dlpfc_bd_3k, 
+    aes(x = domain_simple, fill = domain_simple)) +
+    geom_bar(stat="count", width=.7, color="black") +
+    scale_fill_manual(values = c(cols_7[1:3], "white", cols_7[4:7])) +
+    labs(x = "DLPFC Domain", y = "# Top Genes", tag = "A",
+        title = "devianceFeatureSelection()",
+        subtitle = "binomial deviance model - scry", fill = "")
+
+dlpfc_mvpois_3k_p2 <- ggplot(dlpfc_mv_3k, 
+    aes(x = domain_simple, fill = domain_simple)) +
+    geom_bar(stat="count", width=.7, color="black") +
+    scale_fill_manual(values = c(cols_7[1:3], "white", cols_7[4:7])) +
+    labs(x = "DLPFC Domain", y = "# Top Genes", tag = "B",
+        title = "modelGeneVar()",
+        subtitle = "mean-variance model - scran", fill = "")
+
+dlpfc_mvpois_3k_p3 <- ggplot(dlpfc_mvpois_3k, 
+    aes(x = domain_simple, fill = domain_simple)) +
+    geom_bar(stat="count", width=.7, color="black") +
+    scale_fill_manual(values = c(cols_7[1:3], "white", cols_7[4:7])) +
+    labs(x = "DLPFC Domain", y = "# Top Genes", tag = "C",
+        title = "modelGeneVarByPoisson()",
+        subtitle = "mean-variance model - scran", fill = "")
+
+addPlotTheme3 <- function(myPlot) {
+    myPlot +
+        theme_bw() +
+        theme(aspect.ratio = 1, 
+        title = element_text(size = 11),
+        plot.tag = element_text(size = 11, face = "bold"),
+        legend.position = "none")
+}
+```
+
+*Fig4. Binomial deviance model better corresponds to known DLPFC layer markers*
+
+```{r figure 4 print, fig.width = 12, fig.height = 4, warning=FALSE, echo=FALSE}
+grid.arrange(addPlotTheme3(dlpfc_bd_3k_p1), 
+            addPlotTheme3(dlpfc_mvpois_3k_p2),
+            addPlotTheme3(dlpfc_mvpois_3k_p3),
+            ncol = 3)
+```
+
+### Summary
+
+*Table1. Summary of the evaluation on each approach* 
+
+```{r summary table, echo=FALSE}
+tbl <- tibble(
+    Package = c("scry","scran","scran"),
+    Function = c("devianceFeatureSelection()", "modelGeneVar()",
+            "modelGeneVarByPoisson()"),
+    `SVGs as Highly Ranked Features` = c("\u2714", "\u2718", "\u2718"),
+    `Batch Biased Features` = c("\u2714", "\u2718", "\u2714"),
+    Reproducibility = c("\u2714", "\u2714", "\u2718"),
+    `DLPFC layer marker` = c("\u2714", "\u2718", "\u2718"))
+
+tbl |> gt() |> 
+    tab_style(style = list(cell_text(weight = "bold")),
+        locations = cells_column_labels(everything())) |>
+    cols_align(align = "center", columns = everything())
+```
+
+
+### `R` session information {.unnumbered}
+
+```{r 'sessionInfo'}
+## Session info
+sessionInfo()
+```

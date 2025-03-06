@@ -15,7 +15,7 @@
         legend.title = element_text(size = 8),
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10)) +
-    labs(x = "\u0394 deviance", y = "# SVGs", 
+    labs(x = "Relative Change in Deviance", y = "# SVGs", 
         fill = "nSD Deviance Interval",
         title = "SVGs with relative change in deviance")
     }
@@ -35,7 +35,7 @@
         legend.title = element_text(size = 8),
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10)) +
-    labs(x = "rank difference", y = "# SVGs",
+    labs(x = "Rank Difference", y = "# SVGs",
         fill = "nSD Rank Interval",
         title = "SVGs with rank difference")
     }
