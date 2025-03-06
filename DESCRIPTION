@@ -53,10 +53,18 @@ Suggests:
     knitr,
     tibble,
     tidyr,
+    tidyverse,
     rmarkdown,
     BiocStyle,
     ExperimentHub,
-    SpatialExperiment
+    SpatialExperiment,
+    SingleCellExperiment,
+    spatialLIBD,
+    gt,
+    ggbreak,
+    ggspavis,
+    gridExtra,
+    scran
 VignetteBuilder: knitr
 biocViews: Spatial, Transcriptomics, BatchEffect, QualityControl
 URL: https://github.com/christinehou11/BatchSVG, 
