@@ -52,6 +52,7 @@ library(ExperimentHub)
 library(SummarizedExperiment)
 library(tibble)
 })
+\dontrun{
 ehub <- ExperimentHub()
 spe <- ehub[["EH9605"]]
 fix_order <- dplyr::distinct(
@@ -71,4 +72,5 @@ rownames(spe_sub4) <- rowData(spe_sub4)$gene_id
 SVGs <- svgs_sub4$gene_id
 list_batch_df <- featureSelect(input = spe_sub4, 
    batch_effects = c("sample_id", "sex"), VGs = SVGs)
+}
 }

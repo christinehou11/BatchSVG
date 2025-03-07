@@ -77,6 +77,7 @@ library(ExperimentHub)
 library(SummarizedExperiment)
 library(tibble)
 })
+\dontrun{
 ehub <- ExperimentHub()
 spe <- ehub[["EH9605"]]
 fix_order <- dplyr::distinct(
@@ -99,4 +100,5 @@ list_batch_df <- featureSelect(input = spe_sub4,
 
 biaGenes <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
    nSD_dev = c(5,4), nSD_rank = c(4,6))
+}
 }

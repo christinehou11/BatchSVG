@@ -66,6 +66,7 @@
 #' library(SummarizedExperiment)
 #' library(tibble)
 #' })
+#' \dontrun{
 #' ehub <- ExperimentHub()
 #' spe <- ehub[["EH9605"]]
 #' fix_order <- dplyr::distinct(
@@ -88,6 +89,7 @@
 #' 
 #' biaGenes <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
 #'    nSD_dev = c(5,4), nSD_rank = c(4,6))
+#' }
 biasDetect <- function(list_batch_df, threshold = "both", 
                         nSD_dev = NULL, nSD_rank = NULL,
                         plot_point_size = 3, plot_point_shape = 16,
