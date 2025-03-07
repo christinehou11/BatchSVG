@@ -61,8 +61,6 @@
 #' library(SummarizedExperiment)
 #' library(tibble)
 #' })
-#' 
-#' \dontrun{
 #' ehub <- ExperimentHub()
 #' spe <- ehub[["EH9605"]]
 #' fix_order <- dplyr::distinct(
@@ -85,7 +83,6 @@
 #' 
 #' plots <- svg_nSD(list_batch_df = list_batch_df, 
 #'    sd_interval_dev = c(5,4), sd_interval_rank = c(4,6))
-#' }
 svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
     # input check
     num_batches <- length(list_batch_df)

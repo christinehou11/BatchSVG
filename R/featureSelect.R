@@ -52,7 +52,6 @@
 #' library(SummarizedExperiment)
 #' library(tibble)
 #' })
-#' \dontrun{
 #' ehub <- ExperimentHub()
 #' spe <- ehub[["EH9605"]]
 #' fix_order <- dplyr::distinct(
@@ -72,7 +71,6 @@
 #' SVGs <- svgs_sub4$gene_id
 #' list_batch_df <- featureSelect(input = spe_sub4, 
 #'    batch_effects = c("sample_id", "sex"), VGs = SVGs)
-#' }
 featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
     
     stopifnot(

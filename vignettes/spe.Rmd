@@ -38,7 +38,7 @@ package works with
 if (!requireNamespace("BiocManager")) {
     install.packages("BiocManager")
 }
-BiocManager::install("HuBMAPR")
+BiocManager::install("BatchSVG")
 ```
 
 Install the development version from 
