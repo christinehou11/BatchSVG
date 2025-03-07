@@ -59,7 +59,7 @@
 #'     row.names = 1, check.names = FALSE)
 #'    
 #' list_batch_df <- featureSelect(input = spatialLIBD_spe, 
-#'    batch_effects = "subject", VGs = SVGs)
+#'    batch_effects = "subject", VGs = libd_svg$gene_id)
 #' 
 featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
     

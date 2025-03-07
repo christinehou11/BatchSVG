@@ -68,7 +68,7 @@
 #'     row.names = 1, check.names = FALSE)
 #'    
 #' list_batch_df <- featureSelect(input = spatialLIBD_spe, 
-#'    batch_effects = "subject", VGs = SVGs)
+#'    batch_effects = "subject", VGs = libd_svg$gene_id)
 #' 
 #' plots <- svg_nSD(list_batch_df = list_batch_df, 
 #'    sd_interval_dev = 3, sd_interval_rank = 3)

@@ -1,7 +1,7 @@
 Package: BatchSVG
 Type: Package
 Title: Identify Batch-Biased Features in Spatially Variable Genes
-Version: 0.99.4
+Version: 0.99.5
 Authors@R:
     c(person(
         given = "Christine",

@@ -1,3 +1,7 @@
+# BatchSVG 0.99.5
+
+* Bug fix in example dataset
+
 # BatchSVG 0.99.4
 
 * Updated test and example datasets (`spatialLIBD` spe dataset)
