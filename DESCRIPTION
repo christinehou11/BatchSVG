@@ -1,7 +1,7 @@
 Package: BatchSVG
 Type: Package
 Title: Identify Batch-Biased Features in Spatially Variable Genes
-Version: 0.99.3
+Version: 0.99.4
 Authors@R:
     c(person(
         given = "Christine",
@@ -19,7 +19,7 @@ Authors@R:
     person(
         given = "Stephanie C.", 
         family = "Hicks", 
-        role = "aut",
+        role = c("aut","fnd"),
         email = "shicks19@jhu.edu", 
         comment = c(ORCID = "0000-0002-7858-0231"))
     )
@@ -57,7 +57,8 @@ Suggests:
     rmarkdown,
     BiocStyle,
     ExperimentHub,
-    SpatialExperiment
+    SpatialExperiment,
+    spatialLIBD
 VignetteBuilder: knitr
 biocViews: Spatial, Transcriptomics, BatchEffect, QualityControl
 URL: https://github.com/christinehou11/BatchSVG, 

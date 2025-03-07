@@ -1,3 +1,7 @@
+# BatchSVG 0.99.4
+
+* Updated test and example datasets (`spatialLIBD` spe dataset)
+
 # BatchSVG 0.99.3
 
 * Deleted `CITATION` (no preprint by now)
