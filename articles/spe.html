@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BatchSVG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,128 +104,40 @@ objects.</p>
 visualize the biased features in SVGs.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/christinehou11/BatchSVG" class="external-link">BatchSVG</a></span><span class="op">)</span></span>
-<span><span class="co"># library(humanHippocampus2024)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ExperimentHub</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/drighelli/SpatialExperiment" class="external-link">SpatialExperiment</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LieberInstitute/spatialLIBD" class="external-link">spatialLIBD</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h4>
-<p>We will use the <code>spatially-resolved transcriptomics (SRT)</code>
-dataset from the adjacent tissue sections of the anterior human
-hippocampus across ten adult neurotypical donors. The dataset is
-obtained from <code>humanHippocampus2024</code> package which currently
-is in the <a href="https://bioconductor.org/packages/humanHippocampus2024/" class="external-link">development
-version</a> on Bioconductor 3.21, and it is the
-<code>spatialExperiment</code> object generated and processed from the
-<a href="https://github.com/LieberInstitute/spatial_hpc" class="external-link">spatial_HPC</a>
-project. Please read <a href="https://christinehou11.github.io/humanHippocampus2024/" class="external-link">here</a>
-if interested in <code>humanHippocampus2024</code> data package.</p>
-<p>(The codes to access the <em>spe</em> dataset in
-<code>humanHippocampus2024</code> package will be updated after the
-official release of Bioconductor 3.21.)</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>ehub <span class="ot">&lt;-</span> <span class="fu">ExperimentHub</span>()</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Load the datasets of the package</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># myfiles &lt;- query(ehub, "humanHippocampus2024")</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Resulting humanHippocampus2024 datasets from ExperimentHub query</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># myfiles</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># ExperimentHub with 2 records</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># # snapshotDate(): 2024-10-24</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># # $dataprovider: Lieber Institute for Brain Development (LIBD)</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># # $species: Homo sapiens</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co"># # $rdataclass: SpatialExperiment, SingleCellExperiment</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># # additional mcols(): taxonomyid, genome, description,</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co"># #   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co"># #   rdatapath, sourceurl, sourcetype </span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co"># # retrieve records with, e.g., 'object[["EH9605"]]' </span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#            title</span></span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#   EH9605 | spe  </span></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#   EH9606 | sce</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#   </span></span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co"># spe &lt;- myfiles[["EH9605"]]</span></span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>spe <span class="ot">&lt;-</span> ehub[[<span class="st">"EH9605"</span>]]</span>
-<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>spe</span>
-<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>class<span class="sc">:</span> SpatialExperiment </span>
-<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>dim<span class="sc">:</span> <span class="dv">31483</span> <span class="dv">150917</span> </span>
-<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="fu">metadata</span>(<span class="dv">1</span>)<span class="sc">:</span> Obtained_from</span>
-<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="fu">assays</span>(<span class="dv">2</span>)<span class="sc">:</span> counts logcounts</span>
-<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="fu">rownames</span>(<span class="dv">31483</span>)<span class="sc">:</span> MIR1302<span class="dv">-2</span>HG AL627309<span class="fl">.1</span> ... AC007325<span class="fl">.4</span> AC007325<span class="fl">.2</span></span>
-<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>rowData <span class="fu">names</span>(<span class="dv">7</span>)<span class="sc">:</span> source type ... gene_type gene_search</span>
-<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="fu">colnames</span>(<span class="dv">150917</span>)<span class="sc">:</span> AAACAACGAATAGTTC<span class="dv">-1</span>_V10B01<span class="dv">-086</span>_D1</span>
-<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>  AAACAAGTATCTCCCA<span class="dv">-1</span>_V10B01<span class="dv">-086</span>_D1 ... TTGTTTCCATACAACT<span class="dv">-1</span>_Br2720_B1</span>
-<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>  TTGTTTGTATTACACG<span class="dv">-1</span>_Br2720_B1</span>
-<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>colData <span class="fu">names</span>(<span class="dv">150</span>)<span class="sc">:</span> sample_id in_tissue ... nmf99 nmf100</span>
-<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="fu">reducedDimNames</span>(<span class="dv">3</span>)<span class="sc">:</span> <span class="dv">10</span>x_pca <span class="dv">10</span>x_tsne <span class="dv">10</span>x_umap</span>
-<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>mainExpName<span class="sc">:</span> <span class="cn">NULL</span></span>
-<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="fu">altExpNames</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
-<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>spatialCoords <span class="fu">names</span>(<span class="dv">2</span>) <span class="sc">:</span> pxl_col_in_fullres pxl_row_in_fullres</span>
-<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>imgData <span class="fu">names</span>(<span class="dv">4</span>)<span class="sc">:</span> sample_id image_id data scaleFactor</span></code></pre></div>
-<p>We will use the spatially variable genes set generated from <a href="https://github.com/LieberInstitute/spatial_hpc" class="external-link">spatial_HPC</a>
-project. The result is generated from <a href="(https://www.nature.com/articles/s41467-023-39748-z)" class="external-link">nnSVG</a>
+<p>We will use the`spatially-resolved transcriptomics (SRT) dataset from
+the <a href="https://research.libd.org/spatialLIBD/" class="external-link">spatialLIBD</a>
 package.</p>
-<p>We will select four samples from the raw data as an example:</p>
-<ul>
-<li><p>V11L05-333_B1</p></li>
-<li><p>V11L05-333_D1</p></li>
-<li><p>V11L05-335_D1</p></li>
-<li><p>V11L05-336_A1.</p></li>
-</ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>fix_order <span class="ot">&lt;-</span> <span class="fu">distinct</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="fu">as.data.frame</span>(<span class="fu">colData</span>(spe)), slide, array, brnum, sample_id, </span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    position, sex) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">arrange</span>(slide, array)</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>sub4 <span class="ot">&lt;-</span> fix_order<span class="sc">$</span>sample_id[<span class="fu">c</span>(<span class="dv">14</span>,<span class="dv">16</span>, <span class="dv">20</span>,<span class="dv">21</span>)]</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>spe_sub4 <span class="ot">&lt;-</span> spe[,spe<span class="sc">$</span>sample_id <span class="sc">%in%</span> sub4]</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>spe_sub4 <span class="co"># 31483, 18945</span></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>class<span class="sc">:</span> SpatialExperiment </span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>dim<span class="sc">:</span> <span class="dv">31483</span> <span class="dv">18945</span> </span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="fu">metadata</span>(<span class="dv">1</span>)<span class="sc">:</span> Obtained_from</span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="fu">assays</span>(<span class="dv">2</span>)<span class="sc">:</span> counts logcounts</span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="fu">rownames</span>(<span class="dv">31483</span>)<span class="sc">:</span> MIR1302<span class="dv">-2</span>HG AL627309<span class="fl">.1</span> ... AC007325<span class="fl">.4</span> AC007325<span class="fl">.2</span></span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>rowData <span class="fu">names</span>(<span class="dv">7</span>)<span class="sc">:</span> source type ... gene_type gene_search</span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="fu">colnames</span>(<span class="dv">18945</span>)<span class="sc">:</span> AAACAACGAATAGTTC<span class="dv">-1</span>_V11L05<span class="dv">-333</span>_B1</span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  AAACAAGTATCTCCCA<span class="dv">-1</span>_V11L05<span class="dv">-333</span>_B1 ... TTGTTTGTATTACACG<span class="dv">-1</span>_V11L05<span class="dv">-336</span>_A1</span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  TTGTTTGTGTAAATTC<span class="dv">-1</span>_V11L05<span class="dv">-336</span>_A1</span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>colData <span class="fu">names</span>(<span class="dv">150</span>)<span class="sc">:</span> sample_id in_tissue ... nmf99 nmf100</span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="fu">reducedDimNames</span>(<span class="dv">3</span>)<span class="sc">:</span> <span class="dv">10</span>x_pca <span class="dv">10</span>x_tsne <span class="dv">10</span>x_umap</span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>mainExpName<span class="sc">:</span> <span class="cn">NULL</span></span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="fu">altExpNames</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
-<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>spatialCoords <span class="fu">names</span>(<span class="dv">2</span>) <span class="sc">:</span> pxl_col_in_fullres pxl_row_in_fullres</span>
-<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>imgData <span class="fu">names</span>(<span class="dv">4</span>)<span class="sc">:</span> sample_id image_id data scaleFactor</span></code></pre></div>
-<p>We will refine our selection to include only the top 2,000 ranked
-features
-(rank<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≤</mo><annotation encoding="application/x-tex">\leq</annotation></semantics></math>
-2000) and only genes that appear in more than one sample (n &gt; 1).</p>
-<p>After applying these criteria, we obtain 2,082 spatially variable
-genes across the four samples.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># res_ranks: SVGs results with rank values</span></span>
-<span><span class="va">res_df_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames_to_column</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">res_ranks</span><span class="op">)</span>, <span class="va">var</span><span class="op">&lt;-</span><span class="st">"gene_id"</span><span class="op">)</span>, </span>
-<span>        <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">res_ranks</span><span class="op">)</span>, </span>
-<span>    names_to<span class="op">=</span><span class="st">"sample_id"</span>, </span>
-<span>    values_to<span class="op">=</span><span class="st">"rank"</span>, </span>
-<span>    values_drop_na<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span>    </span>
-<span><span class="va">res_df_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">res_df_sub</span>,</span>
-<span>    <span class="va">sample_id</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> </span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"V11L05-333_B1"</span>, <span class="st">"V11L05-333_D1"</span>, <span class="st">"V11L05-335_D1"</span>, <span class="st">"V11L05-336_A1"</span><span class="op">)</span>, </span>
-<span>    <span class="va">rank</span> <span class="op">&lt;=</span> <span class="fl">2000</span><span class="op">)</span> <span class="co"># top 2k sig features</span></span>
-<span>    </span>
-<span><span class="va">svgs_sub4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">res_df_sub</span>, <span class="va">gene_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">n</span><span class="op">&gt;</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">svgs_sub4</span><span class="op">)</span></span></code></pre></div>
-<pre><code>[1] 2082</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>spatialLIBD_spe <span class="ot">&lt;-</span> <span class="fu">fetch_data</span>(<span class="at">type =</span> <span class="st">"spe"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>spatialLIBD_spe</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>class<span class="sc">:</span> SpatialExperiment </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>dim<span class="sc">:</span> <span class="dv">33538</span> <span class="dv">47681</span> </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">metadata</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">assays</span>(<span class="dv">2</span>)<span class="sc">:</span> counts logcounts</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="fu">rownames</span>(<span class="dv">33538</span>)<span class="sc">:</span> ENSG00000243485 ENSG00000237613 ... ENSG00000277475</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  ENSG00000268674</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>rowData <span class="fu">names</span>(<span class="dv">9</span>)<span class="sc">:</span> source type ... gene_search is_top_hvg</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">colnames</span>(<span class="dv">47681</span>)<span class="sc">:</span> AAACAACGAATAGTTC<span class="dv">-1</span> AAACAAGTATCTCCCA<span class="dv">-1</span> ...</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  TTGTTTCCATACAACT<span class="dv">-1</span> TTGTTTGTGTAAATTC<span class="dv">-1</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>colData <span class="fu">names</span>(<span class="dv">69</span>)<span class="sc">:</span> sample_id Cluster ... array_row array_col</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">reducedDimNames</span>(<span class="dv">6</span>)<span class="sc">:</span> PCA TSNE_perplexity50 ... TSNE_perplexity80</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  UMAP_neighbors15</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>mainExpName<span class="sc">:</span> <span class="cn">NULL</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="fu">altExpNames</span>(<span class="dv">0</span>)<span class="sc">:</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>spatialCoords <span class="fu">names</span>(<span class="dv">2</span>) <span class="sc">:</span> pxl_col_in_fullres pxl_row_in_fullres</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>imgData <span class="fu">names</span>(<span class="dv">4</span>)<span class="sc">:</span> sample_id image_id data scaleFactor</span></code></pre></div>
+<p>We will use the spatially variable genes set generated. The result is
+generated from <a href="(https://www.nature.com/articles/s41467-023-39748-z)" class="external-link">nnSVG</a>
+package.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">libd_nnsvgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>,<span class="st">"libd-all_nnSVG_p-05-features-df.csv"</span>,</span>
+<span>        package <span class="op">=</span> <span class="st">"BatchSVG"</span><span class="op">)</span>,</span>
+<span>    row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="perform-feature-selection-using-featureselect">Perform Feature Selection using <code>featureSelect()</code><a class="anchor" aria-label="anchor" href="#perform-feature-selection-using-featureselect"></a>
@@ -250,54 +162,32 @@ results</p></li>
 <li><p>Number of standard deviations (nSD) for both relative change in
 deviance and rank difference</p></li>
 </ul>
-<p>We will use the example of applying <code><a href="../reference/featureSelect.html">featureSelect()</a></code> to a
-four sample dataset while adjusting for the batch effect
-<em>sample_id</em> and <em>sex</em>.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>spe_sub4 <span class="ot">&lt;-</span> spe_sub4[<span class="fu">rowData</span>(spe_sub4)<span class="sc">$</span>gene_id <span class="sc">%in%</span> svgs_sub4<span class="sc">$</span>gene_id,]</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">rownames</span>(spe_sub4) <span class="ot">&lt;-</span> <span class="fu">rowData</span>(spe_sub4)<span class="sc">$</span>gene_id</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>SVGs <span class="ot">&lt;-</span> svgs_sub4<span class="sc">$</span>gene_id</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>list_batch_df <span class="ot">&lt;-</span> <span class="fu">featureSelect</span>(<span class="at">input =</span> spe_sub4, </span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="at">batch_effect =</span> <span class="fu">c</span>(<span class="st">"sample_id"</span>, <span class="st">"sex"</span>), <span class="at">VGs =</span> SVGs)</span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>Running feature selection without batch...</span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>Batch Effect<span class="sc">:</span> sample_id</span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>Running feature selection without batch...</span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>Calculating deviance and rank difference...</span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>Batch Effect<span class="sc">:</span> sex</span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>Running feature selection without batch...</span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>Calculating deviance and rank difference...</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">class</span>(list_batch_df)</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">"list"</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">head</span>(list_batch_df<span class="sc">$</span>sample_id)</span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default dev_sample_id</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000131584     ACAP3    <span class="fl">16125.31</span>         <span class="dv">1262</span>      <span class="fl">15900.14</span></span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000175756  AURKAIP1    <span class="fl">17344.09</span>         <span class="dv">1060</span>      <span class="fl">17167.86</span></span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000242485    MRPL20    <span class="fl">17629.33</span>         <span class="dv">1023</span>      <span class="fl">17517.05</span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000179403      VWA1    <span class="fl">12860.93</span>         <span class="dv">1726</span>      <span class="fl">12825.66</span></span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000160075     SSU72    <span class="fl">16145.20</span>         <span class="dv">1255</span>      <span class="fl">16136.31</span></span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000078369      GNB1    <span class="fl">22402.83</span>          <span class="dv">516</span>      <span class="fl">22271.32</span></span>
-<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  rank_sample_id       d_diff nSD_dev_sample_id r_diff nSD_rank_sample_id</span>
-<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="dv">1</span>           <span class="dv">1269</span> <span class="fl">0.0141612453</span>       <span class="sc">-</span><span class="fl">0.09513109</span>      <span class="dv">7</span>         <span class="fl">0.16380252</span></span>
-<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="dv">2</span>           <span class="dv">1058</span> <span class="fl">0.0102651525</span>       <span class="sc">-</span><span class="fl">0.16945410</span>     <span class="sc">-</span><span class="dv">2</span>        <span class="sc">-</span><span class="fl">0.04680072</span></span>
-<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="dv">3</span>           <span class="dv">1004</span> <span class="fl">0.0064098269</span>       <span class="sc">-</span><span class="fl">0.24299943</span>    <span class="sc">-</span><span class="dv">19</span>        <span class="sc">-</span><span class="fl">0.44460683</span></span>
-<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="dv">4</span>           <span class="dv">1702</span> <span class="fl">0.0027493688</span>       <span class="sc">-</span><span class="fl">0.31282741</span>    <span class="sc">-</span><span class="dv">24</span>        <span class="sc">-</span><span class="fl">0.56160863</span></span>
-<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="dv">5</span>           <span class="dv">1220</span> <span class="fl">0.0005506572</span>       <span class="sc">-</span><span class="fl">0.35477067</span>    <span class="sc">-</span><span class="dv">35</span>        <span class="sc">-</span><span class="fl">0.81901258</span></span>
-<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="dv">6</span>            <span class="dv">497</span> <span class="fl">0.0059049925</span>       <span class="sc">-</span><span class="fl">0.25262980</span>    <span class="sc">-</span><span class="dv">19</span>        <span class="sc">-</span><span class="fl">0.44460683</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">head</span>(list_batch_df<span class="sc">$</span>sex)</span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default  dev_sex rank_sex</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000131584     ACAP3    <span class="fl">16125.31</span>         <span class="dv">1262</span> <span class="fl">16118.48</span>     <span class="dv">1250</span></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000175756  AURKAIP1    <span class="fl">17344.09</span>         <span class="dv">1060</span> <span class="fl">17247.44</span>     <span class="dv">1064</span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000242485    MRPL20    <span class="fl">17629.33</span>         <span class="dv">1023</span> <span class="fl">17585.70</span>     <span class="dv">1013</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000179403      VWA1    <span class="fl">12860.93</span>         <span class="dv">1726</span> <span class="fl">12860.90</span>     <span class="dv">1709</span></span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000160075     SSU72    <span class="fl">16145.20</span>         <span class="dv">1255</span> <span class="fl">16141.12</span>     <span class="dv">1243</span></span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000078369      GNB1    <span class="fl">22402.83</span>          <span class="dv">516</span> <span class="fl">22314.17</span>      <span class="dv">509</span></span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>        d_diff nSD_dev_sex r_diff nSD_rank_sex</span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="dv">1</span> <span class="fl">4.234208e-04</span>  <span class="sc">-</span><span class="fl">0.2615600</span>    <span class="sc">-</span><span class="dv">12</span>   <span class="sc">-</span><span class="fl">0.3080188</span></span>
-<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="dv">2</span> <span class="fl">5.603690e-03</span>  <span class="sc">-</span><span class="fl">0.1013769</span>      <span class="dv">4</span>    <span class="fl">0.1026729</span></span>
-<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="dv">3</span> <span class="fl">2.480783e-03</span>  <span class="sc">-</span><span class="fl">0.1979427</span>    <span class="sc">-</span><span class="dv">10</span>   <span class="sc">-</span><span class="fl">0.2566824</span></span>
-<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="dv">4</span> <span class="fl">1.811106e-06</span>  <span class="sc">-</span><span class="fl">0.2745969</span>    <span class="sc">-</span><span class="dv">17</span>   <span class="sc">-</span><span class="fl">0.4363600</span></span>
-<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="dv">5</span> <span class="fl">2.527558e-04</span>  <span class="sc">-</span><span class="fl">0.2668373</span>    <span class="sc">-</span><span class="dv">12</span>   <span class="sc">-</span><span class="fl">0.3080188</span></span>
-<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="dv">6</span> <span class="fl">3.973515e-03</span>  <span class="sc">-</span><span class="fl">0.1517848</span>     <span class="sc">-</span><span class="dv">7</span>   <span class="sc">-</span><span class="fl">0.1796776</span></span></code></pre></div>
+<p>We will use the example of applying <code><a href="../reference/featureSelect.html">featureSelect()</a></code> to
+the sample dataset while adjusting for the batch effect of
+<em>subject</em>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>list_batch_df <span class="ot">&lt;-</span> <span class="fu">featureSelect</span>(<span class="at">input =</span> spatialLIBD_spe, </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="at">batch_effect =</span> <span class="st">"subject"</span>, <span class="at">VGs =</span> libd_nnsvgs<span class="sc">$</span>gene_id)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>Running feature selection without batch...</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>Batch Effect<span class="sc">:</span> subject</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>Running feature selection without batch...</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>Calculating deviance and rank difference...</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">class</span>(list_batch_df)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">"list"</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">head</span>(list_batch_df<span class="sc">$</span>subject)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default dev_subject rank_subject</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000187608     ISG15    <span class="fl">43591.43</span>         <span class="dv">1151</span>    <span class="fl">43304.39</span>         <span class="dv">1157</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000131584     ACAP3    <span class="fl">39115.97</span>         <span class="dv">1498</span>    <span class="fl">38826.05</span>         <span class="dv">1509</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000242485    MRPL20    <span class="fl">47074.23</span>          <span class="dv">920</span>    <span class="fl">46912.53</span>          <span class="dv">918</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000160075     SSU72    <span class="fl">47815.13</span>          <span class="dv">862</span>    <span class="fl">47742.10</span>          <span class="dv">852</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000078369      GNB1    <span class="fl">54464.75</span>          <span class="dv">477</span>    <span class="fl">54385.81</span>          <span class="dv">462</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000187730     GABRD    <span class="fl">51521.13</span>          <span class="dv">646</span>    <span class="fl">51099.35</span>          <span class="dv">648</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>       d_diff nSD_dev_subject r_diff nSD_rank_subject</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="dv">1</span> <span class="fl">0.006628419</span>     <span class="sc">-</span><span class="fl">0.04505973</span>      <span class="dv">6</span>       <span class="fl">0.15937488</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.007467317</span>     <span class="sc">-</span><span class="fl">0.03697398</span>     <span class="dv">11</span>       <span class="fl">0.29218728</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="dv">3</span> <span class="fl">0.003446929</span>     <span class="sc">-</span><span class="fl">0.07572463</span>     <span class="sc">-</span><span class="dv">2</span>      <span class="sc">-</span><span class="fl">0.05312496</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.001529688</span>     <span class="sc">-</span><span class="fl">0.09420402</span>    <span class="sc">-</span><span class="dv">10</span>      <span class="sc">-</span><span class="fl">0.26562480</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="dv">5</span> <span class="fl">0.001451448</span>     <span class="sc">-</span><span class="fl">0.09495814</span>    <span class="sc">-</span><span class="dv">15</span>      <span class="sc">-</span><span class="fl">0.39843720</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="dv">6</span> <span class="fl">0.008254157</span>     <span class="sc">-</span><span class="fl">0.02939000</span>      <span class="dv">2</span>       <span class="fl">0.05312496</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="visualize-svg-selection-using-svg_nsd-for-batch-effects">Visualize SVG Selection Using <code>svg_nSD</code> for Batch
@@ -314,23 +204,14 @@ thresholds for filtering biased features. The left panels illustrate the
 distribution of SVGs in terms of deviance and rank difference, while the
 right panels compare values before and after accounting for batch
 effects.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svg_nSD.html">svg_nSD</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, </span>
-<span>                sd_interval_dev <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span><span class="op">)</span>, sd_interval_rank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plots</span><span class="op">$</span><span class="va">sample_id</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/svg%20sample-1.png" width="960"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plots</span><span class="op">$</span><span class="va">sex</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/svg%20sex-1.png" width="960"></p>
-<p>We can also apply <code><a href="../reference/svg_nSD.html">svg_nSD()</a></code> to a single batch effect.
-Note that the function requires the input to be a list of data frames,
-even when analyzing only one batch.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svg_nSD.html">svg_nSD</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, </span>
-<span>                sd_interval_dev <span class="op">=</span> <span class="fl">5</span>, sd_interval_rank <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
-<span><span class="va">plots</span><span class="op">$</span><span class="va">sample_id</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/svg%20one%20plot-1.png" width="960"></p>
+<span>            sd_interval_dev <span class="op">=</span> <span class="fl">3</span>, sd_interval_rank <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><em>Figure 1. Visualizations of nSD_dev and nSD_rank threshold
+selection</em></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plots</span><span class="op">$</span><span class="va">subject</span></span></code></pre></div>
+<p><img src="spe_files/figure-html/figure%201-1.png" width="960"></p>
 </div>
 <div class="section level4">
 <h4 id="identify-biased-genes-using-biasdetect">Identify Biased Genes Using <code>biasDetect()</code><a class="anchor" aria-label="anchor" href="#identify-biased-genes-using-biasdetect"></a>
@@ -339,7 +220,7 @@ even when analyzing only one batch.</p>
 filter out biased genes across different batch effects. Using threshold
 values selected from the visualization results generated by
 <code><a href="../reference/svg_nSD.html">svg_nSD()</a></code>, this function systematically detects outliers
-that exceed a specified normalized standard deviation (nSD) threshold in
+that exceed a specified number of standard deviation (nSD) threshold in
 either relative deviance change, rank difference, or both.</p>
 <p>The function outputs visualizations comparing deviance and rank
 values with and without batch effects. Genes with high deviations,
@@ -349,12 +230,12 @@ excluded based on the selected nSD thresholds.</p>
 allowing users to adjust the data point size
 (<strong>plot_point_size</strong>), shape
 (<strong>plot_point_shape</strong>), annotated text size
-(<strong>plot_text_size</strong>), and data point color pallete
-(<strong>plot_pallete</strong>). Default values are provided for these
+(<strong>plot_text_size</strong>), and data point color palette
+(<strong>plot_palette</strong>). Default values are provided for these
 parameters if not specified. Users should refer to <a href="https://ggplot2.tidyverse.org/index.html" class="external-link">ggplot2</a> aesthetic
 guidelines to ensure appropriate values are assigned for each
 parameter.</p>
-<p>We will use <code>nSD_dev = 7</code> and <code>nSD_rank = 6</code> as
+<p>We will use <code>nSD_dev = 3</code> and <code>nSD_rank = 3</code> as
 the example. The user should adjust the value based on their dataset
 features.</p>
 <p><strong>Usage of Different Threshold Options</strong></p>
@@ -365,136 +246,122 @@ the relative change in deviance. Genes with deviance changes exceeding
 the specified <code>nSD_dev</code> threshold are identified as
 batch-affected and can be removed.</li>
 </ul>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bias_dev</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/biasDetect.html">biasDetect</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, </span>
-<span>    threshold <span class="op">=</span> <span class="st">"dev"</span>, nSD_dev <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">head</span>(bias_dev<span class="sc">$</span>sample_id<span class="sc">$</span>Table)</span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default dev_sample_id</span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000174576     NPAS4    <span class="fl">35003.31</span>          <span class="dv">125</span>     <span class="fl">24629.414</span></span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000123358     NR4A1    <span class="fl">23299.81</span>          <span class="dv">457</span>     <span class="fl">16115.928</span></span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000170345       FOS    <span class="fl">42305.65</span>           <span class="dv">73</span>     <span class="fl">27146.089</span></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000256618  MTRNR2L1    <span class="fl">69206.34</span>           <span class="dv">28</span>     <span class="fl">24876.086</span></span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000118271       TTR  <span class="fl">4719046.58</span>            <span class="dv">1</span>   <span class="fl">3292127.945</span></span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000229807      XIST    <span class="fl">15223.50</span>         <span class="dv">1408</span>      <span class="fl">8819.689</span></span>
-<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>  rank_sample_id    d_diff nSD_dev_sample_id r_diff nSD_rank_sample_id</span>
-<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="dv">1</span>            <span class="dv">363</span> <span class="fl">0.4211996</span>          <span class="fl">7.669653</span>    <span class="dv">238</span>           <span class="fl">5.569286</span></span>
-<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="dv">2</span>           <span class="dv">1226</span> <span class="fl">0.4457631</span>          <span class="fl">8.138234</span>    <span class="dv">769</span>          <span class="fl">17.994876</span></span>
-<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="dv">3</span>            <span class="dv">263</span> <span class="fl">0.5584435</span>         <span class="fl">10.287758</span>    <span class="dv">190</span>           <span class="fl">4.446068</span></span>
-<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="dv">4</span>            <span class="dv">351</span> <span class="fl">1.7820430</span>         <span class="fl">33.629502</span>    <span class="dv">323</span>           <span class="fl">7.558316</span></span>
-<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a><span class="dv">5</span>              <span class="dv">1</span> <span class="fl">0.4334335</span>          <span class="fl">7.903030</span>      <span class="dv">0</span>           <span class="fl">0.000000</span></span>
-<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a><span class="dv">6</span>           <span class="dv">2050</span> <span class="fl">0.7260812</span>         <span class="fl">13.485664</span>    <span class="dv">642</span>          <span class="fl">15.023031</span></span>
-<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a>  nSD_bin_dev dev_outlier</span>
-<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a><span class="dv">1</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a><span class="dv">2</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb18-19"><a href="#cb18-19" tabindex="-1"></a><span class="dv">3</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb18-20"><a href="#cb18-20" tabindex="-1"></a><span class="dv">4</span>     [<span class="dv">28</span>,<span class="dv">35</span>]        <span class="cn">TRUE</span></span>
-<span id="cb18-21"><a href="#cb18-21" tabindex="-1"></a><span class="dv">5</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb18-22"><a href="#cb18-22" tabindex="-1"></a><span class="dv">6</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bias_dev</span><span class="op">$</span><span class="va">sample_id</span><span class="op">$</span><span class="va">Plot</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/bias%20detect%20dev%20plot-1.png" width="700"></p>
+<span>    threshold <span class="op">=</span> <span class="st">"dev"</span>, nSD_dev <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><em>Table 1. Outlier Genes defined by nSD_dev only</em></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">head</span>(bias_dev<span class="sc">$</span>subject<span class="sc">$</span>Table)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default dev_subject rank_subject</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000255823  MTRNR2L8    <span class="fl">286927.9</span>            <span class="dv">5</span>    <span class="fl">67738.95</span>           <span class="dv">77</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000087250       MT3    <span class="fl">115108.2</span>           <span class="dv">21</span>    <span class="fl">86093.50</span>           <span class="dv">31</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000256618  MTRNR2L1    <span class="fl">167381.9</span>           <span class="dv">14</span>    <span class="fl">40299.65</span>         <span class="dv">1368</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000198840    MT<span class="sc">-</span>ND3    <span class="fl">170192.2</span>           <span class="dv">12</span>   <span class="fl">120647.03</span>           <span class="dv">17</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>     d_diff nSD_dev_subject r_diff nSD_rank_subject nSD_bin_dev dev_outlier</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="dv">1</span> <span class="fl">3.2357886</span>       <span class="fl">31.079310</span>     <span class="dv">72</span>        <span class="fl">1.9124986</span>     [<span class="dv">30</span>,<span class="dv">33</span>]        <span class="cn">TRUE</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.3370142</span>        <span class="fl">3.139375</span>     <span class="dv">10</span>        <span class="fl">0.2656248</span>       [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="dv">3</span> <span class="fl">3.1534316</span>       <span class="fl">30.285509</span>   <span class="dv">1354</span>       <span class="fl">35.9655982</span>     [<span class="dv">30</span>,<span class="dv">33</span>]        <span class="cn">TRUE</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.4106625</span>        <span class="fl">3.849237</span>      <span class="dv">5</span>        <span class="fl">0.1328124</span>       [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>        <span class="cn">TRUE</span></span></code></pre></div>
 <p>We can change the data point size using
 <strong>plot_point_size</strong>.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># size default = 3</span></span>
 <span><span class="va">bias_dev_size</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/biasDetect.html">biasDetect</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, </span>
-<span>    threshold <span class="op">=</span> <span class="st">"dev"</span>, nSD_dev <span class="op">=</span> <span class="fl">7</span>, plot_point_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_dev_size</span><span class="op">$</span><span class="va">sample_id</span><span class="op">$</span><span class="va">Plot</span>,<span class="va">bias_dev_size</span><span class="op">$</span><span class="va">sex</span><span class="op">$</span><span class="va">Plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/size%20change-1.png" width="960"></p>
+<span>    threshold <span class="op">=</span> <span class="st">"dev"</span>, nSD_dev <span class="op">=</span> <span class="fl">3</span>, plot_point_size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<p><em>Figure 2. Customize point size</em></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_dev</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span>, <span class="va">bias_dev_size</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spe_files/figure-html/figure%202-1.png" width="960"></p>
 <ul>
 <li>
 <code>threshold = "rank"</code>: Identifies biased genes based
 solely on rank difference. Genes with rank shifts exceeding
 <code>nSD_rank</code> are considered biased.</li>
 </ul>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bias_rank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/biasDetect.html">biasDetect</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, </span>
-<span>    threshold <span class="op">=</span> <span class="st">"rank"</span>, nSD_rank <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">head</span>(bias_rank<span class="sc">$</span>sex<span class="sc">$</span>Table)</span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default  dev_sex rank_sex</span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000159388      BTG2    <span class="fl">18311.28</span>          <span class="dv">926</span> <span class="fl">14257.70</span>     <span class="dv">1543</span></span>
-<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000135625      EGR4    <span class="fl">20336.84</span>          <span class="dv">705</span> <span class="fl">17851.54</span>      <span class="dv">972</span></span>
-<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000120738      EGR1    <span class="fl">19882.54</span>          <span class="dv">752</span> <span class="fl">17444.96</span>     <span class="dv">1037</span></span>
-<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000120129     DUSP1    <span class="fl">25054.85</span>          <span class="dv">365</span> <span class="fl">19007.41</span>      <span class="dv">834</span></span>
-<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000204388    HSPA1B    <span class="fl">19085.73</span>          <span class="dv">841</span> <span class="fl">16440.69</span>     <span class="dv">1197</span></span>
-<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000130222   GADD45G    <span class="fl">16565.74</span>         <span class="dv">1191</span> <span class="fl">13815.91</span>     <span class="dv">1592</span></span>
-<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>     d_diff nSD_dev_sex r_diff nSD_rank_sex nSD_bin_rank rank_outlier</span>
-<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a><span class="dv">1</span> <span class="fl">0.2843081</span>    <span class="fl">8.516661</span>    <span class="dv">617</span>    <span class="fl">15.837301</span>      [<span class="dv">12</span>,<span class="dv">18</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.1392207</span>    <span class="fl">4.030301</span>    <span class="dv">267</span>     <span class="fl">6.853419</span>       [<span class="dv">6</span>,<span class="dv">12</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a><span class="dv">3</span> <span class="fl">0.1397297</span>    <span class="fl">4.046039</span>    <span class="dv">285</span>     <span class="fl">7.315447</span>       [<span class="dv">6</span>,<span class="dv">12</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.3181621</span>    <span class="fl">9.563487</span>    <span class="dv">469</span>    <span class="fl">12.038402</span>      [<span class="dv">12</span>,<span class="dv">18</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a><span class="dv">5</span> <span class="fl">0.1608836</span>    <span class="fl">4.700155</span>    <span class="dv">356</span>     <span class="fl">9.137892</span>       [<span class="dv">6</span>,<span class="dv">12</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a><span class="dv">6</span> <span class="fl">0.1990332</span>    <span class="fl">5.879808</span>    <span class="dv">401</span>    <span class="fl">10.292962</span>       [<span class="dv">6</span>,<span class="dv">12</span><span class="er">)</span>         <span class="cn">TRUE</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bias_rank</span><span class="op">$</span><span class="va">sex</span><span class="op">$</span><span class="va">Plot</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/bias%20detect%20rank%20plot-1.png" width="700"></p>
+<span>    threshold <span class="op">=</span> <span class="st">"rank"</span>, nSD_rank <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><em>Table 2. Outlier Genes defined by nSD_rank only</em></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">head</span>(bias_rank<span class="sc">$</span>subject<span class="sc">$</span>Table)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default dev_subject rank_subject</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000184144     CNTN2    <span class="fl">44388.43</span>         <span class="dv">1101</span>    <span class="fl">42016.77</span>         <span class="dv">1258</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000136541      ERMN    <span class="fl">48106.50</span>          <span class="dv">844</span>    <span class="fl">44879.30</span>         <span class="dv">1036</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000013297    CLDN11    <span class="fl">53385.84</span>          <span class="dv">539</span>    <span class="fl">49776.21</span>          <span class="dv">732</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000164124   TMEM144    <span class="fl">39407.07</span>         <span class="dv">1471</span>    <span class="fl">37587.88</span>         <span class="dv">1605</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000204655       MOG    <span class="fl">37293.40</span>         <span class="dv">1648</span>    <span class="fl">35613.38</span>         <span class="dv">1762</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000091129     NRCAM    <span class="fl">51388.42</span>          <span class="dv">655</span>    <span class="fl">49006.18</span>          <span class="dv">776</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>      d_diff nSD_dev_subject r_diff nSD_rank_subject nSD_bin_rank rank_outlier</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="dv">1</span> <span class="fl">0.05644564</span>       <span class="fl">0.4351052</span>    <span class="dv">157</span>         <span class="fl">4.170309</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.07190853</span>       <span class="fl">0.5841448</span>    <span class="dv">192</span>         <span class="fl">5.099996</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="dv">3</span> <span class="fl">0.07251725</span>       <span class="fl">0.5900120</span>    <span class="dv">193</span>         <span class="fl">5.126559</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.04839817</span>       <span class="fl">0.3575395</span>    <span class="dv">134</span>         <span class="fl">3.559372</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="dv">5</span> <span class="fl">0.04717397</span>       <span class="fl">0.3457399</span>    <span class="dv">114</span>         <span class="fl">3.028123</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a><span class="dv">6</span> <span class="fl">0.04861096</span>       <span class="fl">0.3595904</span>    <span class="dv">121</span>         <span class="fl">3.214060</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span></code></pre></div>
 <p>We can change the data point shape using
 <strong>plot_point_shape</strong>.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<p><em>Figure 3. Customize point shape</em></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># shape default = 16</span></span>
 <span><span class="va">bias_rank_shape</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/biasDetect.html">biasDetect</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, </span>
-<span>    threshold <span class="op">=</span> <span class="st">"rank"</span>, nSD_rank <span class="op">=</span> <span class="fl">6</span>, plot_point_shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">18</span><span class="op">)</span><span class="op">)</span></span>
+<span>    threshold <span class="op">=</span> <span class="st">"rank"</span>, nSD_rank <span class="op">=</span> <span class="fl">3</span>, plot_point_shape <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_rank_shape</span><span class="op">$</span><span class="va">sample_id</span><span class="op">$</span><span class="va">Plot</span>,<span class="va">bias_rank_shape</span><span class="op">$</span><span class="va">sex</span><span class="op">$</span><span class="va">Plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/shape%20change-1.png" width="960"></p>
+<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_rank</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span>, <span class="va">bias_rank_shape</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spe_files/figure-html/figure%203-1.png" width="960"></p>
 <ul>
 <li>
 <code>threshold = "both"</code>: Detects biased genes based on both
 deviance change and rank difference, providing a more stringent
 filtering approach.</li>
 </ul>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bias_both</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/biasDetect.html">biasDetect</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, threshold <span class="op">=</span> <span class="st">"both"</span>,</span>
-<span>    nSD_dev <span class="op">=</span> <span class="fl">7</span>, nSD_rank <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bias_both</span><span class="op">$</span><span class="va">sample_id</span><span class="op">$</span><span class="va">Plot</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/both%20plot-1.png" width="960"></p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">head</span>(bias_both<span class="sc">$</span>sex<span class="sc">$</span>Table)</span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default   dev_sex rank_sex</span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000173110     HSPA6    <span class="fl">9887.942</span>         <span class="dv">2011</span>  <span class="fl">7867.831</span>     <span class="dv">2074</span></span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000159388      BTG2   <span class="fl">18311.285</span>          <span class="dv">926</span> <span class="fl">14257.704</span>     <span class="dv">1543</span></span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000135625      EGR4   <span class="fl">20336.842</span>          <span class="dv">705</span> <span class="fl">17851.538</span>      <span class="dv">972</span></span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000120738      EGR1   <span class="fl">19882.541</span>          <span class="dv">752</span> <span class="fl">17444.962</span>     <span class="dv">1037</span></span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000120129     DUSP1   <span class="fl">25054.848</span>          <span class="dv">365</span> <span class="fl">19007.410</span>      <span class="dv">834</span></span>
-<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000204389    HSPA1A   <span class="fl">52523.899</span>           <span class="dv">47</span> <span class="fl">41069.968</span>       <span class="dv">75</span></span>
-<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a>     d_diff nSD_dev_sex r_diff nSD_rank_sex nSD_bin_dev dev_outlier</span>
-<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a><span class="dv">1</span> <span class="fl">0.2567557</span>    <span class="fl">7.664691</span>     <span class="dv">63</span>    <span class="fl">1.6170988</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.2843081</span>    <span class="fl">8.516661</span>    <span class="dv">617</span>   <span class="fl">15.8373012</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb27-12"><a href="#cb27-12" tabindex="-1"></a><span class="dv">3</span> <span class="fl">0.1392207</span>    <span class="fl">4.030301</span>    <span class="dv">267</span>    <span class="fl">6.8534188</span>       [<span class="dv">0</span>,<span class="dv">7</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
-<span id="cb27-13"><a href="#cb27-13" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.1397297</span>    <span class="fl">4.046039</span>    <span class="dv">285</span>    <span class="fl">7.3154471</span>       [<span class="dv">0</span>,<span class="dv">7</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
-<span id="cb27-14"><a href="#cb27-14" tabindex="-1"></a><span class="dv">5</span> <span class="fl">0.3181621</span>    <span class="fl">9.563487</span>    <span class="dv">469</span>   <span class="fl">12.0384024</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb27-15"><a href="#cb27-15" tabindex="-1"></a><span class="dv">6</span> <span class="fl">0.2788882</span>    <span class="fl">8.349068</span>     <span class="dv">28</span>    <span class="fl">0.7187106</span>      [<span class="dv">7</span>,<span class="dv">14</span><span class="er">)</span>        <span class="cn">TRUE</span></span>
-<span id="cb27-16"><a href="#cb27-16" tabindex="-1"></a>  nSD_bin_rank rank_outlier</span>
-<span id="cb27-17"><a href="#cb27-17" tabindex="-1"></a><span class="dv">1</span>        [<span class="dv">0</span>,<span class="dv">6</span><span class="er">)</span>        <span class="cn">FALSE</span></span>
-<span id="cb27-18"><a href="#cb27-18" tabindex="-1"></a><span class="dv">2</span>      [<span class="dv">12</span>,<span class="dv">18</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb27-19"><a href="#cb27-19" tabindex="-1"></a><span class="dv">3</span>       [<span class="dv">6</span>,<span class="dv">12</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb27-20"><a href="#cb27-20" tabindex="-1"></a><span class="dv">4</span>       [<span class="dv">6</span>,<span class="dv">12</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb27-21"><a href="#cb27-21" tabindex="-1"></a><span class="dv">5</span>      [<span class="dv">12</span>,<span class="dv">18</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
-<span id="cb27-22"><a href="#cb27-22" tabindex="-1"></a><span class="dv">6</span>        [<span class="dv">0</span>,<span class="dv">6</span><span class="er">)</span>        <span class="cn">FALSE</span></span></code></pre></div>
+<span>    nSD_dev <span class="op">=</span> <span class="fl">3</span>, nSD_rank <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<p><em>Table 3. Outlier Genes defined by nSD_dev and nSD_rank</em></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">head</span>(bias_both<span class="sc">$</span>subject<span class="sc">$</span>Table)</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>          gene_id gene_name dev_default rank_default dev_subject rank_subject</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="dv">1</span> ENSG00000184144     CNTN2    <span class="fl">44388.43</span>         <span class="dv">1101</span>    <span class="fl">42016.77</span>         <span class="dv">1258</span></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="dv">2</span> ENSG00000136541      ERMN    <span class="fl">48106.50</span>          <span class="dv">844</span>    <span class="fl">44879.30</span>         <span class="dv">1036</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="dv">3</span> ENSG00000013297    CLDN11    <span class="fl">53385.84</span>          <span class="dv">539</span>    <span class="fl">49776.21</span>          <span class="dv">732</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="dv">4</span> ENSG00000164124   TMEM144    <span class="fl">39407.07</span>         <span class="dv">1471</span>    <span class="fl">37587.88</span>         <span class="dv">1605</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="dv">5</span> ENSG00000204655       MOG    <span class="fl">37293.40</span>         <span class="dv">1648</span>    <span class="fl">35613.38</span>         <span class="dv">1762</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="dv">6</span> ENSG00000091129     NRCAM    <span class="fl">51388.42</span>          <span class="dv">655</span>    <span class="fl">49006.18</span>          <span class="dv">776</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>      d_diff nSD_dev_subject r_diff nSD_rank_subject nSD_bin_dev dev_outlier</span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="dv">1</span> <span class="fl">0.05644564</span>       <span class="fl">0.4351052</span>    <span class="dv">157</span>         <span class="fl">4.170309</span>       [<span class="dv">0</span>,<span class="dv">3</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="dv">2</span> <span class="fl">0.07190853</span>       <span class="fl">0.5841448</span>    <span class="dv">192</span>         <span class="fl">5.099996</span>       [<span class="dv">0</span>,<span class="dv">3</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="dv">3</span> <span class="fl">0.07251725</span>       <span class="fl">0.5900120</span>    <span class="dv">193</span>         <span class="fl">5.126559</span>       [<span class="dv">0</span>,<span class="dv">3</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a><span class="dv">4</span> <span class="fl">0.04839817</span>       <span class="fl">0.3575395</span>    <span class="dv">134</span>         <span class="fl">3.559372</span>       [<span class="dv">0</span>,<span class="dv">3</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="dv">5</span> <span class="fl">0.04717397</span>       <span class="fl">0.3457399</span>    <span class="dv">114</span>         <span class="fl">3.028123</span>       [<span class="dv">0</span>,<span class="dv">3</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a><span class="dv">6</span> <span class="fl">0.04861096</span>       <span class="fl">0.3595904</span>    <span class="dv">121</span>         <span class="fl">3.214060</span>       [<span class="dv">0</span>,<span class="dv">3</span><span class="er">)</span>       <span class="cn">FALSE</span></span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a>  nSD_bin_rank rank_outlier</span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="dv">1</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="dv">2</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a><span class="dv">3</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a><span class="dv">4</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a><span class="dv">5</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span>
+<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a><span class="dv">6</span>        [<span class="dv">3</span>,<span class="dv">6</span><span class="er">)</span>         <span class="cn">TRUE</span></span></code></pre></div>
 <p>We can change the data point color using
-<strong>plot_pallete</strong>. The color pallete <a href="https://r-graph-gallery.com/38-rcolorbrewers-palettes.html" class="external-link">here</a>
+<strong>plot_palette</strong>. The color palette <a href="https://r-graph-gallery.com/38-rcolorbrewers-palettes.html" class="external-link">here</a>
 can be referenced on since the function uses <code>RColorBrewer</code>
 to generate colors.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<p><em>Figure 4. Customize the palette color</em></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># color default = "YlOrRd"</span></span>
 <span><span class="va">bias_both_color</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/biasDetect.html">biasDetect</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, </span>
-<span>    threshold <span class="op">=</span> <span class="st">"both"</span>, nSD_dev <span class="op">=</span> <span class="fl">7</span>, nSD_rank <span class="op">=</span> <span class="fl">6</span>, plot_pallete <span class="op">=</span> <span class="st">"Greens"</span><span class="op">)</span></span>
+<span>    threshold <span class="op">=</span> <span class="st">"both"</span>, nSD_dev <span class="op">=</span> <span class="fl">3</span>, nSD_rank <span class="op">=</span> <span class="fl">3</span>, plot_palette <span class="op">=</span> <span class="st">"Greens"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_both_color</span><span class="op">$</span><span class="va">sample_id</span><span class="op">$</span><span class="va">Plot</span>,<span class="va">bias_both_color</span><span class="op">$</span><span class="va">sex</span><span class="op">$</span><span class="va">Plot</span>,nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/color%20change-1.png" width="960"></p>
+<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_both</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span>, <span class="va">bias_both_color</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span>,nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spe_files/figure-html/figure%204-1.png" width="960"></p>
 <p>We can change the text size using <strong>plot_text_size</strong>. We
-also specify the color palletes for both batch effects at the same
+also specify the color palettes for both batch effects at the same
 time.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<p><em>Figure 5. Customize text size and color palette</em></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># text size default = 3</span></span>
 <span><span class="va">bias_both_color_text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/biasDetect.html">biasDetect</a></span><span class="op">(</span>list_batch_df <span class="op">=</span> <span class="va">list_batch_df</span>, </span>
-<span>    threshold <span class="op">=</span> <span class="st">"both"</span>, nSD_dev <span class="op">=</span> <span class="fl">7</span>, nSD_rank <span class="op">=</span> <span class="fl">6</span>, </span>
-<span>    plot_pallete <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Blues"</span>,<span class="st">"Greens"</span><span class="op">)</span>, plot_text_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span>    threshold <span class="op">=</span> <span class="st">"both"</span>, nSD_dev <span class="op">=</span> <span class="fl">3</span>, nSD_rank <span class="op">=</span> <span class="fl">3</span>, </span>
+<span>    plot_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Blues"</span><span class="op">)</span>, plot_text_size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_both_color_text</span><span class="op">$</span><span class="va">sample_id</span><span class="op">$</span><span class="va">Plot</span>,</span>
-<span>    <span class="va">bias_both_color_text</span><span class="op">$</span><span class="va">sex</span><span class="op">$</span><span class="va">Plot</span>,nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="spe_files/figure-html/text%20change-1.png" width="960"></p>
+<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">bias_both</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span>, <span class="va">bias_both_color_text</span><span class="op">$</span><span class="va">subject</span><span class="op">$</span><span class="va">Plot</span>,nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="spe_files/figure-html/figure%205-1.png" width="960"></p>
 </div>
 <div class="section level4">
 <h4 id="refine-svgs-by-removing-batch-affected-outliers">Refine SVGs by Removing Batch-Affected Outliers<a class="anchor" aria-label="anchor" href="#refine-svgs-by-removing-batch-affected-outliers"></a>
@@ -505,11 +372,11 @@ by removing the identified outliers based on user-defined thresholds for
 <p>Here, we use the results from bias_both, which applied
 <code>threshold = "both"</code> to account for both deviance and rank
 differences, with the batch effect set to sample ID.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>bias_both_df <span class="ot">&lt;-</span> bias_both<span class="sc">$</span>sample_id<span class="sc">$</span>Table</span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>svgs_filt <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(svgs_sub4<span class="sc">$</span>gene_id, bias_both_df<span class="sc">$</span>gene_id)</span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>svgs_sub4_filt <span class="ot">&lt;-</span> svgs_sub4[svgs_sub4<span class="sc">$</span>gene_id <span class="sc">%in%</span> svgs_filt, ]</span>
-<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="fu">nrow</span>(svgs_sub4_filt)</span>
-<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2067</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>bias_both_df <span class="ot">&lt;-</span> bias_both<span class="sc">$</span>subject<span class="sc">$</span>Table</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>svgs_filt <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(libd_nnsvgs<span class="sc">$</span>gene_id, bias_both_df<span class="sc">$</span>gene_id)</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>svgs_filt_spe <span class="ot">&lt;-</span> libd_nnsvgs[libd_nnsvgs<span class="sc">$</span>gene_id <span class="sc">%in%</span> svgs_filt, ]</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="fu">nrow</span>(svgs_filt_spe)</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">1951</span></span></code></pre></div>
 <p>After obtaining the refined set of SVGs, these genes can be further
 analyzed using established spatial transcriptomics clustering algorithms
 to explore tissue layers and spatial organization.</p>
@@ -519,7 +386,7 @@ to explore tissue layers and spatial organization.</p>
 <h3 class="unnumbered" id="r-session-information">
 <code>R</code> session information<a class="anchor" aria-label="anchor" href="#r-session-information"></a>
 </h3>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Session info</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.4.3 (2025-02-28)</span></span>
@@ -544,48 +411,63 @@ to explore tissue layers and spatial organization.</p>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] cowplot_1.1.3               tibble_3.2.1               </span></span>
-<span><span class="co">#&gt;  [3] dplyr_1.1.4                 tidyr_1.3.1                </span></span>
-<span><span class="co">#&gt;  [5] SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1</span></span>
-<span><span class="co">#&gt;  [7] SummarizedExperiment_1.36.0 Biobase_2.66.0             </span></span>
-<span><span class="co">#&gt;  [9] GenomicRanges_1.58.0        GenomeInfoDb_1.42.3        </span></span>
-<span><span class="co">#&gt; [11] IRanges_2.40.1              S4Vectors_0.44.0           </span></span>
-<span><span class="co">#&gt; [13] MatrixGenerics_1.18.1       matrixStats_1.5.0          </span></span>
-<span><span class="co">#&gt; [15] ExperimentHub_2.14.0        AnnotationHub_3.14.0       </span></span>
-<span><span class="co">#&gt; [17] BiocFileCache_2.14.0        dbplyr_2.5.0               </span></span>
-<span><span class="co">#&gt; [19] BiocGenerics_0.52.0         BatchSVG_0.99.3            </span></span>
-<span><span class="co">#&gt; [21] BiocStyle_2.34.0           </span></span>
+<span><span class="co">#&gt;  [1] cowplot_1.1.3               spatialLIBD_1.18.0         </span></span>
+<span><span class="co">#&gt;  [3] SpatialExperiment_1.16.0    SingleCellExperiment_1.28.1</span></span>
+<span><span class="co">#&gt;  [5] SummarizedExperiment_1.36.0 Biobase_2.66.0             </span></span>
+<span><span class="co">#&gt;  [7] GenomicRanges_1.58.0        GenomeInfoDb_1.42.3        </span></span>
+<span><span class="co">#&gt;  [9] IRanges_2.40.1              S4Vectors_0.44.0           </span></span>
+<span><span class="co">#&gt; [11] BiocGenerics_0.52.0         MatrixGenerics_1.18.1      </span></span>
+<span><span class="co">#&gt; [13] matrixStats_1.5.0           BatchSVG_0.99.7            </span></span>
+<span><span class="co">#&gt; [15] BiocStyle_2.34.0           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] DBI_1.2.3               rlang_1.1.5             magrittr_2.0.3         </span></span>
-<span><span class="co">#&gt;  [4] compiler_4.4.3          RSQLite_2.3.9           png_0.1-8              </span></span>
-<span><span class="co">#&gt;  [7] systemfonts_1.2.1       vctrs_0.6.5             pkgconfig_2.0.3        </span></span>
-<span><span class="co">#&gt; [10] crayon_1.5.3            fastmap_1.2.0           magick_2.8.5           </span></span>
-<span><span class="co">#&gt; [13] XVector_0.46.0          labeling_0.4.3          rmarkdown_2.29         </span></span>
-<span><span class="co">#&gt; [16] UCSC.utils_1.2.0        ragg_1.3.3              purrr_1.0.4            </span></span>
-<span><span class="co">#&gt; [19] bit_4.6.0               xfun_0.51               zlibbioc_1.52.0        </span></span>
-<span><span class="co">#&gt; [22] cachem_1.1.0            beachmat_2.22.0         jsonlite_1.9.1         </span></span>
-<span><span class="co">#&gt; [25] blob_1.2.4              DelayedArray_0.32.0     BiocParallel_1.40.0    </span></span>
-<span><span class="co">#&gt; [28] irlba_2.3.5.1           parallel_4.4.3          R6_2.6.1               </span></span>
-<span><span class="co">#&gt; [31] bslib_0.9.0             RColorBrewer_1.1-3      jquerylib_0.1.4        </span></span>
-<span><span class="co">#&gt; [34] Rcpp_1.0.14             bookdown_0.42           knitr_1.49             </span></span>
-<span><span class="co">#&gt; [37] Matrix_1.7-2            tidyselect_1.2.1        abind_1.4-8            </span></span>
-<span><span class="co">#&gt; [40] yaml_2.3.10             codetools_0.2-20        curl_6.2.1             </span></span>
-<span><span class="co">#&gt; [43] lattice_0.22-6          scry_1.18.0             withr_3.0.2            </span></span>
-<span><span class="co">#&gt; [46] KEGGREST_1.46.0         evaluate_1.0.3          desc_1.4.3             </span></span>
-<span><span class="co">#&gt; [49] Biostrings_2.74.1       pillar_1.10.1           BiocManager_1.30.25    </span></span>
-<span><span class="co">#&gt; [52] filelock_1.0.3          generics_0.1.3          BiocVersion_3.20.0     </span></span>
-<span><span class="co">#&gt; [55] ggplot2_3.5.1           munsell_0.5.1           scales_1.3.0           </span></span>
-<span><span class="co">#&gt; [58] glue_1.8.0              tools_4.4.3             ScaledMatrix_1.14.0    </span></span>
-<span><span class="co">#&gt; [61] fs_1.6.5                grid_4.4.3              AnnotationDbi_1.68.0   </span></span>
-<span><span class="co">#&gt; [64] colorspace_2.1-1        GenomeInfoDbData_1.2.13 BiocSingular_1.22.0    </span></span>
-<span><span class="co">#&gt; [67] cli_3.6.4               rsvd_1.0.5              rappdirs_0.3.3         </span></span>
-<span><span class="co">#&gt; [70] textshaping_1.0.0       S4Arrays_1.6.0          gtable_0.3.6           </span></span>
-<span><span class="co">#&gt; [73] sass_0.4.9              digest_0.6.37           SparseArray_1.6.2      </span></span>
-<span><span class="co">#&gt; [76] ggrepel_0.9.6           farver_2.1.2            rjson_0.2.23           </span></span>
-<span><span class="co">#&gt; [79] memoise_2.0.1           htmltools_0.5.8.1       pkgdown_2.1.1          </span></span>
-<span><span class="co">#&gt; [82] lifecycle_1.0.4         httr_1.4.7              mime_0.12              </span></span>
-<span><span class="co">#&gt; [85] bit64_4.6.0-1</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3       jsonlite_1.9.1           magrittr_2.0.3          </span></span>
+<span><span class="co">#&gt;   [4] ggbeeswarm_0.7.2         magick_2.8.5             farver_2.1.2            </span></span>
+<span><span class="co">#&gt;   [7] rmarkdown_2.29           BiocIO_1.16.0            fs_1.6.5                </span></span>
+<span><span class="co">#&gt;  [10] fields_16.3              zlibbioc_1.52.0          ragg_1.3.3              </span></span>
+<span><span class="co">#&gt;  [13] vctrs_0.6.5              Rsamtools_2.22.0         config_0.3.2            </span></span>
+<span><span class="co">#&gt;  [16] memoise_2.0.1            RCurl_1.98-1.16          paletteer_1.6.0         </span></span>
+<span><span class="co">#&gt;  [19] benchmarkme_1.0.8        htmltools_0.5.8.1        S4Arrays_1.6.0          </span></span>
+<span><span class="co">#&gt;  [22] AnnotationHub_3.14.0     curl_6.2.1               BiocNeighbors_2.0.1     </span></span>
+<span><span class="co">#&gt;  [25] SparseArray_1.6.2        sass_0.4.9               bslib_0.9.0             </span></span>
+<span><span class="co">#&gt;  [28] htmlwidgets_1.6.4        desc_1.4.3               plotly_4.10.4           </span></span>
+<span><span class="co">#&gt;  [31] cachem_1.1.0             GenomicAlignments_1.42.0 mime_0.12               </span></span>
+<span><span class="co">#&gt;  [34] lifecycle_1.0.4          iterators_1.0.14         pkgconfig_2.0.3         </span></span>
+<span><span class="co">#&gt;  [37] rsvd_1.0.5               Matrix_1.7-2             R6_2.6.1                </span></span>
+<span><span class="co">#&gt;  [40] fastmap_1.2.0            GenomeInfoDbData_1.2.13  shiny_1.10.0            </span></span>
+<span><span class="co">#&gt;  [43] digest_0.6.37            colorspace_2.1-1         rematch2_2.1.2          </span></span>
+<span><span class="co">#&gt;  [46] AnnotationDbi_1.68.0     scater_1.34.1            irlba_2.3.5.1           </span></span>
+<span><span class="co">#&gt;  [49] ExperimentHub_2.14.0     textshaping_1.0.0        RSQLite_2.3.9           </span></span>
+<span><span class="co">#&gt;  [52] beachmat_2.22.0          labeling_0.4.3           filelock_1.0.3          </span></span>
+<span><span class="co">#&gt;  [55] httr_1.4.7               abind_1.4-8              compiler_4.4.3          </span></span>
+<span><span class="co">#&gt;  [58] withr_3.0.2              attempt_0.3.1            bit64_4.6.0-1           </span></span>
+<span><span class="co">#&gt;  [61] doParallel_1.0.17        BiocParallel_1.40.0      viridis_0.6.5           </span></span>
+<span><span class="co">#&gt;  [64] DBI_1.2.3                maps_3.4.2.1             sessioninfo_1.2.3       </span></span>
+<span><span class="co">#&gt;  [67] rappdirs_0.3.3           DelayedArray_0.32.0      rjson_0.2.23            </span></span>
+<span><span class="co">#&gt;  [70] tools_4.4.3              vipor_0.4.7              beeswarm_0.4.0          </span></span>
+<span><span class="co">#&gt;  [73] httpuv_1.6.15            glue_1.8.0               restfulr_0.0.15         </span></span>
+<span><span class="co">#&gt;  [76] promises_1.3.2           grid_4.4.3               generics_0.1.3          </span></span>
+<span><span class="co">#&gt;  [79] gtable_0.3.6             tidyr_1.3.1              data.table_1.17.0       </span></span>
+<span><span class="co">#&gt;  [82] BiocSingular_1.22.0      ScaledMatrix_1.14.0      XVector_0.46.0          </span></span>
+<span><span class="co">#&gt;  [85] stringr_1.5.1            ggrepel_0.9.6            BiocVersion_3.20.0      </span></span>
+<span><span class="co">#&gt;  [88] foreach_1.5.2            pillar_1.10.1            spam_2.11-1             </span></span>
+<span><span class="co">#&gt;  [91] limma_3.62.2             later_1.4.1              benchmarkmeData_1.0.4   </span></span>
+<span><span class="co">#&gt;  [94] dplyr_1.1.4              BiocFileCache_2.14.0     lattice_0.22-6          </span></span>
+<span><span class="co">#&gt;  [97] rtracklayer_1.66.0       bit_4.6.0                tidyselect_1.2.1        </span></span>
+<span><span class="co">#&gt; [100] locfit_1.5-9.12          scuttle_1.16.0           Biostrings_2.74.1       </span></span>
+<span><span class="co">#&gt; [103] knitr_1.49               gridExtra_2.3            bookdown_0.42           </span></span>
+<span><span class="co">#&gt; [106] edgeR_4.4.2              xfun_0.51                statmod_1.5.0           </span></span>
+<span><span class="co">#&gt; [109] DT_0.33                  stringi_1.8.4            UCSC.utils_1.2.0        </span></span>
+<span><span class="co">#&gt; [112] lazyeval_0.2.2           yaml_2.3.10              shinyWidgets_0.9.0      </span></span>
+<span><span class="co">#&gt; [115] evaluate_1.0.3           codetools_0.2-20         tibble_3.2.1            </span></span>
+<span><span class="co">#&gt; [118] BiocManager_1.30.25      cli_3.6.4                xtable_1.8-4            </span></span>
+<span><span class="co">#&gt; [121] systemfonts_1.2.1        munsell_0.5.1            jquerylib_0.1.4         </span></span>
+<span><span class="co">#&gt; [124] golem_0.5.1              Rcpp_1.0.14              dbplyr_2.5.0            </span></span>
+<span><span class="co">#&gt; [127] scry_1.18.0              png_0.1-8                XML_3.99-0.18           </span></span>
+<span><span class="co">#&gt; [130] parallel_4.4.3           pkgdown_2.1.1            ggplot2_3.5.1           </span></span>
+<span><span class="co">#&gt; [133] blob_1.2.4               dotCall64_1.2            bitops_1.0-9            </span></span>
+<span><span class="co">#&gt; [136] viridisLite_0.4.2        scales_1.3.0             purrr_1.0.4             </span></span>
+<span><span class="co">#&gt; [139] crayon_1.5.3             rlang_1.1.5              KEGGREST_1.46.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
