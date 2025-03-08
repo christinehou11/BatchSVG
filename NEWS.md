@@ -1,3 +1,7 @@
+# BatchSVG 0.99.7
+
+* Bug fixs
+
 # BatchSVG 0.99.6
 
 * Updated vignette using `spatialLIBD` spe dataset
