@@ -50,7 +50,7 @@
 #' @param plot_text_size \code{vector}: A numeric vector specifying text label 
 #'    size in plots. Default is `3`.
 #'    
-#' @param plot_pallete \code{vector}: A character string vector specifying the 
+#' @param plot_palette \code{vector}: A character string vector specifying the 
 #'    color palette for plots. Default is `"YlOrRd"`.
 #'
 #' @return A named list where each element corresponds to a batch and contains:
@@ -61,11 +61,7 @@
 #' @export
 #'
 #' @examples
-#' suppressPackageStartupMessages({
 #' library(spatialLIBD)
-#' library(SummarizedExperiment)
-#' library(tibble)
-#' })
 #' 
 #' spatialLIBD_spe <- fetch_data(type = "spe")
 #' libd_svg <- read.csv(
@@ -81,7 +77,7 @@
 biasDetect <- function(list_batch_df, threshold = "both", 
                         nSD_dev = NULL, nSD_rank = NULL,
                         plot_point_size = 3, plot_point_shape = 16,
-                        plot_text_size = 3, plot_pallete = "YlOrRd") {
+                        plot_text_size = 3, plot_palette = "YlOrRd") {
     
     filter_condition <- match.arg(threshold, choices = c("dev", "rank", "both"))
     if (threshold %in% c("dev", "both") && is.null(nSD_dev)) {
@@ -95,7 +91,7 @@ biasDetect <- function(list_batch_df, threshold = "both",
     plot_point_size <- .replicate_params(plot_point_size, num_batches)
     plot_point_shape <- .replicate_params(plot_point_shape, num_batches)
     plot_text_size <- .replicate_params(plot_text_size, num_batches)
-    plot_pallete <- .replicate_params(plot_pallete, num_batches)
+    plot_palette <- .replicate_params(plot_palette, num_batches)
     
     stopifnot(is.list(list_batch_df), length(list_batch_df) > 0)
     biased_list <- list()
@@ -112,7 +108,7 @@ biasDetect <- function(list_batch_df, threshold = "both",
             breaks=seq(0,max(batch_df[[dev_colname]]) + sd_dev, 
             by=sd_dev), include.lowest=TRUE)
         col_pal_dev <- brewer.pal(length(unique(batch_df[["nSD_bin_dev"]])), 
-            plot_pallete[i])
+            plot_palette[i])
         col_pal_dev[1] <- "grey"
         dev_sd_plot <- ggplot(batch_df,
             aes(x = .data[["dev_default"]], y = .data[[paste0("dev_", batch)]],
@@ -135,7 +131,7 @@ biasDetect <- function(list_batch_df, threshold = "both",
             breaks=seq(0,max(batch_df[[rank_colname]]) + sd_rank, 
             by=sd_rank),include.lowest=TRUE)
         col_pal_rank <- brewer.pal(length(unique(batch_df$nSD_bin_rank)), 
-            plot_pallete[i])
+            plot_palette[i])
         col_pal_rank[1] <- "grey"
         rank_sd_plot <- ggplot(batch_df, 
             aes(x = .data[["rank_default"]],y = .data[[paste0("rank_", batch)]],

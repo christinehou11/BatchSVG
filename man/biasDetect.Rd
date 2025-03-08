@@ -12,7 +12,7 @@ biasDetect(
   plot_point_size = 3,
   plot_point_shape = 16,
   plot_text_size = 3,
-  plot_pallete = "YlOrRd"
+  plot_palette = "YlOrRd"
 )
 }
 \arguments{
@@ -55,7 +55,7 @@ batches.}
 \item{plot_text_size}{\code{vector}: A numeric vector specifying text label
 size in plots. Default is \code{3}.}
 
-\item{plot_pallete}{\code{vector}: A character string vector specifying the
+\item{plot_palette}{\code{vector}: A character string vector specifying the
 color palette for plots. Default is \code{"YlOrRd"}.}
 }
 \value{
@@ -72,11 +72,7 @@ threshold of number of standard deviation in relative change in deviance
 and rank difference.
 }
 \examples{
-suppressPackageStartupMessages({
 library(spatialLIBD)
-library(SummarizedExperiment)
-library(tibble)
-})
 
 spatialLIBD_spe <- fetch_data(type = "spe")
 libd_svg <- read.csv(

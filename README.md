@@ -33,12 +33,6 @@ The development version can be obtained by
 BiocManager::install("christinehou11/BatchSVG")
 ```
 
-#### Tutorial
-
-A detailed tutorial is available in 
-[Find Biased Features](https://jac-thom.github.io/findBiasedFeatures/) written 
-by Jacqui Thompson.
-
 ### Code of Conduct
   
 Please note that the BatchSVG project is released with 

@@ -1,8 +1,4 @@
-suppressPackageStartupMessages({
 library(spatialLIBD)
-library(SummarizedExperiment)
-library(tibble)
-})
 
 spatialLIBD_spe <- fetch_data(type = "spe")
 libd_svg <- read.csv(

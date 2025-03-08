@@ -56,11 +56,8 @@
 #' @export
 #'
 #' @examples
-#' suppressPackageStartupMessages({
 #' library(spatialLIBD)
-#' library(SummarizedExperiment)
-#' library(tibble)
-#' })
+#' 
 #' spatialLIBD_spe <- fetch_data(type = "spe")
 #' libd_svg <- read.csv(
 #'     system.file("extdata","libd-all_nnSVG_p-05-features-df.csv",

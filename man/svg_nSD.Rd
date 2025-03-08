@@ -54,11 +54,8 @@ standard deviation (nSD) intervals and creates histograms and scatter
 plots to illustrate the distribution of batch effects.
 }
 \examples{
-suppressPackageStartupMessages({
 library(spatialLIBD)
-library(SummarizedExperiment)
-library(tibble)
-})
+
 spatialLIBD_spe <- fetch_data(type = "spe")
 libd_svg <- read.csv(
     system.file("extdata","libd-all_nnSVG_p-05-features-df.csv",

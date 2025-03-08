@@ -47,11 +47,7 @@ deviations from the mean difference. The list follows the order of batch
 effects provided in \code{batch_effects}.
 }
 \examples{
-suppressPackageStartupMessages({
 library(spatialLIBD)
-library(SummarizedExperiment)
-library(tibble)
-})
 spatialLIBD_spe <- fetch_data(type = "spe")
 libd_svg <- read.csv(
     system.file("extdata","libd-all_nnSVG_p-05-features-df.csv",
