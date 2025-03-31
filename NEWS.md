@@ -1,3 +1,7 @@
+# BatchSVG 0.99.8
+
+* Fixes the rank plot x/y labels
+
 # BatchSVG 0.99.7
 
 * Bug fixs

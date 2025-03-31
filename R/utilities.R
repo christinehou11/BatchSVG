@@ -74,7 +74,7 @@
         legend.title = element_text(size = 8),
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10)) +
-    labs(x= "dev (no batch)", y="dev (batch)", 
+    labs(x= "rank (no batch)", y="rank (batch)", 
         color = "nSD Rank Interval",
         title = "Rank without vs. with batch")
     }
