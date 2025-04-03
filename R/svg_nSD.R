@@ -57,7 +57,7 @@
 #'
 #' @examples
 #' # use the result generated from featureSelect()
-#' load(system.file("extdata","list_batch_df.rda", package = "BatchSVG"))
+#' data(list_batch_df)
 #' plots <- svg_nSD(list_batch_df = list_batch_df, 
 #'    sd_interval_dev = 3, sd_interval_rank = 3)
 svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
@@ -74,7 +74,8 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
         length(sd_interval_dev) == num_batches, 
         length(sd_interval_rank) == num_batches)
     
-    plot_list <- list()
+    plot_list <- vector("list", length(list_batch_df))
+    names(plot_list) <- names(list_batch_df)  
     
     for (i in seq_along(list_batch_df)) {
         batch <- names(list_batch_df)[i]
@@ -84,9 +85,11 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
         # deviance plot
         sd_dev <- sd_interval_dev[i]
         dev_colname <- paste0("nSD_dev_",batch)
+        
         batch_df$nSD_bin_dev <- cut(abs(batch_df[[dev_colname]]), right = FALSE,
             breaks=seq(0,max(batch_df[[dev_colname]]) + sd_dev, 
             by=sd_dev), include.lowest=TRUE)
+        
         col_pal_dev <- brewer.pal(length(unique(batch_df[["nSD_bin_dev"]])), 
                                 "YlOrRd")
         col_pal_dev[1] <- "grey"
@@ -105,13 +108,14 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
             scale_color_manual(values=col_pal_dev) +
             labs(subtitle = paste0("Batch: ",batch, "; nSD width = ", sd_dev))
         
-        
         # rank plot
         sd_rank <- sd_interval_rank[i]
         rank_colname <- paste0("nSD_rank_", batch)
+        
         batch_df$nSD_bin_rank <- cut(abs(batch_df[[rank_colname]]), right=FALSE,
             breaks=seq(0,max(batch_df[[rank_colname]]) + sd_rank, 
             by=sd_rank),include.lowest=TRUE)
+        
         col_pal_rank <- brewer.pal(length(unique(batch_df$nSD_bin_rank)), 
             "YlOrRd")
         col_pal_rank[1] <- "grey"
@@ -130,7 +134,7 @@ svg_nSD <- function(list_batch_df, sd_interval_dev, sd_interval_rank) {
             scale_color_manual(values = col_pal_rank) +
             labs(subtitle = paste0("Batch: ", batch,"; nSD width = ", sd_rank))
         
-        plot_list[[batch]] <- plot_grid(dev_sd_plot1, dev_sd_plot2, 
+        plot_list[[i]] <- plot_grid(dev_sd_plot1, dev_sd_plot2, 
             rank_sd_plot1, rank_sd_plot2, ncol = 2, align = "hv")
     }
     plot_list

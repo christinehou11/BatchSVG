@@ -1,4 +1,4 @@
-library(spatialLIBD)
+suppressMessages(library(spatialLIBD))
 
 spatialLIBD_spe <- fetch_data(type = "spe")
 libd_svg <- read.csv(

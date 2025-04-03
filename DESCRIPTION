@@ -1,7 +1,7 @@
 Package: BatchSVG
 Type: Package
 Title: Identify Batch-Biased Features in Spatially Variable Genes
-Version: 0.99.8
+Version: 0.99.9
 Authors@R:
     c(person(
         given = "Christine",
@@ -25,7 +25,7 @@ Authors@R:
     )
 Description: `BatchSVG` is a feature-based Quality Control (QC) to identify 
     SVGs on spatial transcriptomics data with specific types of batch effect. 
-    Regarding to the spatial transcriptomics data experients, the batch can be 
+    Regarding to the spatial transcriptomics data experiments, the batch can be 
     defined as "sample", "sex", and etc.The `BatchSVG` method is based on 
     binomial deviance model (Townes et al, 2019) and applies cutoffs based on 
     the number of standard deviation (nSD) of relative change in deviance and 
@@ -47,7 +47,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
-    R (>= 4.4.0)
+    R (>= 4.5.0)
 Suggests:
     testthat (>= 3.0.0),
     knitr,
@@ -60,4 +60,4 @@ URL: https://github.com/christinehou11/BatchSVG,
     https://christinehou11.github.io/BatchSVG
 BugReports: https://github.com/christinehou11/BatchSVG/issues
 Config/testthat/edition: 3
-LazyData: true
+LazyData: false

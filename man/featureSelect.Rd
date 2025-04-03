@@ -4,7 +4,7 @@
 \alias{featureSelect}
 \title{Feature selection}
 \usage{
-featureSelect(input, batch_effects = NULL, VGs = NULL)
+featureSelect(input, batch_effects = NULL, VGs = NULL, verbose = TRUE)
 }
 \arguments{
 \item{input}{A \code{SpatialExperiment} object containing spatial
@@ -17,6 +17,10 @@ column names.}
 \item{VGs}{A character vector specifying the variable genes (VGs) to be
 analyzed. Only genes present in this vector will be retained for
 feature selection.}
+
+\item{verbose}{Logical (TRUE or FALSE). Default is TRUE.
+If TRUE, progress messages will be printed;
+If FALSE, messages will be suppressed.}
 }
 \value{
 A named list where each element corresponds to a batch effect.

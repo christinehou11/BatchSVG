@@ -55,7 +55,7 @@ plots to illustrate the distribution of batch effects.
 }
 \examples{
 # use the result generated from featureSelect()
-load(system.file("extdata","list_batch_df.rda", package = "BatchSVG"))
+data(list_batch_df)
 plots <- svg_nSD(list_batch_df = list_batch_df, 
    sd_interval_dev = 3, sd_interval_rank = 3)
 }

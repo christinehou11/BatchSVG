@@ -6,7 +6,7 @@
 \usage{
 biasDetect(
   list_batch_df,
-  threshold = "both",
+  threshold = c("both", "dev", "rank"),
   nSD_dev = NULL,
   nSD_rank = NULL,
   plot_point_size = 3,
@@ -73,7 +73,7 @@ and rank difference.
 }
 \examples{
 # use the result generated from featureSelect()
-load(system.file("extdata","list_batch_df.rda", package = "BatchSVG"))
+data(list_batch_df)
 biaGenes <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
    nSD_dev = 3, nSD_rank = 3)
 }

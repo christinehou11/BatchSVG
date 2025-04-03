@@ -62,15 +62,18 @@
 #'
 #' @examples
 #' # use the result generated from featureSelect()
-#' load(system.file("extdata","list_batch_df.rda", package = "BatchSVG"))
+#' data(list_batch_df)
 #' biaGenes <- biasDetect(list_batch_df = list_batch_df, threshold = "both", 
 #'    nSD_dev = 3, nSD_rank = 3)
-biasDetect <- function(list_batch_df, threshold = "both", 
+biasDetect <- function(list_batch_df, threshold = c("both", "dev", "rank"), 
                         nSD_dev = NULL, nSD_rank = NULL,
                         plot_point_size = 3, plot_point_shape = 16,
                         plot_text_size = 3, plot_palette = "YlOrRd") {
     
-    filter_condition <- match.arg(threshold, choices = c("dev", "rank", "both"))
+    filter_condition <- match.arg(threshold)
+    
+    if (threshold == "both" && (is.null(nSD_dev) || is.null(nSD_rank)) ) {
+    stop("When threshold = 'both', you must specify 'nSD_dev' AND 'nSD_rank'.")}
     if (threshold %in% c("dev", "both") && is.null(nSD_dev)) {
         stop("When threshold = 'dev' or 'both', you must specify 'nSD_dev'.")}
     if (threshold %in% c("rank", "both") && is.null(nSD_rank)) {
@@ -85,7 +88,12 @@ biasDetect <- function(list_batch_df, threshold = "both",
     plot_palette <- .replicate_params(plot_palette, num_batches)
     
     stopifnot(is.list(list_batch_df), length(list_batch_df) > 0)
-    biased_list <- list()
+    
+    biased_list <- vector("list", length(list_batch_df))
+    names(biased_list) <- names(list_batch_df)
+    
+    dev_sd_plot <- NULL
+    rank_sd_plot <- NULL
     
     for (i in seq_along(list_batch_df)) {
         batch <- names(list_batch_df)[i]
@@ -95,12 +103,15 @@ biasDetect <- function(list_batch_df, threshold = "both",
         if (!is.null(nSD_dev)) {
         sd_dev <- nSD_dev[i]
         dev_colname <- paste0("nSD_dev_",batch)
+        
         batch_df$nSD_bin_dev <- cut(abs(batch_df[[dev_colname]]), right = FALSE,
             breaks=seq(0,max(batch_df[[dev_colname]]) + sd_dev, 
             by=sd_dev), include.lowest=TRUE)
+        
         col_pal_dev <- brewer.pal(length(unique(batch_df[["nSD_bin_dev"]])), 
             plot_palette[i])
         col_pal_dev[1] <- "grey"
+        
         dev_sd_plot <- ggplot(batch_df,
             aes(x = .data[["dev_default"]], y = .data[[paste0("dev_", batch)]],
                 color = .data[["nSD_bin_dev"]]))
@@ -112,18 +123,22 @@ biasDetect <- function(list_batch_df, threshold = "both",
                 aes(label = ifelse(.data[[dev_colname]] > sd_dev,
                 .data[["gene_name"]], "")), size = plot_text_size[i], 
                 max.overlaps = Inf)
+        
         batch_df$dev_outlier <- batch_df$nSD_dev >= sd_dev
         }
         
         if (!is.null(nSD_rank)) {
         sd_rank <- nSD_rank[i]
         rank_colname <- paste0("nSD_rank_", batch)
+        
         batch_df$nSD_bin_rank <- cut(abs(batch_df[[rank_colname]]), right=FALSE,
             breaks=seq(0,max(batch_df[[rank_colname]]) + sd_rank, 
             by=sd_rank),include.lowest=TRUE)
+        
         col_pal_rank <- brewer.pal(length(unique(batch_df$nSD_bin_rank)), 
             plot_palette[i])
         col_pal_rank[1] <- "grey"
+        
         rank_sd_plot <- ggplot(batch_df, 
             aes(x = .data[["rank_default"]],y = .data[[paste0("rank_", batch)]],
                 color = .data[["nSD_bin_rank"]]))
@@ -135,22 +150,30 @@ biasDetect <- function(list_batch_df, threshold = "both",
                 aes(label = ifelse(.data[[rank_colname]] > sd_rank,
                 .data[["gene_name"]], "")), size = plot_text_size[i], 
                 max.overlaps = Inf)
+        
         batch_df$rank_outlier <- batch_df$nSD_rank >= sd_rank
         }
         
         if (filter_condition == "dev") {
-            biased_list[[batch]][["Plot"]] <- dev_sd_plot
-            biased_list[[batch]][["Table"]] <- filter(batch_df,
-                .data$dev_outlier==TRUE)}
-        else if (filter_condition == "rank") {
-            biased_list[[batch]][["Plot"]] <- rank_sd_plot
-            biased_list[[batch]][["Table"]] <- filter(batch_df,
-                .data$rank_outlier==TRUE)}
-        else {
-            biased_list[[batch]][["Plot"]] <- plot_grid(
-                dev_sd_plot, rank_sd_plot, ncol = 2, align = "hv")
-            biased_list[[batch]][["Table"]] <- filter(batch_df,
-                .data$dev_outlier==TRUE | .data$rank_outlier==TRUE)}
+            biased_list[[i]] <- list(
+                Plot = dev_sd_plot,
+                Table = filter(batch_df, .data$dev_outlier == TRUE)
+            )
+        } else if (filter_condition == "rank") {
+            biased_list[[i]] <- list(
+                Plot = rank_sd_plot,
+                Table = filter(batch_df, .data$rank_outlier == TRUE)
+            )
+        } else {
+            biased_list[[i]] <- list(
+                Plot = plot_grid(dev_sd_plot, rank_sd_plot, 
+                    ncol = 2, align = "hv"),
+                Table = filter(batch_df, 
+                    .data$dev_outlier == TRUE | .data$rank_outlier == TRUE)
+            )
+        }
     }
+    
     biased_list
+    
     }

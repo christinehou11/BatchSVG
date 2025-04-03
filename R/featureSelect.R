@@ -22,6 +22,9 @@
 #' @param VGs A character vector specifying the variable genes (VGs) to be 
 #'     analyzed. Only genes present in this vector will be retained for 
 #'     feature selection.
+#' @param verbose Logical (TRUE or FALSE). Default is TRUE.
+#'    If TRUE, progress messages will be printed; 
+#'    If FALSE, messages will be suppressed.
 #'
 #' @return A named list where each element corresponds to a batch effect. 
 #'    Each batch contains a data frame with the following columns:
@@ -57,7 +60,8 @@
 #' list_batch_df <- featureSelect(input = spatialLIBD_spe, 
 #'    batch_effects = "subject", VGs = libd_svg$gene_id)
 #' 
-featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
+featureSelect <- function(input, batch_effects = NULL, VGs = NULL,
+                            verbose = TRUE) {
     
     stopifnot(
         inherits(input, c("SpatialExperiment")), 
@@ -78,28 +82,35 @@ featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
     input <- input[rowData(input)$gene_id %in% VGs, ]
     rownames(input) <- rowData(input)$gene_id
     
-    message("Running feature selection without batch...")
+    if (verbose) message("Running feature selection with batch...")
     bd <- devianceFeatureSelection(input, assay = "counts", fam = "binomial")
     bd_df <- cbind.data.frame("gene_id"=rownames(bd),
         "gene_name"=rowData(bd)$gene_name, "dev"= rowData(bd)$binomial_deviance,
         "rank"=(nrow(bd) + 1) - rank(rowData(bd)$binomial_deviance))
     rownames(bd_df) <- bd_df$gene
     
-    results_list <- list()
+    results_list <- vector("list", length(batch_effects))
+    names(results_list) <- batch_effects  
     
-    for (batch in batch_effects) {
-        message("Batch Effect: ", batch)
-        message("Running feature selection without batch...")
+    for (i in seq_along(batch_effects)) {
+        batch <- batch_effects[i]
+        
+        if (verbose) message("Batch Effect: ", batch)
+        if (verbose) message("Running feature selection without batch...")
+        
         batch_data <- colData(input)[[batch]]
         bd_batch <- devianceFeatureSelection(input, assay = "counts",
             fam = "binomial",batch = as.factor(batch_data))
-        bd_batch_df <- cbind.data.frame("gene_id"=rownames(bd_batch),
+        
+        bd_batch_df <- cbind.data.frame(
+            "gene_id"=rownames(bd_batch),
             "gene_name"=rowData(bd_batch)$gene_name,
             "dev"= rowData(bd_batch)$binomial_deviance,
             "rank"=(nrow(bd_batch)+1)-rank(rowData(bd_batch)$binomial_deviance))
         rownames(bd_batch_df) <- bd_batch_df$gene
         
-        message("Calculating deviance and rank difference...")
+        if (verbose) message("Calculating deviance and rank difference...")
+        
         batch_df <- left_join(bd_df, bd_batch_df, by=c("gene_id", "gene_name"),
             suffix=c("_default",paste0("_", batch)))
         
@@ -114,7 +125,7 @@ featureSelect <- function(input, batch_effects = NULL, VGs = NULL) {
         batch_df[[paste0("nSD_rank_", batch)]] <- 
             (batch_df$r_diff - mean(batch_df$r_diff)) / sd(batch_df$r_diff)
         
-        results_list[[batch]] <- batch_df
+        results_list[[i]] <- batch_df
     }
     results_list
     }

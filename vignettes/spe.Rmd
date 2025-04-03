@@ -61,7 +61,7 @@ library(cowplot)
 
 #### Data
 
-We will use the`spatially-resolved transcriptomics (SRT) dataset from the 
+We will use the spatially-resolved transcriptomics (SRT) dataset from the 
 [spatialLIBD](https://research.libd.org/spatialLIBD/) package.
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
@@ -107,6 +107,13 @@ while adjusting for the batch effect of *subject*.
 ```{r feature select, comment = NA, warning=FALSE}
 list_batch_df <- featureSelect(input = spatialLIBD_spe, 
     batch_effect = "subject", VGs = libd_nnsvgs$gene_id)
+```
+
+To suppress the message, let `verbose = FALSE`.
+
+```{r, eval=FALSE}
+list_batch_df <- featureSelect(input = spatialLIBD_spe, 
+    batch_effect = "subject", VGs = libd_nnsvgs$gene_id, verbose = FALSE)
 ```
 
 ```{r feature select class, comment = NA, warning=FALSE}
