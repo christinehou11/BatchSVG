@@ -21,18 +21,16 @@ knitr::opts_chunk$set(
 
 ### Introduction
 
-`BatchSVG` is the R/Bioconductor package for spatial transcriptomics data 
-quality control (QC). As the feature-based QC method, the package provides 
-functions to identify the biased features associated with the batch effect(s) 
-(e.g. sample,  slide, and sex) in spatially variable genes (SVGs) using 
-binomial deviance model, aiming to develop the downstream clustering 
-performances and remove the technical noises caused by batch effects. The 
+`BatchSVG` is an R/Bioconductor package for spatial transcriptomics data 
+quality control (QC). As a feature-based QC method, the package provides 
+functions to identify biased features associated with batch effect(s) 
+(e.g. sample,  slide, and sex) in spatially variable genes (SVGs) using the
+binomial deviance model, aiming to improve the downstream clustering 
+performance and remove technical noise caused by batch effects. The 
 package works with 
 [SpatialExperiment](https://github.com/drighelli/SpatialExperiment) objects. 
 
 ### Installation
-
-(After accepted in [Bioconductor](https://bioconductor.org/)). 
 
 ```{r install bioc, eval=FALSE}
 if (!requireNamespace("BiocManager")) {
@@ -51,7 +49,7 @@ remotes::install("christinehou11/BatchSVG")
 ### Biased Feature Identification
 
 In this section, we will include the standard workflow for using `BatchSVG` to
-show how the method help to detect and visualize the biased features in SVGs. 
+show how the method helps to detect and visualize biased features in SVGs. 
 
 ```{r library, message=FALSE}
 library(BatchSVG)
@@ -69,7 +67,7 @@ spatialLIBD_spe <- fetch_data(type = "spe")
 spatialLIBD_spe
 ```
 
-We will use the spatially variable genes set generated. The 
+We will use the spatially variable genes set previously generated. The 
 result is generated from 
 [nnSVG]((https://www.nature.com/articles/s41467-023-39748-z)) package.
 
@@ -84,7 +82,7 @@ libd_nnsvgs <- read.csv(
 #### Perform Feature Selection using `featureSelect()`
 
 We will perform feature selection on a subset of spatial transcriptomics data 
-(*input*) using a predefined set of spatially variable genes (*VGs*). 
+(*input*) using a predefined set of spatially variable genes (*SVGs*). 
 Specifically, we will compute the number of standard deviations for the relative
 change in deviance (**nSD_dev_{batch effect}**) and rank difference 
 (**nSD_rank_{batch effect}**) before and after adjusting for batch effects.
