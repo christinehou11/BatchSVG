@@ -1,15 +1,21 @@
 Package: BatchSVG
 Type: Package
 Title: Identify Batch-Biased Features in Spatially Variable Genes
-Version: 1.1.0
+Version: 1.1.1
 Authors@R:
     c(person(
         given = "Christine",
         family = "Hou",
-        role = c("aut", "cre"),
+        role = c("aut"),
         email = "chris2018hou@gmail.com",
         comment = c(ORCID = "0009-0001-5350-0629")
     ),
+    c(person(
+        given = "Kinnary",
+        family = "Shah",
+        role = c("aut", "cre"),
+        email = "kinnaryshahh@gmail.com")
+    ),    
     person(
         given = "Jacqui",
         family = "Thompson",
