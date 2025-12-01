@@ -1,5 +1,5 @@
 ---
-title: "Find Batch-biased Features in SVGs"
+title: "Find Batch-biased SVGs"
 package: "BatchSVG"
 author:
   - name: "Kinnary Shah"
@@ -10,7 +10,7 @@ author:
     email: chris2018hou@gmail.com
 output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{01 Tutorial for spe data object}
+  %\VignetteIndexEntry{Tutorial for spe object}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
