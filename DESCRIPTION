@@ -1,7 +1,7 @@
 Package: BatchSVG
 Type: Package
 Title: Identify Batch-Biased Spatially Variable Genes
-Version: 1.3.2
+Version: 1.3.3
 Authors@R:
     c(person(
         given = "Christine",
@@ -29,7 +29,7 @@ Authors@R:
         email = "shicks19@jhu.edu", 
         comment = c(ORCID = "0000-0002-7858-0231"))
     )
-Description: `BatchSVG` is a method to identify batch-biased spatially variable genes (SVGs) in spatial transcriptomics data. The batch variable can be defined as "sample", "donor sex", or other batch effects of interest. The `BatchSVG` method is based on the binomial deviance model ([Townes et al, 2019](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6))).
+Description: BatchSVG is a method to identify batch-biased spatially variable genes (SVGs) in spatial transcriptomics data. The batch variable can be defined as sample, donor sex, or other batch effects of interest. The BatchSVG method is based on the binomial deviance model (Townes et al, 2019).
 License: Artistic-2.0
 Imports:
     scry,
@@ -44,7 +44,7 @@ Imports:
     SummarizedExperiment
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.5.0)
 Suggests:
