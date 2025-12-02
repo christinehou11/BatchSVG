@@ -1,13 +1,6 @@
 #' @keywords internal
 #' @title Identify Batch-Biased Features in Spatially Variable Genes
-#' @description `BatchSVG` is a feature-based Quality Control (QC) to identify 
-#' SVGs on spatial transcriptomics data with specific types of batch effect. 
-#' Regarding to the spatial transcriptomics data experiments, the batch can be 
-#' defined as "sample", "sex", and etc.The `BatchSVG` method is based on 
-#' binomial deviance model (Townes et al, 2019) and applies cutoffs based on 
-#' the number of standard deviation (nSD) of relative change in deviance and 
-#' rank difference as the data-driven thresholding approach to detect the 
-#' batch-biased outliers.
+#' @description `BatchSVG` is a method to identify batch-biased spatially variable genes (SVGs) in spatial transcriptomics data. The batch variable can be defined as sample, donor sex, or other batch effects of interest. The BatchSVG method is based on the binomial deviance model (Townes et al, 2019).
 #' @docType package
 #' @importFrom SummarizedExperiment colData
 #' @importFrom ggplot2 ggplot scale_color_manual aes labs
