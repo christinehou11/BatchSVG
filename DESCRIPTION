@@ -1,7 +1,7 @@
 Package: BatchSVG
 Type: Package
 Title: Identify Batch-Biased Spatially Variable Genes
-Version: 1.3.3
+Version: 1.3.4
 Authors@R:
     c(person(
         given = "Christine",
@@ -17,7 +17,7 @@ Authors@R:
         email = "kinnaryshahh@gmail.com")
     ),    
     person(
-        given = "Jacqui",
+        given = "Jacqueline R.",
         family = "Thompson",
         role = "aut",
         email = "jthom338@jh.edu"
