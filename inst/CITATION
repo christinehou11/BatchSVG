@@ -1,0 +1,18 @@
+citHeader("BatchSVG is described in the following publication:")
+
+citEntry(
+  entry  = "Article", 
+  title  = "BatchSVG: identifying batch-biased genes in the application of spatially variable gene detection", 
+  author = personList(as.person("Kinnary Shah"), 
+                      as.person("Christine Hou"), 
+                      as.person("Jacqueline R. Thompson"), 
+                      as.person("Stephanie C. Hicks")), 
+  journal = "bioRxiv", 
+  year    = "2026", 
+  doi     = "https://doi.org/10.64898/2025.12.09.693192", 
+  textVersion = paste0(
+    "Shah, Hou et al. (2026), BatchSVG: identifying batch-biased genes in ", 
+    "the application of spatially variable gene detection ", 
+    "bioRxiv"
+  )
+)
