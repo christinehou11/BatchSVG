@@ -4,7 +4,6 @@ batch-biased spatially variable genes (SVGs) in spatial transcriptomics data.
 The batch variable can be defined as "sample", "donor sex", or other batch effects of interest. The `BatchSVG` method is based on the
 binomial deviance model ([Townes et al, 2019](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1861-6))).
 
-
 #### Installation
 
 `BatchSVG` is a R package available in *Bioconductor* version 3.19 and later. 
