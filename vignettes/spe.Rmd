@@ -50,28 +50,25 @@ remotes::install("christinehou11/BatchSVG")
 
 In this section, we will demonstrate the workflow for using
 `BatchSVG` and show how the method helps to detect and visualize batch-biased SVGs. We will use an SRT dataset from
-the [spatialLIBD](https://research.libd.org/spatialLIBD/) package.
+the [WeberDivechaLCdata](https://bioconductor.org/packages/release/data/experiment/html/WeberDivechaLCdata.html) package.
 
 
 ```{r library, message=FALSE}
 library(BatchSVG)
-library(spatialLIBD)
+library(WeberDivechaLCdata)
 library(cowplot)
 ```
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
-spatialLIBD_spe <- fetch_data(type = "spe")
-spatialLIBD_spe
+spe <- WeberDivechaLCdata_Visium()
+spe
 ```
 
 We will use an SVG set that was previously generated using the
 [nnSVG]((https://www.nature.com/articles/s41467-023-39748-z)) package.
 
 ```{r load nnsvg, comment=NA, warning=FALSE, message=FALSE}
-libd_nnsvgs <- read.csv(
-    system.file("extdata","libd-all_nnSVG_p-05-features-df.csv",
-        package = "BatchSVG"),
-    row.names = 1, check.names = FALSE)
+svgs <- read.csv("svgs_LC.csv", check.names = FALSE)
 ```
 
 ## Perform Feature Selection using `featureSelect()`
@@ -101,16 +98,16 @@ frame containing key results, including:
     deviance and rank difference
 
 We use apply `featureSelect()` to the example
-dataset while adjusting for the batch effect of *subject*.
+dataset while adjusting for the batch effect of *sample_id*.
 
 ```{r feature select, comment = NA, warning=FALSE}
-list_batch_df <- featureSelect(input = spatialLIBD_spe, 
-    batch_effect = "subject", VGs = libd_nnsvgs$gene_id)
+list_batch_df <- featureSelect(input = spe, 
+    batch_effect = "sample_id", VGs = svgs$gene_id)
 ```
 
 ```{r, eval=FALSE}
-list_batch_df <- featureSelect(input = spatialLIBD_spe, 
-    batch_effect = "subject", VGs = libd_nnsvgs$gene_id, verbose = FALSE)
+list_batch_df <- featureSelect(input = spe, 
+    batch_effect = "sample_id", VGs = svgs$gene_id, verbose = FALSE)
 ```
 
 ```{r feature select class, comment = NA, warning=FALSE}
@@ -118,7 +115,7 @@ class(list_batch_df)
 ```
 
 ```{r feature select print, comment = NA, warning=FALSE}
-head(list_batch_df$subject)
+head(list_batch_df$sample_id)
 ```
 
 ## Visualize SVG Selection Using `svg_nSD()`
@@ -135,13 +132,13 @@ The SVGs in red and very far off the line are most likely to be batch-biased SVG
 
 ```{r svg, comment=NA, warning=FALSE, message=FALSE}
 plots <- svg_nSD(list_batch_df = list_batch_df, 
-            sd_interval_dev = 3, sd_interval_rank = 3)
+            sd_interval_dev = 5, sd_interval_rank = 5)
 ```
 
 *Figure 1. Visualizations of nSD_dev and nSD_rank threshold selection*
 
 ```{r figure 1, warning=FALSE, message=FALSE, fig.width=10, fig.height=8}
-plots$subject
+plots$sample_id
 ```
 
 ## Identify Biased Genes Using `biasDetect()`
@@ -165,8 +162,8 @@ provided for these parameters if not specified. Users should refer to the
 [ggplot2](https://ggplot2.tidyverse.org/index.html) aesthetic guidelines
 to ensure appropriate values are assigned for each parameter.
 
-We will use `nSD_dev = 3` and `nSD_rank = 3` for the example. Users
-should adjust these values based on their datasets.
+We will use `nSD_dev = 10` and `nSD_rank = 8` for the example. Users
+should adjust these values based on their datasets. We have chosen relatively high thresholds in this example to be more conservative with the SVGs we will filter out of the SVG list.
 
 **Usage of Different Threshold Options**
 
@@ -177,13 +174,13 @@ should adjust these values based on their datasets.
 
 ```{r bias detect dev, comment = NA, message=FALSE, warning=FALSE}
 bias_dev <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "dev", nSD_dev = 3)
+    threshold = "dev", nSD_dev = 10)
 ```
 
 *Table 1. Outlier Genes defined by nSD_dev only*
 
 ```{r table 1, comment = NA, message=FALSE, warning=FALSE}
-head(bias_dev$subject$Table)
+head(bias_dev$sample_id$Table)
 ```
 
 We can change point size using **plot_point_size**.
@@ -191,13 +188,13 @@ We can change point size using **plot_point_size**.
 ```{r size change, message=FALSE, warning=FALSE}
 # size default = 3
 bias_dev_size <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "dev", nSD_dev = 3, plot_point_size = 4)
+    threshold = "dev", nSD_dev = 10, plot_point_size = 4)
 ```
 
 *Figure 2. Customize point size*
 
 ```{r figure 2, warning=FALSE, message=FALSE, fig.width= 10, fig.height=4}
-plot_grid(bias_dev$subject$Plot, bias_dev_size$subject$Plot)
+plot_grid(bias_dev$sample_id$Plot, bias_dev_size$sample_id$Plot)
 ```
 
 -   `threshold = "rank"`: Identifies biased genes based only on rank
@@ -206,13 +203,13 @@ plot_grid(bias_dev$subject$Plot, bias_dev_size$subject$Plot)
 
 ```{r bias detect rank, comment = NA, message=FALSE, warning=FALSE}
 bias_rank <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "rank", nSD_rank = 3)
+    threshold = "rank", nSD_rank = 8)
 ```
 
 *Table 2. Outlier Genes defined by nSD_rank only*
 
 ```{r table 2, comment = NA, message=FALSE, warning=FALSE}
-head(bias_rank$subject$Table)
+head(bias_rank$sample_id$Table)
 ```
 
 We can change point shape using **plot_point_shape**.
@@ -222,9 +219,9 @@ We can change point shape using **plot_point_shape**.
 ```{r figure 3, message=FALSE, warning=FALSE, fig.width= 10, fig.height=4}
 # shape default = 16
 bias_rank_shape <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "rank", nSD_rank = 3, plot_point_shape = 2)
+    threshold = "rank", nSD_rank = 8, plot_point_shape = 2)
 
-plot_grid(bias_rank$subject$Plot, bias_rank_shape$subject$Plot)
+plot_grid(bias_rank$sample_id$Plot, bias_rank_shape$sample_id$Plot)
 ```
 
 -   `threshold = "both"`: Detects biased genes based on both relative change in deviance and rank difference, providing a more stringent filtering
@@ -232,13 +229,13 @@ plot_grid(bias_rank$subject$Plot, bias_rank_shape$subject$Plot)
 
 ```{r both, comment = NA, message=FALSE, warning=FALSE}
 bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
-    nSD_dev = 3, nSD_rank = 3)
+    nSD_dev = 10, nSD_rank = 8)
 ```
 
 *Table 3. Outlier Genes defined by nSD_dev and nSD_rank*
 
 ```{r table 3, comment = NA, message=FALSE, warning=FALSE}
-head(bias_both$subject$Table)
+head(bias_both$sample_id$Table)
 ```
 
 We can change point color using **plot_palette**. The color
@@ -252,9 +249,9 @@ colors.
 ```{r figure 4, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
 # color default = "YlOrRd"
 bias_both_color <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "both", nSD_dev = 3, nSD_rank = 3, plot_palette = "Greens")
+    threshold = "both", nSD_dev = 10, nSD_rank = 8, plot_palette = "Greens")
 
-plot_grid(bias_both$subject$Plot, bias_both_color$subject$Plot,nrow = 2)
+plot_grid(bias_both$sample_id$Plot, bias_both_color$sample_id$Plot,nrow = 2)
 ```
 
 We can change text size using **plot_text_size**. We can also specify unique color palettes for both batch effects.
@@ -264,10 +261,10 @@ We can change text size using **plot_text_size**. We can also specify unique col
 ```{r figure 5, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
 # text size default = 3
 bias_both_color_text <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "both", nSD_dev = 3, nSD_rank = 3, 
+    threshold = "both", nSD_dev = 10, nSD_rank = 8, 
     plot_palette = c("Blues"), plot_text_size = 4)
 
-plot_grid(bias_both$subject$Plot, bias_both_color_text$subject$Plot,nrow = 2)
+plot_grid(bias_both$sample_id$Plot, bias_both_color_text$sample_id$Plot,nrow = 2)
 ```
 
 ## Refine SVGs by Removing Batch-Affected Outliers
@@ -280,9 +277,9 @@ Here, we use the results from bias_both, which applied
 `threshold = "both"` to account for both deviance and rank differences.
 
 ```{r new svgs, comment = NA, message=FALSE, warning=FALSE}
-bias_both_df <- bias_both$subject$Table
-svgs_filt <- setdiff(libd_nnsvgs$gene_id, bias_both_df$gene_id)
-svgs_filt_spe <- libd_nnsvgs[libd_nnsvgs$gene_id %in% svgs_filt, ]
+bias_both_df <- bias_both$sample_id$Table
+svgs_filt <- setdiff(svgs$gene_id, bias_both_df$gene_id)
+svgs_filt_spe <- svgs[svgs$gene_id %in% svgs_filt, ]
 nrow(svgs_filt_spe)
 ```
 
