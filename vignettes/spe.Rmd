@@ -27,8 +27,24 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-A standard task in the analysis of spatially resolved transcriptomics (SRT) data is to identify spatially variable genes (SVGs). This is most commonly done within one tissue section at a time because the spatial relationships between the tissue sections are typically unknown. One challenge is how to identify and remove SVGs that are associated with a known bias or technical artifact, such as the slide or capture area, which can lead to poor performance in downstream analyses, such as spatial domain detection. Here, we introduce `BatchSVG`, a tool to identify biased features associated with batch effect(s)
-(e.g. sample, slide, and sex) in a set of SVGs. Our approach compares the rank of per-gene deviance under a binomial model (i) with and (ii) without including a covariate in the model that is associated with the known bias or technical artifact. If the rank of a feature changes significantly between these, then we infer that this gene is likely associated with the bias or technical artifact and should be removed from the downstream analysis. The package is compatible with [SpatialExperiment](https://github.com/drighelli/SpatialExperiment) objects.
+A standard task in the analysis of spatially resolved transcriptomics
+(SRT) data is to identify spatially variable genes (SVGs). This is most
+commonly done within one tissue section at a time because the spatial
+relationships between the tissue sections are typically unknown. One
+challenge is how to identify and remove SVGs that are associated with a
+known bias or technical artifact, such as the slide or capture area,
+which can lead to poor performance in downstream analyses, such as
+spatial domain detection. Here, we introduce `BatchSVG`, a tool to
+identify biased features associated with batch effect(s) (e.g. sample,
+slide, and sex) in a set of SVGs. Our approach compares the rank of
+per-gene deviance under a binomial model (i) with and (ii) without
+including a covariate in the model that is associated with the known
+bias or technical artifact. If the rank of a feature changes
+significantly between these, then we infer that this gene is likely
+associated with the bias or technical artifact and should be removed
+from the downstream analysis. The package is compatible with
+[SpatialExperiment](https://github.com/drighelli/SpatialExperiment)
+objects.
 
 # Installation
 
@@ -48,69 +64,86 @@ remotes::install("christinehou11/BatchSVG")
 
 # Biased Feature Identification
 
-In this section, we will demonstrate the workflow for using
-`BatchSVG` and show how the method helps to detect and visualize batch-biased SVGs. We will use an SRT dataset from
-the [spatialLIBD](https://research.libd.org/spatialLIBD/) package.
-
+In this section, we will demonstrate the workflow for using `BatchSVG`
+and show how the method helps to detect and visualize batch-biased SVGs.
+We will use an SRT dataset from the
+[WeberDivechaLCdata](https://bioconductor.org/packages/release/data/experiment/html/WeberDivechaLCdata.html)
+package.
 
 ```{r library, message=FALSE}
 library(BatchSVG)
-library(spatialLIBD)
+library(WeberDivechaLCdata)
 library(cowplot)
 ```
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
-spatialLIBD_spe <- fetch_data(type = "spe")
-spatialLIBD_spe
+spe <- WeberDivechaLCdata_Visium()
+spe
 ```
 
 We will use an SVG set that was previously generated using the
 [nnSVG]((https://www.nature.com/articles/s41467-023-39748-z)) package.
 
 ```{r load nnsvg, comment=NA, warning=FALSE, message=FALSE}
-libd_nnsvgs <- read.csv(
-    system.file("extdata","libd-all_nnSVG_p-05-features-df.csv",
-        package = "BatchSVG"),
-    row.names = 1, check.names = FALSE)
+svgs <- read.csv("svgs_LC.csv", check.names = FALSE)
 ```
 
 ## Perform Feature Selection using `featureSelect()`
 
-This function performs feature selection on a chosen subset of SRT
-data (*input*) using a predefined set of SVGs
-(*VGs*).
+This function performs feature selection on a chosen subset of SRT data
+(*input*) using a predefined set of SVGs (*VGs*).
 
-To assess the impact of the batch variable in the SRT data, we fit a binomial model per gene (i) with and (ii) without including a covariate in the model that is associated with the batch effect or unwanted variation. Using this model output, we define $d_{i, \text{ default}}$ and $d_{i, \text{ batch name}}$ as the residual deviance for gene $i$ using a binomial model with and without the batch effect, respectively. We calculate a per-gene relative change in deviance (RCD) as 
-${RCD}_i = \frac{d_{i, \text{ default}} - d_{i, \text{ batch name}}}{d_{i, \text{ batch name}}}$. 
-Generally, a higher per-gene deviance $d_i$ suggests that the gene's expression is more likely to be biologically meaningful. Therefore, a reduction in deviance after accounting for the batch covariate indicates that the batch explains a portion of the variation in gene expression that was previously attributed to biological differences.
+To assess the impact of the batch variable in the SRT data, we fit a
+binomial model per gene (i) with and (ii) without including a covariate
+in the model that is associated with the batch effect or unwanted
+variation. Using this model output, we define $d_{i, \text{ default}}$
+and $d_{i, \text{ batch name}}$ as the residual deviance for gene $i$
+using a binomial model with and without the batch effect, respectively.
+We calculate a per-gene relative change in deviance (RCD) as
+${RCD}_i = \frac{d_{i, \text{ default}} - d_{i, \text{ batch name}}}{d_{i, \text{ batch name}}}$.
+Generally, a higher per-gene deviance $d_i$ suggests that the gene's
+expression is more likely to be biologically meaningful. Therefore, a
+reduction in deviance after accounting for the batch covariate indicates
+that the batch explains a portion of the variation in gene expression
+that was previously attributed to biological differences.
 
-In addition to the residual deviance itself, we also consider the ranks of the residual deviances where top-ranked genes have the largest residual deviance and are considered more important. Here, an increase in rank (e.g. from a rank of 1 to a rank of 500) when including the batch variable indicates that the relative importance of the feature is diminished once the batch variable is accounted for. Therefore, in addition to RCD, we also evaluated the rank deviance (RD), which is defined as 
-${RD}_i = r_{i, \text{ batch name}} - r_{i, \text{ default}}$, where $r_{i, \text{ default}}$ and $r_{i, \text{ batch name}}$ are the per-gene rank when the binomial deviance model is run with and without the batch variable, respectively.
-
+In addition to the residual deviance itself, we also consider the ranks
+of the residual deviances where top-ranked genes have the largest
+residual deviance and are considered more important. Here, an increase
+in rank (e.g. from a rank of 1 to a rank of 500) when including the
+batch variable indicates that the relative importance of the feature is
+diminished once the batch variable is accounted for. Therefore, in
+addition to RCD, we also evaluated the rank deviance (RD), which is
+defined as
+${RD}_i = r_{i, \text{ batch name}} - r_{i, \text{ default}}$, where
+$r_{i, \text{ default}}$ and $r_{i, \text{ batch name}}$ are the
+per-gene rank when the binomial deviance model is run with and without
+the batch variable, respectively.
 
 The `featureSelect()` function enables feature selection while
 accounting for multiple batch effects. It returns a **list** of data
 frames, where each batch effect is associated with a corresponding data
 frame containing key results, including:
 
--   Relative change in deviance before and after batch effect adjustment (RCD)
+-   Relative change in deviance before and after batch effect adjustment
+    (RCD)
 
 -   Rank differences before and after batch effect adjustment (RD)
 
 -   Number of standard deviations (nSD) for both relative change in
     deviance and rank difference
 
-We use apply `featureSelect()` to the example
-dataset while adjusting for the batch effect of *subject*.
+We use apply `featureSelect()` to the example dataset while adjusting
+for the batch effect of *sample_id*.
 
 ```{r feature select, comment = NA, warning=FALSE}
-list_batch_df <- featureSelect(input = spatialLIBD_spe, 
-    batch_effect = "subject", VGs = libd_nnsvgs$gene_id)
+list_batch_df <- featureSelect(input = spe, 
+    batch_effect = "sample_id", VGs = svgs$gene_id)
 ```
 
 ```{r, eval=FALSE}
-list_batch_df <- featureSelect(input = spatialLIBD_spe, 
-    batch_effect = "subject", VGs = libd_nnsvgs$gene_id, verbose = FALSE)
+list_batch_df <- featureSelect(input = spe, 
+    batch_effect = "sample_id", VGs = svgs$gene_id, verbose = FALSE)
 ```
 
 ```{r feature select class, comment = NA, warning=FALSE}
@@ -118,30 +151,32 @@ class(list_batch_df)
 ```
 
 ```{r feature select print, comment = NA, warning=FALSE}
-head(list_batch_df$subject)
+head(list_batch_df$sample_id)
 ```
 
 ## Visualize SVG Selection Using `svg_nSD()`
 
-The `svg_nSD()` function generates visualizations to assess the impact of the batch
-variable(s) on the SVGs. It produces bar charts
-of the distribution of SVGs based on relative change in deviance
-and rank difference, with colors representing different nSD intervals.
+The `svg_nSD()` function generates visualizations to assess the impact
+of the batch variable(s) on the SVGs. It produces bar charts of the
+distribution of SVGs based on relative change in deviance and rank
+difference, with colors representing different nSD intervals.
 Additionally, the scatterplots compare deviance and rank values with and
-without batch effects. Using these plots, we can determine appropriate nSD thresholds
-for filtering batch-biased SVGs.
+without batch effects. Using these plots, we can determine appropriate
+nSD thresholds for filtering batch-biased SVGs.
 
-The SVGs in red and very far off the line are most likely to be batch-biased SVGs since their deviance and/or rank values are more changed compared to the other SVGs.
+The SVGs in red and very far off the line are most likely to be
+batch-biased SVGs since their deviance and/or rank values are more
+changed compared to the other SVGs.
 
 ```{r svg, comment=NA, warning=FALSE, message=FALSE}
 plots <- svg_nSD(list_batch_df = list_batch_df, 
-            sd_interval_dev = 3, sd_interval_rank = 3)
+            sd_interval_dev = 5, sd_interval_rank = 5)
 ```
 
 *Figure 1. Visualizations of nSD_dev and nSD_rank threshold selection*
 
 ```{r figure 1, warning=FALSE, message=FALSE, fig.width=10, fig.height=8}
-plots$subject
+plots$sample_id
 ```
 
 ## Identify Biased Genes Using `biasDetect()`
@@ -149,41 +184,44 @@ plots$subject
 The function `biasDetect()` is designed to identify and filter out
 batch-biased SVGs across different batch effects. Using threshold values
 selected from the visualization results generated by `svg_nSD()`, this
-function detects outliers that exceed a specified number
-of standard deviation (nSD) threshold in either relative change in deviance, rank difference, or both.
+function detects outliers that exceed a specified number of standard
+deviation (nSD) threshold in either relative change in deviance, rank
+difference, or both.
 
 The function outputs visualizations comparing deviance and rank values
 with and without batch effects. Genes with high deviations, highlighted
 in color, are identified as potentially biased and can be excluded based
 on the selected nSD thresholds.
 
-The function offers flexibility in customizing plot aesthetics,
-allowing users to adjust the point size (**plot_point_size**),
-shape (**plot_point_shape**), annotated text size (**plot_text_size**),
-and color palette (**plot_palette**). Default values are
-provided for these parameters if not specified. Users should refer to the
+The function offers flexibility in customizing plot aesthetics, allowing
+users to adjust the point size (**plot_point_size**), shape
+(**plot_point_shape**), annotated text size (**plot_text_size**), and
+color palette (**plot_palette**). Default values are provided for these
+parameters if not specified. Users should refer to the
 [ggplot2](https://ggplot2.tidyverse.org/index.html) aesthetic guidelines
 to ensure appropriate values are assigned for each parameter.
 
-We will use `nSD_dev = 3` and `nSD_rank = 3` for the example. Users
-should adjust these values based on their datasets.
+We will use `nSD_dev = 10` and `nSD_rank = 8` for the example. Users
+should adjust these values based on their datasets. We have chosen
+relatively high thresholds in this example to be more conservative with
+the SVGs we will filter out of the SVG list.
 
 **Usage of Different Threshold Options**
 
--   `threshold = "dev"`: Filters batch-biased SVGs based only on the relative
-    change in deviance. Genes with deviance changes exceeding the
-    specified `nSD_dev` threshold are identified as batch-biased and
+-   `threshold = "dev"`: Filters batch-biased SVGs based only on the
+    relative change in deviance. Genes with deviance changes exceeding
+    the specified `nSD_dev` threshold are identified as batch-biased and
     can be removed.
 
 ```{r bias detect dev, comment = NA, message=FALSE, warning=FALSE}
 bias_dev <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "dev", nSD_dev = 3)
+    threshold = "dev", nSD_dev = 10)
 ```
 
 *Table 1. Outlier Genes defined by nSD_dev only*
 
 ```{r table 1, comment = NA, message=FALSE, warning=FALSE}
-head(bias_dev$subject$Table)
+head(bias_dev$sample_id$Table)
 ```
 
 We can change point size using **plot_point_size**.
@@ -191,13 +229,13 @@ We can change point size using **plot_point_size**.
 ```{r size change, message=FALSE, warning=FALSE}
 # size default = 3
 bias_dev_size <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "dev", nSD_dev = 3, plot_point_size = 4)
+    threshold = "dev", nSD_dev = 10, plot_point_size = 4)
 ```
 
 *Figure 2. Customize point size*
 
 ```{r figure 2, warning=FALSE, message=FALSE, fig.width= 10, fig.height=4}
-plot_grid(bias_dev$subject$Plot, bias_dev_size$subject$Plot)
+plot_grid(bias_dev$sample_id$Plot, bias_dev_size$sample_id$Plot)
 ```
 
 -   `threshold = "rank"`: Identifies biased genes based only on rank
@@ -206,13 +244,13 @@ plot_grid(bias_dev$subject$Plot, bias_dev_size$subject$Plot)
 
 ```{r bias detect rank, comment = NA, message=FALSE, warning=FALSE}
 bias_rank <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "rank", nSD_rank = 3)
+    threshold = "rank", nSD_rank = 8)
 ```
 
 *Table 2. Outlier Genes defined by nSD_rank only*
 
 ```{r table 2, comment = NA, message=FALSE, warning=FALSE}
-head(bias_rank$subject$Table)
+head(bias_rank$sample_id$Table)
 ```
 
 We can change point shape using **plot_point_shape**.
@@ -222,73 +260,72 @@ We can change point shape using **plot_point_shape**.
 ```{r figure 3, message=FALSE, warning=FALSE, fig.width= 10, fig.height=4}
 # shape default = 16
 bias_rank_shape <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "rank", nSD_rank = 3, plot_point_shape = 2)
+    threshold = "rank", nSD_rank = 8, plot_point_shape = 2)
 
-plot_grid(bias_rank$subject$Plot, bias_rank_shape$subject$Plot)
+plot_grid(bias_rank$sample_id$Plot, bias_rank_shape$sample_id$Plot)
 ```
 
--   `threshold = "both"`: Detects biased genes based on both relative change in deviance and rank difference, providing a more stringent filtering
-    approach.
+-   `threshold = "both"`: Detects biased genes based on both relative
+    change in deviance and rank difference, providing a more stringent
+    filtering approach.
 
 ```{r both, comment = NA, message=FALSE, warning=FALSE}
 bias_both <- biasDetect(list_batch_df = list_batch_df, threshold = "both",
-    nSD_dev = 3, nSD_rank = 3)
+    nSD_dev = 10, nSD_rank = 8)
 ```
 
 *Table 3. Outlier Genes defined by nSD_dev and nSD_rank*
 
 ```{r table 3, comment = NA, message=FALSE, warning=FALSE}
-head(bias_both$subject$Table)
+head(bias_both$sample_id$Table)
 ```
 
-We can change point color using **plot_palette**. The color
-palette
+We can change point color using **plot_palette**. The color palette
 [here](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html) can
-be referenced as the function uses `RColorBrewer` to generate
-colors.
+be referenced as the function uses `RColorBrewer` to generate colors.
 
 *Figure 4. Customize the palette color*
 
 ```{r figure 4, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
 # color default = "YlOrRd"
 bias_both_color <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "both", nSD_dev = 3, nSD_rank = 3, plot_palette = "Greens")
+    threshold = "both", nSD_dev = 10, nSD_rank = 8, plot_palette = "Greens")
 
-plot_grid(bias_both$subject$Plot, bias_both_color$subject$Plot,nrow = 2)
+plot_grid(bias_both$sample_id$Plot, bias_both_color$sample_id$Plot,nrow = 2)
 ```
 
-We can change text size using **plot_text_size**. We can also specify unique color palettes for both batch effects.
+We can change text size using **plot_text_size**. We can also specify
+unique color palettes for both batch effects.
 
 *Figure 5. Customize text size and color palette*
 
 ```{r figure 5, message=FALSE, warning=FALSE, fig.width= 10, fig.height=8}
 # text size default = 3
 bias_both_color_text <- biasDetect(list_batch_df = list_batch_df, 
-    threshold = "both", nSD_dev = 3, nSD_rank = 3, 
+    threshold = "both", nSD_dev = 10, nSD_rank = 8, 
     plot_palette = c("Blues"), plot_text_size = 4)
 
-plot_grid(bias_both$subject$Plot, bias_both_color_text$subject$Plot,nrow = 2)
+plot_grid(bias_both$sample_id$Plot, bias_both_color_text$sample_id$Plot,nrow = 2)
 ```
 
 ## Refine SVGs by Removing Batch-Affected Outliers
 
-Finally, we obtain a refined set of SVGs by
-removing the batch-biased SVGs based on user-defined thresholds for
-`nSD_dev` and `nSD_rank`.
+Finally, we obtain a refined set of SVGs by removing the batch-biased
+SVGs based on user-defined thresholds for `nSD_dev` and `nSD_rank`.
 
 Here, we use the results from bias_both, which applied
 `threshold = "both"` to account for both deviance and rank differences.
 
 ```{r new svgs, comment = NA, message=FALSE, warning=FALSE}
-bias_both_df <- bias_both$subject$Table
-svgs_filt <- setdiff(libd_nnsvgs$gene_id, bias_both_df$gene_id)
-svgs_filt_spe <- libd_nnsvgs[libd_nnsvgs$gene_id %in% svgs_filt, ]
+bias_both_df <- bias_both$sample_id$Table
+svgs_filt <- setdiff(svgs$gene_id, bias_both_df$gene_id)
+svgs_filt_spe <- svgs[svgs$gene_id %in% svgs_filt, ]
 nrow(svgs_filt_spe)
 ```
 
 After obtaining the refined set of SVGs, these genes can be further
-analyzed using established SRT clustering algorithms
-to explore tissue layers and spatial organization.
+analyzed using established SRT clustering algorithms to explore tissue
+layers and spatial organization.
 
 # `R` session information {.unnumbered}
 
