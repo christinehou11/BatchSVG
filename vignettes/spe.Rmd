@@ -57,6 +57,7 @@ the [WeberDivechaLCdata](https://bioconductor.org/packages/release/data/experime
 library(BatchSVG)
 library(WeberDivechaLCdata)
 library(cowplot)
+library(ggplot2)
 ```
 
 ```{r load data, comment=NA, warning=FALSE, message=FALSE}
@@ -141,6 +142,7 @@ plots <- svg_nSD(list_batch_df = list_batch_df,
 plots$sample_id
 ```
 
+
 ## Identify Biased Genes Using `biasDetect()`
 
 The function `biasDetect()` is designed to identify and filter out
@@ -163,7 +165,46 @@ provided for these parameters if not specified. Users should refer to the
 to ensure appropriate values are assigned for each parameter.
 
 We will use `nSD_dev = 10` and `nSD_rank = 8` for the example. Users
-should adjust these values based on their datasets. We have chosen relatively high thresholds in this example to be more conservative with the SVGs we will filter out of the SVG list.
+should adjust these values based on their datasets. We also include a brief sensitivity analysis below, visualizing how the number of identified batch-biased genes varies across a range of nSD values. We have chosen relatively high thresholds in this example to be more conservative with the SVGs we will filter out of the SVG list.
+
+```{r}
+
+vec_dev <- list_batch_df$sample_id$nSD_dev_sample_id[list_batch_df$sample_id$nSD_dev_sample_id > 0]
+x_values <- 2:round(max(vec_dev))
+
+counts <- sapply(x_values, function(x) sum(vec_dev > x))
+
+df <- data.frame(
+  threshold = x_values,
+  count = counts
+)
+
+p1 <- ggplot(df, aes(x = threshold, y = count)) +
+  geom_point(color = "blue", size = 2) +
+  labs(x = "Threshold Value",
+       y = "Number of SVGs > Threshold",
+       title = "Relative Change in Deviance") +
+  theme_minimal()
+
+vec_rank <- list_batch_df$sample_id$nSD_rank_sample_id[list_batch_df$sample_id$nSD_rank_sample_id > 0]
+x_values <- 2:round(max(vec_rank))
+
+counts <- sapply(x_values, function(x) sum(vec_rank > x))
+
+df <- data.frame(
+  threshold = x_values,
+  count = counts
+)
+
+p2 <- ggplot(df, aes(x = threshold, y = count)) +
+  geom_point(color = "blue", size = 2) +
+  labs(x = "Threshold Value",
+       y = "Number of SVGs > Threshold",
+       title = "Rank Difference") +
+  theme_minimal()
+
+plot_grid(p1,p2)
+```
 
 **Usage of Different Threshold Options**
 
