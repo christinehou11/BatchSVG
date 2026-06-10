@@ -52,6 +52,7 @@ package.
 library(BatchSVG)
 library(WeberDivechaLCdata)
 library(cowplot)
+library(ggplot2)
 ```
 
 ``` r
@@ -232,9 +233,53 @@ parameters if not specified. Users should refer to the
 to ensure appropriate values are assigned for each parameter.
 
 We will use `nSD_dev = 10` and `nSD_rank = 8` for the example. Users
-should adjust these values based on their datasets. We have chosen
-relatively high thresholds in this example to be more conservative with
-the SVGs we will filter out of the SVG list.
+should adjust these values based on their datasets. We also include a
+brief sensitivity analysis below, visualizing how the number of
+identified batch-biased genes varies across a range of nSD values. We
+have chosen relatively high thresholds in this example to be more
+conservative with the SVGs we will filter out of the SVG list.
+
+``` r
+
+
+vec_dev <- list_batch_df$sample_id$nSD_dev_sample_id[list_batch_df$sample_id$nSD_dev_sample_id > 0]
+x_values <- 2:round(max(vec_dev))
+
+counts <- sapply(x_values, function(x) sum(vec_dev > x))
+
+df <- data.frame(
+  threshold = x_values,
+  count = counts
+)
+
+p1 <- ggplot(df, aes(x = threshold, y = count)) +
+  geom_point(color = "blue", size = 2) +
+  labs(x = "Threshold Value",
+       y = "Number of SVGs > Threshold",
+       title = "Relative Change in Deviance") +
+  theme_minimal()
+
+vec_rank <- list_batch_df$sample_id$nSD_rank_sample_id[list_batch_df$sample_id$nSD_rank_sample_id > 0]
+x_values <- 2:round(max(vec_rank))
+
+counts <- sapply(x_values, function(x) sum(vec_rank > x))
+
+df <- data.frame(
+  threshold = x_values,
+  count = counts
+)
+
+p2 <- ggplot(df, aes(x = threshold, y = count)) +
+  geom_point(color = "blue", size = 2) +
+  labs(x = "Threshold Value",
+       y = "Number of SVGs > Threshold",
+       title = "Rank Difference") +
+  theme_minimal()
+
+plot_grid(p1,p2)
+```
+
+![](spe_files/figure-html/unnamed-chunk-3-1.png)
 
 **Usage of Different Threshold Options**
 
@@ -465,44 +510,45 @@ sessionInfo()
 #> [8] base     
 #> 
 #> other attached packages:
-#>  [1] cowplot_1.2.0               WeberDivechaLCdata_1.14.0  
-#>  [3] SpatialExperiment_1.22.0    SingleCellExperiment_1.34.0
-#>  [5] SummarizedExperiment_1.42.0 Biobase_2.72.0             
-#>  [7] GenomicRanges_1.64.0        Seqinfo_1.2.0              
-#>  [9] IRanges_2.46.0              S4Vectors_0.50.0           
-#> [11] MatrixGenerics_1.24.0       matrixStats_1.5.0          
-#> [13] ExperimentHub_3.2.0         AnnotationHub_4.2.0        
-#> [15] BiocFileCache_3.2.0         dbplyr_2.5.2               
-#> [17] BiocGenerics_0.58.0         generics_0.1.4             
-#> [19] BatchSVG_1.5.2              BiocStyle_2.40.0           
+#>  [1] ggplot2_4.0.3               cowplot_1.2.0              
+#>  [3] WeberDivechaLCdata_1.14.0   SpatialExperiment_1.22.0   
+#>  [5] SingleCellExperiment_1.34.0 SummarizedExperiment_1.42.0
+#>  [7] Biobase_2.72.0              GenomicRanges_1.64.0       
+#>  [9] Seqinfo_1.2.0               IRanges_2.46.0             
+#> [11] S4Vectors_0.50.1            MatrixGenerics_1.24.0      
+#> [13] matrixStats_1.5.0           ExperimentHub_3.2.0        
+#> [15] AnnotationHub_4.2.0         BiocFileCache_3.2.0        
+#> [17] dbplyr_2.5.2                BiocGenerics_0.58.1        
+#> [19] generics_0.1.4              BatchSVG_1.5.3             
+#> [21] BiocStyle_2.40.0           
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.1     dplyr_1.2.1          farver_2.1.2        
-#>  [4] blob_1.3.0           Biostrings_2.80.0    filelock_1.0.3      
+#>  [4] blob_1.3.0           Biostrings_2.80.1    filelock_1.0.3      
 #>  [7] S7_0.2.2             fastmap_1.2.0        digest_0.6.39       
 #> [10] rsvd_1.0.5           lifecycle_1.0.5      KEGGREST_1.52.0     
-#> [13] RSQLite_2.4.6        magrittr_2.0.5       compiler_4.6.0      
+#> [13] RSQLite_3.53.1       magrittr_2.0.5       compiler_4.6.0      
 #> [16] rlang_1.2.0          sass_0.4.10          tools_4.6.0         
 #> [19] yaml_2.3.12          knitr_1.51           labeling_0.4.3      
 #> [22] S4Arrays_1.12.0      htmlwidgets_1.6.4    bit_4.6.0           
-#> [25] curl_7.1.0           DelayedArray_0.38.1  RColorBrewer_1.1-3  
-#> [28] abind_1.4-8          BiocParallel_1.46.0  withr_3.0.2         
-#> [31] purrr_1.2.2          desc_1.4.3           grid_4.6.0          
-#> [34] beachmat_2.28.0      ggplot2_4.0.3        scales_1.4.0        
-#> [37] cli_3.6.6            crayon_1.5.3         rmarkdown_2.31      
-#> [40] ragg_1.5.2           otel_0.2.0           rjson_0.2.23        
-#> [43] httr_1.4.8           DBI_1.3.0            cachem_1.1.0        
-#> [46] parallel_4.6.0       AnnotationDbi_1.74.0 BiocManager_1.30.27 
-#> [49] XVector_0.52.0       vctrs_0.7.3          Matrix_1.7-5        
-#> [52] jsonlite_2.0.0       bookdown_0.46        BiocSingular_1.28.0 
-#> [55] bit64_4.8.0          ggrepel_0.9.8        scry_1.24.0         
-#> [58] irlba_2.3.7          magick_2.9.1         systemfonts_1.3.2   
-#> [61] jquerylib_0.1.4      glue_1.8.1           pkgdown_2.2.0       
-#> [64] codetools_0.2-20     gtable_0.3.6         BiocVersion_3.23.1  
-#> [67] ScaledMatrix_1.20.0  tibble_3.3.1         pillar_1.11.1       
-#> [70] rappdirs_0.3.4       htmltools_0.5.9      R6_2.6.1            
-#> [73] httr2_1.2.2          textshaping_1.0.5    evaluate_1.0.5      
-#> [76] lattice_0.22-9       png_0.1-9            memoise_2.0.1       
-#> [79] bslib_0.10.0         Rcpp_1.1.1-1.1       SparseArray_1.12.2  
-#> [82] xfun_0.57            fs_2.1.0             pkgconfig_2.0.3
+#> [25] curl_7.1.0           DelayedArray_0.38.2  RColorBrewer_1.1-3  
+#> [28] abind_1.4-8          BiocParallel_1.46.0  purrr_1.2.2         
+#> [31] withr_3.0.2          desc_1.4.3           grid_4.6.0          
+#> [34] beachmat_2.28.0      scales_1.4.0         cli_3.6.6           
+#> [37] crayon_1.5.3         rmarkdown_2.31       ragg_1.5.2          
+#> [40] otel_0.2.0           rjson_0.2.23         httr_1.4.8          
+#> [43] DBI_1.3.0            cachem_1.1.0         parallel_4.6.0      
+#> [46] AnnotationDbi_1.74.0 BiocManager_1.30.27  XVector_0.52.0      
+#> [49] vctrs_0.7.3          Matrix_1.7-5         jsonlite_2.0.0      
+#> [52] bookdown_0.46        BiocSingular_1.28.0  bit64_4.8.2         
+#> [55] ggrepel_0.9.8        scry_1.24.0          irlba_2.3.7         
+#> [58] magick_2.9.1         systemfonts_1.3.2    jquerylib_0.1.4     
+#> [61] glue_1.8.1           pkgdown_2.2.0        codetools_0.2-20    
+#> [64] gtable_0.3.6         BiocVersion_3.23.1   ScaledMatrix_1.20.0 
+#> [67] tibble_3.3.1         pillar_1.11.1        rappdirs_0.3.4      
+#> [70] htmltools_0.5.9      R6_2.6.1             httr2_1.2.2         
+#> [73] textshaping_1.0.5    evaluate_1.0.5       lattice_0.22-9      
+#> [76] png_0.1-9            memoise_2.0.1        bslib_0.11.0        
+#> [79] Rcpp_1.1.1-1.1       SparseArray_1.12.2   xfun_0.58           
+#> [82] fs_2.1.0             pkgconfig_2.0.3
 ```

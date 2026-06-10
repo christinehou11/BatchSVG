@@ -144,7 +144,7 @@ spatialLIBD_spe <- fetch_data(type = "spe")
 #> 
 #> adding rname 'https://www.dropbox.com/s/f4wcvtdq428y73p/Human_DLPFC_Visium_processedData_sce_scran_spatialLIBD.Rdata?dl=1'
 #> 
-#> 2026-05-08 19:22:34.657979 loading file /home/runner/.cache/R/BiocFileCache/35066166b139_Human_DLPFC_Visium_processedData_sce_scran_spatialLIBD.Rdata%3Fdl%3D1
+#> 2026-06-10 21:13:05.914904 loading file /home/runner/.cache/R/BiocFileCache/37b92a53361a_Human_DLPFC_Visium_processedData_sce_scran_spatialLIBD.Rdata%3Fdl%3D1
 libd_svg <- read.csv(
     system.file("extdata","libd-all_nnSVG_p-05-features-df.csv",
               package = "BatchSVG"),
